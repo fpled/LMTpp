@@ -5,7 +5,7 @@
 
 #ifdef METIL_COMP_DIRECTIVE
 
-#pragma inc_path /opt/intel/Compiler/11.1/064/mkl/include/
+#pragma inc_path /opt/intel/composer_xe_2015.1.133/mkl/include
 
 #endif
 

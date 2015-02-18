@@ -4,16 +4,15 @@
 #ifdef WITH_MKL
 #ifdef METIL_COMP_DIRECTIVE
 
-#pragma lib_path /opt/intel/Compiler/11.1/064/lib/intel64/lib
-#pragma lib_path /opt/intel/Compiler/11.1/064/mkl/lib/em64t
-#pragma lib_path /opt/intel/Compiler/11.1/064/lib/intel64/
+#pragma lib_path /opt/intel/composer_xe_2015.1.133/compiler/lib/intel64
+#pragma lib_path /opt/intel/composer_xe_2015.1.133/mkl/lib/intel64
 #pragma lib_name mkl_intel_lp64
 #pragma lib_name mkl_gnu_thread
 #pragma lib_name mkl_core
 #pragma lib_name iomp5
 #pragma lnk_flag /usr/lib/libpthread_nonshared.a
 
-#pragma inc_path /opt/intel/Compiler/11.1/064/mkl/include/
+#pragma inc_path /opt/intel/composer_xe_2015.1.133/mkl/include
 
 #endif
 
