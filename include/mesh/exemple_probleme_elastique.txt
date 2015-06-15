@@ -19,9 +19,9 @@
             #CC = '/opt/intel/bin/icc',
             #CXX = '/opt/intel/bin/icc',
             LIBS = [ 'mkl_core', 'mkl_intel_lp64', 'mkl_gnu_thread', 'iomp5', 'pthread', 'cholmod' , 'umfpack' , 'dmumps' , 'mpi_cxx' ],
-            CPPPATH = [ '#LMT/include', '/usr/include/suitesparse', '/opt/intel/Compiler/11.1/064/mkl/include' , '/usr/lib/openmpi/include/' ],
+			CPPPATH = [ '#LMT/include', '/usr/include/suitesparse', '/opt/intel/composer_xe_2015.1.133/mkl/include' , '/usr/lib/openmpi/include/' ],
             CPPFLAGS = cppflags( ['xml2-config'] ) + " -O3 -g -m64 -mtune=core2 "  + " -DWITH_MKL " + " -DWITH_MUMPS "  + " -DWITH_CHOLMOD " + " -DWITH_UMFPACK " ,
-            LINKFLAGS = linkflags( ['xml2-config' ] ) + ' -L/usr/lib/openmpi/lib/ ' + ' -L/opt/intel/Compiler/11.1/064/mkl/lib/em64t/ ' + ' -L/opt/intel/Compiler/11.1/064/lib/intel64/ ' + './build/LMT/util/MKL_direct_solver.o '  + ' ./build/LMT/util/MUMPS_solver.o ' ,
+			LINKFLAGS = linkflags( ['xml2-config' ] ) + ' -L/usr/lib/openmpi/lib/ ' + ' -L/opt/intel/composer_xe_2015.1.133/mkl/lib/intel64 ' + ' -L/opt/intel/composer_xe_2015.1.133/compiler/lib/intel64 ' + './build/LMT/util/MKL_direct_solver.o '  + ' ./build/LMT/util/MUMPS_solver.o ' ,
         )
         
         make_dep_py(env)
@@ -52,7 +52,7 @@
 
     Enfin il faudra mettre à jour la variable d'environnement <strong> LD_LIBRARY_PATH <strong> en tapant dans une console bash :
     \ code
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/Compiler/11.1/064/lib/intel64/lib:/opt/intel/Compiler/11.1/064/mkl/lib/em64t       
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/composer_xe_2015.1.133/compiler/lib/intel64:/opt/intel/composer_xe_2015.1.133/mkl/lib/intel64
     Pour les autres shell ( e.g. cshell ), reportez-vous à sa documentation.
 
     Voici maintenant le code de l'exemple. C'est un exemple très simple.

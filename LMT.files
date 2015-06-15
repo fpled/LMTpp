@@ -670,3 +670,7 @@ tests/include/containers/header_linker_test.h
 >>>>>>> 84970ab377c8efe2513bcdc32b420f113cc95188
 Makefile
 run_unit_test.py
+include/util/MKL_common.h
+include/util/MKL_iterative_solver.h
+include/util/MKL_iterative_solver.h
+include/mesh/exemple_probleme_elastique.txt

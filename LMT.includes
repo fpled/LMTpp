@@ -1,2 +1,4 @@
 doc/src
 include
+include/util
+include/mesh

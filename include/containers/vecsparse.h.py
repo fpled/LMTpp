@@ -67,7 +67,7 @@ Voici un exemple d'utilisation :
 
 
     \\relates Vec
-    \\friend raphael.pasquier@lmt.ens-cachan.fr
+    \\friend samir.amrouche@lmt.ens-cachan.fr
 */
 template<class TT,int static_size_>
 class Vec<Sparse<TT>,static_size_> {

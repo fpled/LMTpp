@@ -41,7 +41,7 @@ namespace LMT {
     \\brief vecteur a element contigus. Si la taille change , on preferera le type SplittedVector qui assure que le vecteur ne sera pas deplace en memoire apres trop d'ajouts.
     Full vector. Elements are contiguous.
     <strong> IMORTANT : during resize, pop_back, ... and so on, location of data in memory may be moved. Use SplittedVector if you are pointer stability. </strong>
-    \\friend raphael.pasquier@lmt.ens-cachan.fr
+    \\friend samir.amrouche@lmt.ens-cachan.fr
     \\friend hugo.leclerc@lmt.ens-cachan.fr
 */
 

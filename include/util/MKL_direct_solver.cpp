@@ -3,9 +3,8 @@
 
 #ifdef METIL_COMP_DIRECTIVE
 
-#pragma lib_path /opt/intel/Compiler/11.1/064/lib/intel64/lib
-#pragma lib_path /opt/intel/Compiler/11.1/064/mkl/lib/em64t
-#pragma lib_path /opt/intel/Compiler/11.1/064/lib/intel64/
+#pragma lib_path /opt/intel/composer_xe_2015.1.133/compiler/lib/intel64
+#pragma lib_path /opt/intel/composer_xe_2015.1.133/mkl/lib/intel64
 #pragma lib_name mkl_intel_lp64
 #pragma lib_name mkl_gnu_thread
 #pragma lib_name mkl_core

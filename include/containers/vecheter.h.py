@@ -22,7 +22,7 @@ struct ExtractDM;
 
     \\relates apply
     \\relates Vec
-    \\friend raphael.pasquier@lmt.ens-cachan.fr
+    \\friend samir.amrouche@lmt.ens-cachan.fr
 */
 
 /// heterogeneous vector. static_size is the number of elements
