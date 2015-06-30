@@ -13,8 +13,9 @@
 #define LMT_READ_GID_HEADER
 
 #include "mesh.h"
-#include "tetra.h"
+#include "triangle.h"
 #include "triangle_6.h"
+#include "tetra.h"
 
 #include <fstream>
 #include <map>

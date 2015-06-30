@@ -1,7 +1,7 @@
 #ifndef READER_INP_H
 #define READER_INP_H
 
-#include "io/normalize_end_line.h"
+#include "../io/normalize_end_line.h"
 #include <map>
 #include <limits>
 

@@ -12,8 +12,8 @@
 #ifndef LMT_meshancestor_HEADER
 #define LMT_meshancestor_HEADER
 
-#include "containers/vec.h"
-#include "containers/packedvectorofvector.h"
+#include "../containers/vec.h"
+#include "../containers/packedvectorofvector.h"
 #include "element.h"
 #include "meshdata.h"
 #include "node.h"

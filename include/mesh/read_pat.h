@@ -15,8 +15,9 @@
 #include <map>
 #include <sstream>
 
-#include "Tetra.h"
-#include "Hexa.h"
+#include "triangle.h"
+#include "tetra.h"
+#include "hexa.h"
 //#include "mesh/extract_scalar.h"
 
 /// read elements
@@ -53,11 +54,11 @@ void read_pat_elements(TM &m,istream &is,int nb_elem, std::map<int,int> &map_num
       return;
     }
 
-    // ATTETION DANS MOLDFLOW SEULS LES TRIANGLES ET THETRAHEDRON SONT UTILISES
+    // ATTETION DANS MOLDFLOW SEULS LES TRIANGLES ET THETRAHEDRES SONT UTILISES
     if (n_nodes == 3)
       m.add_element(Triangle(),&vn[0]);
     else if (n_nodes == 4)
-      m.add_element(Tetrahedron(),&vn[0]);
+      m.add_element(Tetra(),&vn[0]);
     else
       std::cerr << "Elements with " << n_nodes << " nodes are not managed in read_pat()." << std::endl;
   }

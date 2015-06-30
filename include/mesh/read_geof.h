@@ -1,10 +1,13 @@
 #ifndef READ_GEOF_H
 #define READ_GEOF_H
 
-#include "mesh/hexa.h"
-#include "mesh/triangle_6.h"
-#include "mesh/tetra.h"
-#include "mesh/wedge.h"
+#include "bar.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "tetra.h"
+#include "hexa.h"
+#include "wedge.h"
 #include <stdexcept>
 #include <map>
 using namespace std;

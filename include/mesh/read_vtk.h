@@ -1,10 +1,18 @@
 #ifndef READ_VTK_H
 #define READ_VTK_H
 
-#include "../mesh/tetra.h"
-#include "../mesh/wedge.h"
-#include "../mesh/wedge_15.h"
-#include "../mesh/hexa.h"
+#include "bar.h"
+#include "bar_3.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "quad_8.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "hexa_20.h"
+#include "wedge.h"
+#include "wedge_15.h"
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -30,7 +38,7 @@ struct GetVtkFields {
 };
 
 
-/// put avs castem mesh in mesh
+/// put vtk mesh in mesh
 template<class TM>
 void read_vtk(TM &mesh, std::istream &is) throw(std::runtime_error) {
     using namespace std;
@@ -160,7 +168,7 @@ void read_vtk(TM &mesh, std::istream &is) throw(std::runtime_error) {
     }
 }
 /*!
- put vtk mesh castem in m
+ put vtk mesh in m
 \keyword Maillage/Import
 */
 template<class TM>

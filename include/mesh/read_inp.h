@@ -12,11 +12,11 @@
 #ifndef LMT_READ_INP_HEADER
 #define LMT_READ_INP_HEADER
 
-#include "mesh/hexa.h"
-#include "mesh/tetra.h"
-#include "mesh/wedge.h"
-#include "mesh/tetra_10.h"
-#include "containers/indexof.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "wedge.h"
+#include "../containers/indexof.h"
 
 #include <fstream>
 #include <map>
@@ -79,13 +79,10 @@ template<class TM> void read_inp( TM &m, const std::string &fic_name ) {
                 std::string type_elem = read_until_sp( line, type_pos + 5 );
                 //
                 if ( int( type_elem.find( "C3D8" ) ) >= 0 ) {
-                    Hexa h;
                     ctxt = ReadingHexa;
                 } else if ( int( type_elem.find( "C3D6" ) ) >= 0 ) {
-                    Wedge w;
                     ctxt = ReadingWedge;
                 } else if ( int( type_elem.find( "C3D4" ) ) >= 0 ) {
-                    Wedge w;
                     ctxt = ReadingTetra;
                 } else {
                     std::cerr << "in InpReader, unmanaged type " + type_elem << std::endl;

@@ -12,9 +12,9 @@
 #ifndef LMTDISPLAYPARAVIEW_H
 #define LMTDISPLAYPARAVIEW_H
 
-#include "mesh/write_mesh_vtk.h"
-#include "implicitgeometry/shapedeclaration.h"
-#include "containers/algo.h"
+#include "write_mesh_vtk.h"
+#include "../implicitgeometry/shapedeclaration.h"
+#include "../containers/algo.h"
 
 #include <string>
 #include <fstream>

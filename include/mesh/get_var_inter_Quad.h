@@ -1,7 +1,7 @@
 #ifndef GET_VAR_INTER__Quad_H
 #define GET_VAR_INTER__Quad_H
 
-#include "containers/system_Poly.h"
+#include "../containers/system_Poly.h"
 
 
 namespace LMT {

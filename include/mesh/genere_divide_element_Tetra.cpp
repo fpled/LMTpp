@@ -1,8 +1,8 @@
-#include "mesh/mesh.h"
-#include "mesh/meshcaracstd.h"
-#include "mesh/make_rect.h"
-#include "mesh/displayparaview.h"
-#include "util/combinatorialiterator.h"
+#include "mesh.h"
+#include "meshcaracstd.h"
+#include "make_rect.h"
+#include "displayparaview.h"
+#include "../util/combinatorialiterator.h"
 
 #include "MonMeshCarac.h"
 

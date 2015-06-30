@@ -10,9 +10,11 @@
 #ifndef LMT_READ_BDF_HEADER
 #define LMT_READ_BDF_HEADER
 
-#include "mesh/hexa.h"
-#include "mesh/tetra.h"
-#include "mesh/wedge.h"
+#include "bar.h"
+#include "triangle.h"
+#include "tetra.h"
+#include "hexa.h"
+#include "wedge.h"
 
 #include <fstream>
 #include <map>

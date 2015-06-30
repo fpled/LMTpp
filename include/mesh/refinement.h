@@ -13,6 +13,7 @@
 #define LMT_refinement_HEADER
 
 #include "mesh.h"
+#include "bar.h"
 #include "triangle.h"
 #include "quad.h"
 #include "tetra.h"

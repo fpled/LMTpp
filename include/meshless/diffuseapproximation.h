@@ -12,8 +12,8 @@
 #ifndef DIFFUSE_APPROXIMATION_H
 #define DIFFUSE_APPROXIMATION_H
 
-#include "containers/vec.h"
-#include "containers/matumfpack.h"
+#include "../containers/vec.h"
+#include "../containers/matumfpack.h"
 
 namespace LMT {
 

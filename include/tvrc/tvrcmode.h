@@ -12,7 +12,7 @@
 #ifndef TVRCMODE_H
 #define TVRCMODE_H
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 #include <string>
 
 namespace LMT {

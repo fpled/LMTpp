@@ -1,7 +1,8 @@
-#include "mesh/hexa.h"
-#include "mesh/triangle_6.h"
-#include "mesh/tetra.h"
-#include "mesh/wedge.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "tetra.h"
+#include "hexa.h"
+#include "wedge.h"
 #include <stdexcept>
 #include <map>
 using namespace std;

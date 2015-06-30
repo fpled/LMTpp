@@ -12,10 +12,14 @@
 #ifndef LMT_READ_GID2_HEADER
 #define LMT_READ_GID2_HEADER
 
-#include "../mesh/hexa.h"
-#include "../mesh/tetra.h"
-#include "../mesh/wedge.h"
-#include "../mesh/tetra_10.h"
+#include "bar.h"
+#include "bar_3.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "wedge.h"
 #include "../containers/indexof.h"
 
 #include <fstream>
@@ -45,15 +49,13 @@ template<         class T, class VarTag,unsigned n           > void assign_tag_v
 
 /// put gmsh mesh in m
 template<class TM,class VarTag>
-void read_msh_2( TM &m,std::istream &is, unsigned nvi, const VarTag &vt ) throw ( std::runtime_error ) {
+void read_msh_2( TM &m, std::istream &is, unsigned nvi, const VarTag &vt ) throw ( std::runtime_error ) {
     using namespace std;
     typedef typename TM::Pvec Pvec;
     typedef typename TM::TNode TNode;
     static const int dim = TM::dim;
-
     if ( not nvi )
         nvi = TM::nvi;
-    //
     int ctxte = 0;
 
     // correspondance between number in file -> ref in mesh
@@ -303,7 +305,7 @@ void read_msh_2_tags_on_skin( TM &m, const std::string &fic_name, const VarTag &
 Attention: importe seulement les Bar(), les Triangle(), les Quad(), les Hexa(), les Tetra() et les Wedge().
 */
 template<class TM>
-void read_msh_2( TM &m,const std::string &fic_name, unsigned nvi = 0 ) throw ( std::runtime_error ) {
+void read_msh_2( TM &m, const std::string &fic_name, unsigned nvi = 0 ) throw ( std::runtime_error ) {
     // ouverture du fichier
     std::ifstream my_file( fic_name.c_str() );
     if ( ! my_file.is_open() )
@@ -320,7 +322,7 @@ read_msh_2( m, "toto.msh", dim, HeteroExplPack<toto_DM,tata_DM>() )
 \keyword Maillage/Import
 */
 template<class TM,class VarTag>
-void read_msh_2( TM &m,const std::string &fic_name, unsigned nvi, const VarTag &vt ) throw ( std::runtime_error ) {
+void read_msh_2( TM &m, const std::string &fic_name, unsigned nvi, const VarTag &vt ) throw ( std::runtime_error ) {
     // ouverture du fichier
     std::ifstream my_file( fic_name.c_str() );
     if ( ! my_file.is_open() )

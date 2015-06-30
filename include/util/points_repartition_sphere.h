@@ -12,7 +12,7 @@
 #ifndef LMT_points_repartition_sphere_HEADER
 #define LMT_points_repartition_sphere_HEADER
 
-#include "containers/vec.h"
+#include "../containers/vec.h"
 
 namespace LMT {
 

@@ -12,7 +12,7 @@
 #ifndef LMT_tvrcmaterial_HEADER
 #define LMT_tvrcmaterial_HEADER
 
-#include "io/xmlnode.h"
+#include "../io/xmlnode.h"
 
 namespace LMT {
 

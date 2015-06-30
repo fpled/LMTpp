@@ -12,13 +12,19 @@
 #ifndef LMTMESHCARACSTD_H
 #define LMTMESHCARACSTD_H
 
-#include "mesh/mesh.h"
+#include "mesh.h"
 #include "element.h"
-#include "tetra.h"
-#include "hexa.h"
-#include "tetra_10.h"
-#include "hexa_20.h"
+#include "bar.h"
+#include "bar_3.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "quad_8.h"
 #include "quad_9.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "hexa_20.h"
 
 namespace LMT {
 

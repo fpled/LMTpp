@@ -1,9 +1,9 @@
 #ifndef ELEMLIST_H
 #define ELEMLIST_H
 
-#include "containers/typeifnotvoid.h"
-#include "util/valorptr.h"
-#include "containers/indexof.h"
+#include "../containers/typeifnotvoid.h"
+#include "../util/valorptr.h"
+#include "../containers/indexof.h"
 #include "dynamicdata.h"
 
 namespace LMT {

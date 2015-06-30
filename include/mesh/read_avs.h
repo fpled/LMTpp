@@ -1,15 +1,18 @@
 #ifndef READ_AVS_H
 #define READ_AVS_H
 
-#include "../mesh/mesh.h"
-#include "../mesh/hexa.h"
-#include "../mesh/triangle_6.h"
-#include "../mesh/tetra.h"
-#include "../mesh/tetra_10.h"
-#include "../mesh/wedge.h"
-#include "../mesh/quad_8.h"
-#include "../mesh/quad_9.h"
-#include "../mesh/hexa_20.h"
+#include "mesh.h"
+#include "bar.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "quad_8.h"
+#include "quad_9.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "hexa_20.h"
+#include "wedge.h"
 #include "../io/normalize_end_line.h"
 #include <stdexcept>
 #include <map>

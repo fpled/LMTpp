@@ -1,8 +1,8 @@
 #ifndef LMT_mesh_make_rect_HEADER
 #define LMT_mesh_make_rect_HEADER
 
-#include "util/rectilinear_iterator.h"
-#include "containers/mat.h"
+#include "../util/rectilinear_iterator.h"
+#include "../containers/mat.h"
 
 namespace LMT {
 

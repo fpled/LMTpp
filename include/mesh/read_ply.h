@@ -22,7 +22,8 @@
 #include <map>
 #include <sstream>
 
-#include "element_Triangle.h"
+#include "triangle.h"
+//#include "element_Triangle.h"
 
 /// put gid mesh in m
 template<class TM>

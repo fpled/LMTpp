@@ -12,7 +12,7 @@
 #ifndef LMT_load_image_HEADER
 #define LMT_load_image_HEADER
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 
 namespace LMT {
 

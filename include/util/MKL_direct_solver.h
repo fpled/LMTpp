@@ -25,7 +25,7 @@
 
 #endif
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 
 using namespace LMT;
 

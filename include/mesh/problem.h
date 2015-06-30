@@ -12,10 +12,10 @@
 #ifndef LMT_problem_HEADER
 #define LMT_problem_HEADER
 
-#include "mesh/mesh.h"
-#include "mesh/displayparaview.h"
-#include "mesh/read_gid.h"
-#include "mesh/read_stl.h"
+#include "mesh.h"
+#include "displayparaview.h"
+#include "read_gid.h"
+#include "read_stl.h"
 
 namespace LMT {
 
