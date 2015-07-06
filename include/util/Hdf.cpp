@@ -1,8 +1,11 @@
 #include "Hdf.h"
 
 #ifdef METIL_COMP_DIRECTIVE
+#pragma lib_path /usr/lib/x86_64-linux-gnu/hdf5/serial
 #pragma lib_name hdf5
 #endif
+// #pragma lib_name mpi
+// #pragma lib_name mpi++
 
 using namespace std;
 using namespace LMT;

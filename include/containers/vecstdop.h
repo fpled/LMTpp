@@ -179,6 +179,15 @@ inline typename TypeReduction<Plus,Vec<TT,s> >::T mean(const Vec<TT,s> &v) {
     return sum( v ) / v.size();
 }
 
+/*! root mean square
+  \relates Vec
+  \keyword Vecteur
+*/
+template<class TT,int s>
+inline typename TypeReduction<Plus,Vec<TT,s> >::T rms( const Vec<TT,s> &v ) {
+    return sqrt( sum( v * v ) / v.size() );
+}
+
 /*!
   \keyword Vecteur
 */
