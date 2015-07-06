@@ -12,19 +12,19 @@
 #ifndef LMT_formulation_HEADER
 #define LMT_formulation_HEADER
 
-#include "mesh/mesh.h"
+#include "../mesh/mesh.h"
 
-#include "containers/heterogeneouspack.h"
+#include "../containers/heterogeneouspack.h"
 #include "convergence_criteria.h"
 #include "constraint.h"
 #include "sollicitation.h"
-#include "util/symamd.h"
-#include "util/symrcm.h"
-#include "util/solveLDL.h"
-#include "util/MUMPS_solver.h"
-#include "formulation/formulation_ancestor.h"
-#include "containers/matcholamd.h"
-#include "containers/matumfpack.h"
+#include "../util/symamd.h"
+#include "../util/symrcm.h"
+#include "../util/solveLDL.h"
+#include "../util/MUMPS_solver.h"
+#include "../formulation/formulation_ancestor.h"
+#include "../containers/matcholamd.h"
+#include "../containers/matumfpack.h"
 
 namespace LMT {
 

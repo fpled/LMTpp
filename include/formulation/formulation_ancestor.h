@@ -3,8 +3,8 @@
 
 #include <pthread.h>
 
-#include "containers/mat.h"
-#include "io/xmlnode.h"
+#include "../containers/mat.h"
+#include "../io/xmlnode.h"
 
 namespace LMT {
 
