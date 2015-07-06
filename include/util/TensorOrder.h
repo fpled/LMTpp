@@ -19,6 +19,7 @@ Boston, MA 02110-1301, USA.
 
 #include "../containers/vec.h"
 #include "../containers/mat.h"
+#include "../containers/Tens3.h"
 
 /**
   @brief To get the static dimensionnality of objects
@@ -40,6 +41,11 @@ struct TensorOrder<LMT::Vec<T,s,IVO> > {
 template<class T,class STR,class STO,class IO>
 struct TensorOrder<LMT::Mat<T,STR,STO,IO> > {
     static const int res = 2;
+};
+
+template<class T>
+struct TensorOrder<LMT::Tens3<T> > {
+    static const int res = 3;
 };
 
 #endif // METIL_TENSOR_ORDER_H
