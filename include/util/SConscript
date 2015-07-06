@@ -9,6 +9,7 @@ lib = env.Library('LMT_util', [
     'solveLDL_semimorse.cpp',
     'symrcm.cpp',
     'symamd.cpp',
+    'Hdf.cpp',
   ]
 )
 

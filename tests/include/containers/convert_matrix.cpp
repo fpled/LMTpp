@@ -1,5 +1,5 @@
-#include "util/unit_test.h" /// pour la macro UNIT_TEST( )
-#include <containers/mat.h>
+#include "../../../include/util/unit_test.h" /// pour la macro UNIT_TEST( )
+#include "../../../include/containers/mat.h"
 
 using namespace LMT;
 

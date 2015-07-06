@@ -1,0 +1,7 @@
+
+On se met dans le répertoire LMT/doc puis on tape :
+make
+
+Cela crée un répertoire html (dans le répertoire doc) qui contient la documentation. 
+La page d'accueil est index.html.
+

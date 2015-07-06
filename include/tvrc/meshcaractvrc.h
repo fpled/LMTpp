@@ -1,10 +1,10 @@
 #ifndef LMT___LMT_INCLUDE_TVRC_MESHCARACTVRC_MESHCARAC_PY
 #define LMT___LMT_INCLUDE_TVRC_MESHCARACTVRC_MESHCARAC_PY
 
-#include "../mesh/nodalelement.h"
-#include "../mesh/triangle.h"
-#include "../mesh/bar.h"
-#include "../mesh/tetra.h"
+#include "mesh/nodalelement.h"
+#include "mesh/triangle.h"
+#include "mesh/bar.h"
+#include "mesh/tetra.h"
 namespace LMT {
 
 template<unsigned nb_dim,class T> class Meshcaractvrc;
