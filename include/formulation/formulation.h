@@ -82,11 +82,11 @@ public:
     
     - si wont_add_nz=true (utilisation d'un solveur externe si possible (CholMod si sym=true, UMFPACK si sym=false par exemple), solveur interne (LDL, Inv,...) sinon),
         - si sym=false (pas CholMod, pas LDL), appel du solveur UMFPACK (si "-DWITH_UMFPACK" dans directive de compil) ou MUMPS (si "-DWITH_MUMPS" dans directive de compil) ou Inv (sinon) -> il faudrait peut-être inverser l'appel entre MUMPS et UMFPACK (si "-DWITH_UMFPACK -DWITH_MUMPS" dans directive de compil), car il me semble que MUMPS est plus rapide que UMFPACK, quand penses-tu Hugal ? Ca vaudrait le coup de faire un test...
-        - si sym=true, appel du solveur CholMod (si "-DWITH_CHOLMOD" dans directive de compil) ou MUMPS (si "-DWITH_MUMPS" dans directive de compil) ou LDL (si "-DLDL" dans directive de compil) ou Inv (sinon) -> OK, cas classique.
+        - si sym=true, appel du solveur CholMod (si "-DWITH_CHOLMOD" dans directive de compil) ou MUMPS (si "-DWITH_MUMPS" dans directive de compil) ou LDL (si "-DWITH_LDL" dans directive de compil) ou Inv (sinon) -> OK, cas classique.
         
     - si wont_add_nz=false (utilisation d'un solveur interne, donc pas CholMod, pas UMFPACK, pas MUMPS qui font appel à des librairies externes),
         - si sym=false (pas CholdMod, pas LDL), appel du solveur Inv -> à réfléchir, c'est très lent, pas efficace...
-        - si sym=true, appel du solveur MUMPS (si "-DWITH_MUMPS" dans directive de compil) ou LDL (si "-DLDL" dans directive de compil) ou Inv (sinon) -> là on fait appel au solveur MUMPS bien que ce soit un solveur externe, car si "-DWITH_MUMPS -DLDL" dans directive de compil, on privilegie MUMPS
+        - si sym=true, appel du solveur MUMPS (si "-DWITH_MUMPS" dans directive de compil) ou LDL (si "-DWITH_LDL" dans directive de compil) ou Inv (sinon) -> là on fait appel au solveur MUMPS bien que ce soit un solveur externe, car si "-DWITH_MUMPS -DWITH_LDL" dans directive de compil, on privilegie MUMPS
         
     Mais qu'est-ce qu'une directive de compilation ?
         cf. CPPFLAGS dans vasoSConstuction
@@ -144,7 +144,7 @@ public:
 private:
 #if WITH_MUMPS
     MUMPS_solver solver;
-#elif LDL
+#elif WITH_LDL
     LDL_solver solver;
 #endif
     template<unsigned nm,unsigned n,unsigned tne> struct MatCaracElem {
@@ -1384,7 +1384,7 @@ public:
 //                 std::cout << "Solveur MUMPS" << std::endl << std:: endl;
                 solver.get_factorization( matrices( Number<0>() ), false, true );
                 vectors[0] = solver.solve( sollicitation );
-                #elif LDL
+                #elif WITH_LDL
 //                 std::cout << "Solveur LDL" << std::endl << std:: endl;
                 solver.get_factorization( matrices(Number<0>()), false );
                 vectors[0] = sollicitation;
@@ -1427,7 +1427,7 @@ public:
 //                 std::cout << "Solveur MUMPS" << std::endl << std:: endl;
                 solver.get_factorization( matrices( Number<0>() ), false, true );
                 vectors[0] = solver.solve( sollicitation );
-                #elif LDL
+                #elif WITH_LDL
 //                 std::cout << "Solveur LDL" << std::endl << std:: endl;
                 solver.get_factorization( matrices(Number<0>()), false );
                 vectors[0] = sollicitation;
@@ -1777,7 +1777,7 @@ private:
     }
 
     void get_factorization_matrix(const Number<0> &sym) {
-        #ifndef LDL
+        #ifndef WITH_LDL
         #ifndef WITH_UMFPACK
         precond_matrix = matrices(Number<0>());
         lu_factorize( precond_matrix );
@@ -1785,7 +1785,7 @@ private:
         #endif
     }
     void get_factorization_matrix(const Number<1> &sym) {
-        #ifndef LDL
+        #ifndef WITH_LDL
         #ifndef WITH_UMFPACK
         precond_matrix = matrices(Number<0>());
         chol_factorize( precond_matrix );
@@ -1793,7 +1793,7 @@ private:
         #endif
     }
     void solve_system_using_factorization_matrix(const Number<0> &sym) {
-        #ifndef LDL
+        #ifndef WITH_LDL
         #ifndef WITH_UMFPACK
         solve_using_lu_factorize( precond_matrix, sollicitation, vectors[0] );
         #endif
@@ -1805,7 +1805,7 @@ private:
         #endif
     }
     void solve_system_using_factorization_matrix(const Number<1> &sym) {
-        #ifndef LDL
+        #ifndef WITH_LDL
         #ifndef WITH_UMFPACK
         solve_using_chol_factorize( precond_matrix, sollicitation, vectors[0] );
         #endif

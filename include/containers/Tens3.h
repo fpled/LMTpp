@@ -22,6 +22,8 @@ struct Tens3 {
         return data.ptr();
     }
 
+    template<class T2> void set(const T2 &v) { data.set(v); }
+
     Vec<int> size;
     Vec<T>   data;
 };
