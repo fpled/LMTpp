@@ -76,7 +76,7 @@ public:
     ~DisplayParaview() {
     }
     
-    template<class TM> std::string add_mesh(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),double time_step=0,bool write_mesh=true) {
+    template<class TM> std::string add_mesh( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double time_step = 0, bool write_mesh = true ) {
         std::string pvu_name = prefix;
         //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
         pvu_name += "_" + to_string( time_step ) + "_" + to_string( pvu_files[time_step].size() ) + ".vtu";
@@ -96,7 +96,7 @@ public:
         return pvu_name;
     }
 
-    template<class TM> std::string add_mesh_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),double iter=0,bool write_mesh=true) {
+    template<class TM> std::string add_mesh_iter( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double iter = 0, bool write_mesh = true ) {
         std::string pvu_name = prefix;
         //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
         pvu_name += "_" + to_string( iter ) + ".vtu";
@@ -116,10 +116,12 @@ public:
         return pvu_name;
     }
 
-    template<class TM> std::string add_mesh_wo_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),bool write_mesh=true) {
+    template<class TM> std::string set_mesh( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), bool write_mesh = true ) {
         std::ostringstream ss;
         ss << prefix ;//<< pvu_files[prefix].size() << ".vtu";
-        std::string pvu_name( ss.str() + ".vtu" );
+        std::string pvu_name( ss.str() );
+        if ( prefix.rfind(".vtu") != prefix.size() - 4 )
+            pvu_name += ".vtu";
 
         pvu_files[ 0 ].push_back( pvu_name );
 
@@ -135,7 +137,7 @@ public:
         return pvu_name;
     }
 
-    template<class TS> std::string add_shape(const Shape<2,TS> &shape,unsigned grid_size,const std::string &prefix="paraview") {
+    template<class TS> std::string add_shape( const Shape<2,TS> &shape, unsigned grid_size, const std::string &prefix = "paraview" ) {
         typedef typename Shape<2,TS>::Pvec Pvec;
         typedef typename Shape<2,TS>::TPen TPen;
         Pvec tdim_min,tdim_max;
@@ -189,7 +191,8 @@ public:
         type_field_to_display = type;
     }
 
-    void make_pvd_file( const std::string &filename = "paraview" ) const {
+    void make_pvd_file( const std::string &prefix = "paraview" ) const {
+        std::string filename = prefix;
         if ( filename.rfind(".pvd") != filename.size() - 4 )
            filename += ".pvd";
         std::ofstream f( filename.c_str() );
@@ -205,7 +208,8 @@ public:
         f << "</VTKFile>" << std::endl;
    }
 
-   int exec( const std::string &filename = "paraview" ) {
+   int exec( const std::string &prefix = "paraview" ) {
+       std::string filename = prefix;
        if ( filename.rfind(".pvd") != filename.size() - 4 )
            filename += ".pvd";
        make_pvd_file( filename );
@@ -358,24 +362,24 @@ private:
     \author Hugal
  
 */
-template<class TM> void display_mesh(const TM &m,const char *nodal_field_to_display="",DisplayParaview::TypeField type_field_to_display=DisplayParaview::Nodal) {
+template<class TM> void display_mesh( const TM &m, const char *nodal_field_to_display = "", DisplayParaview::TypeField type_field_to_display = DisplayParaview::Nodal, const std::string &prefix = "paraview" ) {
     DisplayParaview dp;
-    dp.add_mesh(m);
+    dp.add_mesh( m, prefix );
     dp.set_field_to_display( nodal_field_to_display, type_field_to_display );
-    dp.exec();
+    dp.exec( prefix );
 }
 
 /*!
  * usefull to get several Windows (using apply_mt)
  */
-struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec( "conf"+to_string(i)+".pvs"); } };
+struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec( "conf"+to_string(i)+".pvs" ); } };
 
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
 int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
     DisplayParaview dp;
-    std::string res = dp.add_mesh( m, prefix );
+    std::string res = dp.set_mesh( m, prefix );
     
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
