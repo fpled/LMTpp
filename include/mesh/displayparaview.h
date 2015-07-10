@@ -81,15 +81,14 @@ public:
         //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
         pvu_name += "_" + to_string( time_step ) + "_" + to_string( pvu_files[time_step].size() ) + ".vtu";
         // std::cout << pvu_name << std::endl;
-    
+
         pvu_files[ time_step ].push_back( pvu_name );
         
-        if (write_mesh)
-        {
+        if (write_mesh) {
             std::ofstream f( pvu_name.c_str() );
             write_mesh_vtk<true>( f, m, display_fields );
         }
-    
+
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
         if ( m.node_list.size() )
@@ -97,17 +96,19 @@ public:
         return pvu_name;
     }
 
-    template<class TM> std::string add_mesh_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),double iter=0) {
+    template<class TM> std::string add_mesh_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),double iter=0,bool write_mesh=true) {
         std::string pvu_name = prefix;
         //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
         pvu_name += "_" + to_string( iter ) + ".vtu";
         // std::cout << pvu_name << std::endl;
-    
+
         pvu_files[ iter ].push_back( pvu_name );
-        std::ofstream f( pvu_name.c_str() );
         
-        write_mesh_vtk<true>( f, m, display_fields );
-    
+        if (write_mesh) {
+            std::ofstream f( pvu_name.c_str() );
+            write_mesh_vtk<true>( f, m, display_fields );
+        }
+
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
         if ( m.node_list.size() )
@@ -115,14 +116,17 @@ public:
         return pvu_name;
     }
 
-    template<class TM> std::string add_mesh_wo_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all")) {
+    template<class TM> std::string add_mesh_wo_iter(const TM &m,const std::string &prefix="paraview",const Vec<std::string> &display_fields=Vec<std::string>("all"),bool write_mesh=true) {
         std::ostringstream ss;
         ss << prefix ;//<< pvu_files[prefix].size() << ".vtu";
         std::string pvu_name( ss.str() + ".vtu" );
+
         pvu_files[ 0 ].push_back( pvu_name );
-        std::ofstream f( pvu_name.c_str() );
-        
-        write_mesh_vtk<true>( f, m, display_fields );
+
+        if (write_mesh) {
+            std::ofstream f( pvu_name.c_str() );
+            write_mesh_vtk<true>( f, m, display_fields );
+        }
 
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
@@ -185,7 +189,9 @@ public:
         type_field_to_display = type;
     }
 
-    void make_pvd_file( const std::string &filename = "paraview.pvd" ) const {
+    void make_pvd_file( const std::string &filename = "paraview" ) const {
+        if ( filename.rfind(".pvd") != filename.size() - 4 )
+           filename += ".pvd";
         std::ofstream f( filename.c_str() );
         //
         f << "<?xml version='1.0'?>" << std::endl;
@@ -199,89 +205,91 @@ public:
         f << "</VTKFile>" << std::endl;
    }
 
-   int exec( const std::string &filename = "paraview.pvd" ) {
-        make_pvd_file( filename );
-        
-        if ( pvsm_file.size() ) {
-            std::string t = "paraview --state=" + pvsm_file;
-            return system( t.c_str() );
-        }
-        
-        std::string t = "paraview --data=" + filename;
-        return system( t.c_str() );
+   int exec( const std::string &filename = "paraview" ) {
+       if ( filename.rfind(".pvd") != filename.size() - 4 )
+           filename += ".pvd";
+       make_pvd_file( filename );
+
+       if ( pvsm_file.size() ) {
+           std::string t = "paraview --state=" + pvsm_file;
+           return system( t.c_str() );
+       }
+
+       std::string t = "paraview --data=" + filename;
+       return system( t.c_str() );
     
-        /*
-        std::string tmp_file = prefix + ".pvs";
-        std::ofstream pvs( tmp_file.c_str() );
-        pvs << "" << std::endl;
-        pvs << "# ParaView State Version 1.8" << std::endl;
-        pvs << "" << std::endl;
-        pvs << "set kw(vtkApplication) [$Application GetMainWindow]" << std::endl;
-        pvs << "set kw(vtkMainWin) [$kw(vtkApplication) GetMainView]" << std::endl;
-        // pvs << "set kw(vtkTemp322) [$kw(vtkApplication) GetAnimationInterface]" << std::endl;
-        //pvs << "[$kw(vtkApplication) GetRotateCameraButton] SetState 1" << std::endl;
-        //pvs << "$kw(vtkApplication) ChangeInteractorStyle 1" << std::endl;
-        for( std::map<std::string,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter ) {
-            for(unsigned i=0;i<( all_mesh ? iter->second.size() : min(iter->second.size(),(unsigned)1) );++i) {
-                pvs << "set kw(vtkgr" << i << ") [$kw(vtkApplication) InitializeReadCustom \"XMLUnstructuredGridReader\" \""
-                    << iter->second[i] << "\"]" << std::endl;
-                pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkgr" << i << ") \"" << iter->second[i] << "\"" << std::endl;
-                pvs << "$kw(vtkApplication) FinalizeRead $kw(vtkgr" << i << ") \"" << iter->second[i] << "\"" << std::endl;
-                pvs << "set kw(vtkTemp534) [$kw(vtkgr" << i << ") GetPVWidget {Filename}]" << std::endl;
-                pvs << "$kw(vtkTemp534) SetValue \"" << iter->second[i] << "\"" << std::endl;
-                pvs << "$kw(vtkgr" << i << ") AcceptCallback" << std::endl;
-                if ( field_to_display.size() ) {
-                    if ( type_field_to_display == Nodal )
-                        pvs << "[$kw(vtkgr"<<i<<") GetPVOutput] ColorByPointField {" << field_to_display << "} 1" << std::endl;
-                    else
-                        pvs << "[$kw(vtkgr"<<i<<") GetPVOutput] ColorByCellField {" << field_to_display << "} 1" << std::endl;
-                }
-                pvs << "" << std::endl;
-            }
-        }
-        for(unsigned i=0;i<vti_files.size();++i) {
-            pvs << "set kw(vtkTemp525) [$kw(vtkApplication) InitializeReadCustom \"XMLImageDataReader\" \""
-                << vti_files[i] << "\"]" << std::endl;
-            pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkTemp525) \"" << vti_files[i] << "\"" << std::endl;
-            pvs << "$kw(vtkApplication) FinalizeRead $kw(vtkTemp525) \"" << vti_files[i] << "\"" << std::endl;
-            pvs << "set kw(vtkTemp534) [$kw(vtkTemp525) GetPVWidget {Filename}]" << std::endl;
-            pvs << "$kw(vtkTemp534) SetValue \"" << vti_files[i] << "\"" << std::endl;
-            pvs << "set kw(vtkTemp529) [$kw(vtkTemp525) GetPVWidget {PointSelection}]" << std::endl;
-            pvs << "$kw(vtkTemp529) SetArrayStatus {offset} 1" << std::endl;
-            pvs << "set kw(vtkTemp533) [$kw(vtkTemp525) GetPVWidget {CellSelection}]" << std::endl;
-            pvs << "$kw(vtkTemp525) AcceptCallback" << std::endl;
-            pvs << "set pvDisp(vtkTemp525) [$kw(vtkTemp525) GetPartDisplay]" << std::endl;
-            pvs << "$pvDisp(vtkTemp525) SetOpacity 0.3" << std::endl;
-            pvs << "[$kw(vtkTemp525) GetPVOutput] ColorByPointField {offset} 1" << std::endl;
-            pvs << "set kw(vtkTemp602) [$kw(vtkApplication) CreatePVSource Contour]" << std::endl;
-            pvs << "set kw(vtkTemp608) [$kw(vtkTemp602) GetPVWidget {Contour Values}]" << std::endl;
-            pvs << "$kw(vtkTemp608) AddValue 0" << std::endl;
-            pvs << "$kw(vtkTemp602) AcceptCallback" << std::endl;
-        }
-        if ( field_to_display.size() ) {
-            pvs << "set kw(vtkTemp571) [$kw(vtkApplication) GetPVColorMap {" << field_to_display << "} 1]" << std::endl;
-            // pvs << "$kw(vtkTemp571) SetScalarRange 0 11" << std::endl;
-            pvs << "$kw(vtkTemp571) SetStartHSV 0.6667 1 1" << std::endl;
-            pvs << "$kw(vtkTemp571) SetEndHSV 0 1 1" << std::endl;
-            pvs << "$kw(vtkTemp571) VectorModeMagnitudeCallback" << std::endl;
-            pvs << "$kw(vtkTemp571) SetScalarBarVisibility 1" << std::endl;
-        }
-        pvs << "$kw(vtkMainWin) SetRendererBackgroundColor "
-            << background_color[0] << " " 
-            << background_color[1] << " " 
-            << background_color[2] << std::endl;
-        pvs << "$kw(vtkMainWin) ParallelProjectionOff" << std::endl;
-    
-        pvs << "$kw(vtkApplication) SetCenterOfRotation "
-            << (xmin[0]+xmax[0])/2.0 << " " 
-            << (xmin[1]+xmax[1])/2.0 << " " 
-            << (xmin[2]+xmax[2])/2.0 << std::endl;
-        pvs << "$kw(vtkApplication) ResetCameraCallback" << std::endl;
-        //    pvs << "$kw(vtkMainWin) Render" << std::endl;
-        pvs.close();
-        
-        system( ("paraview --data="+tmp_file).c_str() );
-        */
+       /*
+       std::string tmp_file = prefix + ".pvs";
+       std::ofstream pvs( tmp_file.c_str() );
+       pvs << "" << std::endl;
+       pvs << "# ParaView State Version 1.8" << std::endl;
+       pvs << "" << std::endl;
+       pvs << "set kw(vtkApplication) [$Application GetMainWindow]" << std::endl;
+       pvs << "set kw(vtkMainWin) [$kw(vtkApplication) GetMainView]" << std::endl;
+       // pvs << "set kw(vtkTemp322) [$kw(vtkApplication) GetAnimationInterface]" << std::endl;
+       //pvs << "[$kw(vtkApplication) GetRotateCameraButton] SetState 1" << std::endl;
+       //pvs << "$kw(vtkApplication) ChangeInteractorStyle 1" << std::endl;
+       for( std::map<std::string,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter ) {
+           for(unsigned i=0;i<( all_mesh ? iter->second.size() : min(iter->second.size(),(unsigned)1) );++i) {
+               pvs << "set kw(vtkgr" << i << ") [$kw(vtkApplication) InitializeReadCustom \"XMLUnstructuredGridReader\" \""
+                   << iter->second[i] << "\"]" << std::endl;
+               pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkgr" << i << ") \"" << iter->second[i] << "\"" << std::endl;
+               pvs << "$kw(vtkApplication) FinalizeRead $kw(vtkgr" << i << ") \"" << iter->second[i] << "\"" << std::endl;
+               pvs << "set kw(vtkTemp534) [$kw(vtkgr" << i << ") GetPVWidget {Filename}]" << std::endl;
+               pvs << "$kw(vtkTemp534) SetValue \"" << iter->second[i] << "\"" << std::endl;
+               pvs << "$kw(vtkgr" << i << ") AcceptCallback" << std::endl;
+               if ( field_to_display.size() ) {
+                   if ( type_field_to_display == Nodal )
+                       pvs << "[$kw(vtkgr"<<i<<") GetPVOutput] ColorByPointField {" << field_to_display << "} 1" << std::endl;
+                   else
+                       pvs << "[$kw(vtkgr"<<i<<") GetPVOutput] ColorByCellField {" << field_to_display << "} 1" << std::endl;
+               }
+               pvs << "" << std::endl;
+           }
+       }
+       for(unsigned i=0;i<vti_files.size();++i) {
+           pvs << "set kw(vtkTemp525) [$kw(vtkApplication) InitializeReadCustom \"XMLImageDataReader\" \""
+               << vti_files[i] << "\"]" << std::endl;
+           pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkTemp525) \"" << vti_files[i] << "\"" << std::endl;
+           pvs << "$kw(vtkApplication) FinalizeRead $kw(vtkTemp525) \"" << vti_files[i] << "\"" << std::endl;
+           pvs << "set kw(vtkTemp534) [$kw(vtkTemp525) GetPVWidget {Filename}]" << std::endl;
+           pvs << "$kw(vtkTemp534) SetValue \"" << vti_files[i] << "\"" << std::endl;
+           pvs << "set kw(vtkTemp529) [$kw(vtkTemp525) GetPVWidget {PointSelection}]" << std::endl;
+           pvs << "$kw(vtkTemp529) SetArrayStatus {offset} 1" << std::endl;
+           pvs << "set kw(vtkTemp533) [$kw(vtkTemp525) GetPVWidget {CellSelection}]" << std::endl;
+           pvs << "$kw(vtkTemp525) AcceptCallback" << std::endl;
+           pvs << "set pvDisp(vtkTemp525) [$kw(vtkTemp525) GetPartDisplay]" << std::endl;
+           pvs << "$pvDisp(vtkTemp525) SetOpacity 0.3" << std::endl;
+           pvs << "[$kw(vtkTemp525) GetPVOutput] ColorByPointField {offset} 1" << std::endl;
+           pvs << "set kw(vtkTemp602) [$kw(vtkApplication) CreatePVSource Contour]" << std::endl;
+           pvs << "set kw(vtkTemp608) [$kw(vtkTemp602) GetPVWidget {Contour Values}]" << std::endl;
+           pvs << "$kw(vtkTemp608) AddValue 0" << std::endl;
+           pvs << "$kw(vtkTemp602) AcceptCallback" << std::endl;
+       }
+       if ( field_to_display.size() ) {
+           pvs << "set kw(vtkTemp571) [$kw(vtkApplication) GetPVColorMap {" << field_to_display << "} 1]" << std::endl;
+           // pvs << "$kw(vtkTemp571) SetScalarRange 0 11" << std::endl;
+           pvs << "$kw(vtkTemp571) SetStartHSV 0.6667 1 1" << std::endl;
+           pvs << "$kw(vtkTemp571) SetEndHSV 0 1 1" << std::endl;
+           pvs << "$kw(vtkTemp571) VectorModeMagnitudeCallback" << std::endl;
+           pvs << "$kw(vtkTemp571) SetScalarBarVisibility 1" << std::endl;
+       }
+       pvs << "$kw(vtkMainWin) SetRendererBackgroundColor "
+           << background_color[0] << " "
+           << background_color[1] << " "
+           << background_color[2] << std::endl;
+       pvs << "$kw(vtkMainWin) ParallelProjectionOff" << std::endl;
+
+       pvs << "$kw(vtkApplication) SetCenterOfRotation "
+           << (xmin[0]+xmax[0])/2.0 << " "
+           << (xmin[1]+xmax[1])/2.0 << " "
+           << (xmin[2]+xmax[2])/2.0 << std::endl;
+       pvs << "$kw(vtkApplication) ResetCameraCallback" << std::endl;
+       //    pvs << "$kw(vtkMainWin) Render" << std::endl;
+       pvs.close();
+
+       system( ("paraview --data="+tmp_file).c_str() );
+       */
     }
 
     Vec<std::string> get_all_pvu_files() const {
@@ -365,7 +373,7 @@ struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec(
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
-int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix="paraview", const std::string &pvsm_file = "" ) {
+int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
     DisplayParaview dp;
     std::string res = dp.add_mesh( m, prefix );
     
@@ -390,17 +398,19 @@ int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &p
     \author Hugal
 */
 template<class Carac, class X, class Y>
-int display( const SubStructuredProblem<Carac,X,Y> &sst_pb, const std::string &pvsm_file = "" ) {
+int display( const SubStructuredProblem<Carac,X,Y> &sst_pb, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
+    if ( prefix.rfind(".pvd") != prefix.size() - 4 )
+        prefix += ".pvd";
     DisplayParaview dp;
     apply_wi( sst_pb.sub_structures, DisplayParaview::AddSstMesh(), dp, 0 );
     apply_wi( sst_pb.interfaces    , DisplayParaview::AddSstMesh(), dp, 0 );
-    dp.make_pvd_file( "paraview.pvd" );
+    dp.make_pvd_file( prefix );
     
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
         return system( t.c_str() );
     }
-    std::string t = "paraview --data=paraview.pvd";
+    std::string t = "paraview --data=" + prefix;
     return system( t.c_str() );
 }
 

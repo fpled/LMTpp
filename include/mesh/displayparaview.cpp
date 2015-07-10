@@ -28,12 +28,12 @@ namespace LMT {
 const unsigned NodalElement::nb_nodes;
 const unsigned Bar::nb_nodes;
 const unsigned Bar_3::nb_nodes;
+const unsigned Triangle::nb_nodes;
+const unsigned Triangle_6::nb_nodes;
 const unsigned Quad::nb_nodes;
 const unsigned Quad_8::nb_nodes;
 const unsigned Tetra::nb_nodes;
 const unsigned Tetra_10::nb_nodes;
-const unsigned Triangle::nb_nodes;
-const unsigned Triangle_6::nb_nodes;
 const unsigned Wedge::nb_nodes;
 const unsigned Wedge_15::nb_nodes;
 const unsigned Hexa::nb_nodes;

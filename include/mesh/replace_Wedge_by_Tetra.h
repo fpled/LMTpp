@@ -270,7 +270,7 @@ struct Replace_Wedge_by_Tetra {
 };
 
 /*!
-    Cette fonction enlève tous les \a Hexa du maillage "m" et les remplace par des \a Wedge . Le maillage "m" est donc __modifié__ .  
+    Cette fonction enlève tous les \a Wedge du maillage "m" et les remplace par des \a Tetra . Le maillage "m" est donc __modifié__ .
 
     Paramètre :
         * m : est un maillage de la plateforme.
