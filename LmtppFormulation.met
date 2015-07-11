@@ -170,7 +170,7 @@ class Variable[ nb_dim = [], sym = false ] inherits VariableAncestor
     property is_a_LmtppVariable
     static const TS := type_for_nb_dim_and_sym( nb_dim, sym )
     
-    #parameters
+    # parameters
     default_value    := TS()
     
     # computed
