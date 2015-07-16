@@ -55,14 +55,14 @@ namespace LMTPRIVATE {
     }
 
     template<class TM,class TMParent,unsigned num_sub_mesh,unsigned max_num_sub_mesh>
-    struct Refinment {
+    struct Refinement {
         typedef typename TM::TNode TNode;
-        typedef Refinment<typename TM::TNext,TMParent,num_sub_mesh+1,max_num_sub_mesh> RNext;
+        typedef Refinement<typename TM::TNext,TMParent,num_sub_mesh+1,max_num_sub_mesh> RNext;
         typedef typename TM::Tpos T;
         typedef DynamicData<TNode *,TM::TElemList::nb_elem_type> TDN;
 
         ///
-        Refinment(TMParent *mp):m_parent(mp),cut("cut"),next(mp) {}
+        Refinement(TMParent *mp):m_parent(mp),cut("cut"),next(mp) {}
         
         ///
         template<class Op> struct RefineBars {
@@ -352,8 +352,8 @@ namespace LMTPRIVATE {
         bool appended_cut;
     };
     template<class TM,class TMParent,unsigned max_num_sub_mesh>
-    struct Refinment<TM,TMParent,max_num_sub_mesh,max_num_sub_mesh> {
-        Refinment(TMParent *mp) {}
+    struct Refinement<TM,TMParent,max_num_sub_mesh,max_num_sub_mesh> {
+        Refinement(TMParent *mp) {}
         template<class T> void update_cut(const TM &m,T max_length) const {}
     };
 };
@@ -404,10 +404,10 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
     m.update_elem_children( Number<TM::nvi-1>() );
     if ( TM::dim == 3 )
         m.update_elem_children( Number<TM::nvi-2>() );
-    LMTPRIVATE::Refinment<TM,TM,0,TM::dim+1> r( &m );
+    LMTPRIVATE::Refinement<TM,TM,0,TM::dim+1> r( &m );
     r.update_cut( m, op );
     
-    typename LMTPRIVATE::Refinment<TM,TM,0,TM::dim+1>::Control_two_cuts ctrl;
+    typename LMTPRIVATE::Refinement<TM,TM,0,TM::dim+1>::Control_two_cuts ctrl;
     
     do {
         ctrl.has_two_cuts = false;

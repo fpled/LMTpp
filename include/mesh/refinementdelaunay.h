@@ -19,7 +19,7 @@ namespace LMT {
 
 namespace LMTPRIVATE {
     template<class TM>
-    struct RefinmentDelaunay {
+    struct RefinementDelaunay {
         typedef typename TM::Pvec Pvec;
         typedef typename TM::Tpos T;
         template<class TE> void operator()(const TE &e) {
@@ -45,7 +45,7 @@ namespace LMTPRIVATE {
 */
 template<unsigned nvi,class TM,class T>
 bool refinementdelaunay_if_length_sup(TM &m,T max_length) {
-    LMTPRIVATE::RefinmentDelaunay<TM> r;
+    LMTPRIVATE::RefinementDelaunay<TM> r;
     r.max_length = max_length;
     apply( m.elem_list, r);
     remove_doubles(r.new_points);
