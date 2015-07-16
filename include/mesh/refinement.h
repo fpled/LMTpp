@@ -559,7 +559,7 @@ bool level_set_cut( TM &m, const PhiExtract &p, bool spread_cut = false ) {
     opérateur créé pour la fonction \a refinement_if_length_sup .
 */
 template<class T>
-struct RafinementOpBasedOnLength {
+struct RefinementOpBasedOnLength {
     template<class TE> bool operator()(const TE &e) const { return length(e.node(1)->pos-e.node(0)->pos) > max_length; }
     T max_length;
 };
@@ -574,7 +574,7 @@ struct RafinementOpBasedOnLength {
 */
 template<class TM,class T>
 bool refinement_if_length_sup( TM &m, T max_length, bool spread_cut = false ) {
-    RafinementOpBasedOnLength<T> rl;
+    RefinementOpBasedOnLength<T> rl;
     rl.max_length = max_length;
     return refinement( m, rl, spread_cut );
 }

@@ -237,7 +237,7 @@ template<class TM>
 void crack_cut( TM &m, double lim = 0.5, typename TM::Pvec dir = typename TM::Pvec( 1 ) ) {
     MyRefinement<typename TM::Pvec> mr;
 
-    // rafinement
+    // raffinement
     for( int var = 0; ; ++var ) {
         // moyenne de epsilon
         Vec<double> vg, sg; vg.resize( m.node_list.size(), 0 ); sg.resize( m.node_list.size(), 0 );

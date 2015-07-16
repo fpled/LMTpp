@@ -1307,7 +1307,7 @@ public:
                 ScalarType ress = (ScalarType)res.subs_numerical( vss );
                 // add to vec and mat
                 unsigned num_in_fmat = sollicitations[i].num_in_fmat(*this);
-                std::cerr << "num_in_fmat " << num_in_fmat<< std::endl;
+                std::cerr << "num_in_fmat " << num_in_fmat << std::endl;
                 if ( assemble_vec )
                     sollicitation[num_in_fmat] += ress;
             }
