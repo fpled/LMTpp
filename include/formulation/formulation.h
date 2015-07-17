@@ -1337,25 +1337,25 @@ public:
     bool solve_system_(ScalarType iterative_criterium, const Number<1> &n_wont_add_nz, const Number<0> &sym) {
         try {
             if ( boolean_(iterative_criterium) ) {
-//                 std::cout << "Solveur iteratif type factorisation LU incomplete" << std::endl << std::endl;
+//                std::cout << "Solveur iteratif type factorisation LU incomplete" << std::endl << std::endl;
                 Mat<ScalarType, Gen<>, SparseLU > mm = matrices(Number<0>());
                 lu_factorize( mm );
                 solve_using_incomplete_lu_factorize( mm, Mat<ScalarType, Gen<>, SparseLU >(matrices(Number<0>())), sollicitation, vectors[0], iterative_criterium );
             }
             else {
                 #if WITH_UMFPACK
-//                 std::cout << "Solveur UMFPACK" << std::endl << std::endl;
+//                std::cout << "Solveur UMFPACK" << std::endl << std::endl;
                 if ( not matrices(Number<0>()).get_factorization() ) {
                     std::cout << "Bing. Inversion error" << std::endl << std::endl;
                     return false;
                 }
                 vectors[0] = matrices(Number<0>()).solve( sollicitation );
                 #elif WITH_MUMPS
-//                 std::cout << "Solveur MUMPS" << std::endl << std::endl;
+//                std::cout << "Solveur MUMPS" << std::endl << std::endl;
                 solver.get_factorization( matrices(Number<0>()), false, true );
                 vectors[0] = solver.solve( sollicitation );
 				#else
-//                 std::cout << "Solveur Inv" << std::endl << std::endl;
+//                std::cout << "Solveur Inv" << std::endl << std::endl;
                 vectors[0] = inv(matrices(Number<0>())) * sollicitation;
 				#endif
             }
@@ -1367,30 +1367,30 @@ public:
     bool solve_system_(ScalarType iterative_criterium, const Number<1> &n_wont_add_nz, const Number<1> &sym) {
         try {
             if ( boolean_(iterative_criterium) ) {
-//                 std::cout << "Solveur iteratif type factorisation de Cholesky incomplete" << std::endl << std::endl;
+//                std::cout << "Solveur iteratif type factorisation de Cholesky incomplete" << std::endl << std::endl;
                 Mat<ScalarType,Sym<>,SparseLine<> > mm = matrices(Number<0>());
                 incomplete_chol_factorize( mm );
                 solve_using_incomplete_chol_factorize( mm, Mat<ScalarType,Sym<>,SparseLine<> >( matrices(Number<0>()) ), sollicitation, vectors[0], iterative_criterium );
             }
             else {
                 #if WITH_CHOLMOD
-//                 std::cout << "Solveur CholMod" << std::endl << std::endl;
+//                std::cout << "Solveur CholMod" << std::endl << std::endl;
                 if ( not matrices(Number<0>()).get_factorization() ) {
                     std::cout << "Bing. Inversion error" << std::endl << std::endl;
                     return false;
                 }
                 vectors[0] = matrices(Number<0>()).solve( sollicitation );
                 #elif WITH_MUMPS
-//                 std::cout << "Solveur MUMPS" << std::endl << std:: endl;
+//                std::cout << "Solveur MUMPS" << std::endl << std:: endl;
                 solver.get_factorization( matrices( Number<0>() ), false, true );
                 vectors[0] = solver.solve( sollicitation );
                 #elif WITH_LDL
-//                 std::cout << "Solveur LDL" << std::endl << std:: endl;
+//                std::cout << "Solveur LDL" << std::endl << std:: endl;
                 solver.get_factorization( matrices(Number<0>()), false );
                 vectors[0] = sollicitation;
                 solver.solve( vectors[0] );
                 #else
-//                 std::cout << "Solveur Inv" << std::endl << std::endl << std:: endl;
+//                std::cout << "Solveur Inv" << std::endl << std::endl << std:: endl;
                 vectors[0] = inv(matrices(Number<0>())) * sollicitation;
                 #endif
             }
@@ -1402,13 +1402,13 @@ public:
     bool solve_system_(ScalarType iterative_criterium, const Number<0> &n_wont_add_nz, const Number<0> &sym) {
         try {
             if ( boolean_(iterative_criterium) ) {
-//                 std::cout << "Solveur iteratif type factorisation LU incomplete" << std::endl << std::endl;
+//                std::cout << "Solveur iteratif type factorisation LU incomplete" << std::endl << std::endl;
                 Mat<ScalarType, Gen<>, SparseLU > mm = matrices(Number<0>());
                 lu_factorize( mm );
                 solve_using_incomplete_lu_factorize( mm, Mat<ScalarType, Gen<>, SparseLU >( matrices(Number<0>()) ), sollicitation, vectors[0], iterative_criterium );
             }
             else {
-//                 std::cout << "Solveur Inv" << std::endl << std:: endl;
+//                std::cout << "Solveur Inv" << std::endl << std:: endl;
                 vectors[0] = inv(matrices(Number<0>())) * sollicitation;
             }
         } catch(const SolveException &e) { std::cerr << "system not inversible" << std::endl; return false; }
@@ -1424,16 +1424,16 @@ public:
             }
             else {
                 #if WITH_MUMPS
-//                 std::cout << "Solveur MUMPS" << std::endl << std:: endl;
+//                std::cout << "Solveur MUMPS" << std::endl << std:: endl;
                 solver.get_factorization( matrices( Number<0>() ), false, true );
                 vectors[0] = solver.solve( sollicitation );
                 #elif WITH_LDL
-//                 std::cout << "Solveur LDL" << std::endl << std:: endl;
+//                std::cout << "Solveur LDL" << std::endl << std:: endl;
                 solver.get_factorization( matrices(Number<0>()), false );
                 vectors[0] = sollicitation;
                 solver.solve( vectors[0] );
                 #else
-//                 std::cout << "Solveur Inv" << std::endl << std:: endl;
+//                std::cout << "Solveur Inv" << std::endl << std:: endl;
                 vectors[0] = inv(matrices(Number<0>())) * sollicitation;
                 #endif
             }
