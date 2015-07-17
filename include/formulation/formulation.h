@@ -1055,7 +1055,7 @@ public:
                         }
                     }
                 } else { // -> lagrange
-                    assert( coeffs.size() == 1 );
+                    // assert( coeffs.size() == 1 );
                     // vec
                     if ( assemble_vec )
                         sollicitation[ offset_lagrange_multipliers + i ] += ress;
