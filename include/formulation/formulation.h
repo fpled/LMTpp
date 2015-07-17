@@ -22,7 +22,7 @@
 #include "../util/symrcm.h"
 #include "../util/solveLDL.h"
 #include "../util/MUMPS_solver.h"
-#include "../formulation/formulation_ancestor.h"
+#include "formulation_ancestor.h"
 #include "../containers/matcholamd.h"
 #include "../containers/matumfpack.h"
 
