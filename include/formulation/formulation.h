@@ -1096,13 +1096,13 @@ public:
     /// ...
     virtual void assemble(bool assemble_mat=true,bool assemble_vec=true) {
         // assemble_mat
-        //         std::cout << "assemble_mat -> " << time_of_day_in_sec() << std::endl;
+        // std::cout << "assemble_mat -> " << time_of_day_in_sec() << std::endl;
         assemble_clean_mat(assemble_mat,assemble_vec);
         // constraints
-        //         std::cout << "assemble_con -> " << time_of_day_in_sec() << std::endl;
+        // std::cout << "assemble_con -> " << time_of_day_in_sec() << std::endl;
         assemble_constraints(assemble_mat,assemble_vec);
         // sollicitations
-        //         std::cout << "assemble_sol -> " << time_of_day_in_sec() << std::endl;
+        // std::cout << "assemble_sol -> " << time_of_day_in_sec() << std::endl;
         assemble_sollicitations(assemble_mat,assemble_vec);
 
         if ( user_want_pierre_precond )
@@ -1131,32 +1131,33 @@ public:
             if ( assemble_vec ) {
                 AssembleNode<true,true > assnode;
                 assnode.vectors = &vectors_;
-                //apply( m->node_list, assnode, *this, K, F ); // nodal
+                // apply( m->node_list, assnode, *this, K, F ); // nodal
                 apply_mt( m->node_list, this->nb_threads_assemble_matrix, assnode, *this, K, F ); // nodal
                 AssembleElem<true,true > asselem;
                 asselem.vectors = &vectors_;
-                //apply( m->elem_list, asselem, *this, K, F ); // element (and skin elements)
+                // apply( m->elem_list, asselem, *this, K, F ); // element (and skin elements)
                 apply_mt( m->elem_list, this->nb_threads_assemble_matrix, asselem, *this, K, F ); // element (and skin elements)
             }
             else{
                 AssembleNode<true,false > assnode;
                 assnode.vectors = &vectors_;
-                //apply( m->node_list, assnode, *this, K, F ); // nodal
+                // apply( m->node_list, assnode, *this, K, F ); // nodal
                 apply_mt( m->node_list, this->nb_threads_assemble_matrix, assnode, *this, K, F ); // nodal
                 AssembleElem<true,false > asselem;
                 asselem.vectors = &vectors_;
-                //apply( m->elem_list, asselem, *this, K, F ); // element (and skin elements)
+                // apply( m->elem_list, asselem, *this, K, F ); // element (and skin elements)
                 apply_mt( m->elem_list, this->nb_threads_assemble_matrix, asselem, *this, K, F ); // element (and skin elements)
             }
         }
         else {
-            AssembleNode<false,true > toto2;
-            toto2.vectors = &vectors_;
-            apply( m->node_list, toto2, *this, K, F ); // nodal
-            AssembleElem<false,true > toto;
-            toto.vectors = &vectors_;
-            apply( m->elem_list, toto, *this , K, F ); // element (and skin elements)
-//             apply_mt( m->elem_list, this->nb_threads_assemble_matrix, toto, *this, K, F );
+            AssembleNode<false,true > assnode;
+            assnode.vectors = &vectors_;
+            apply( m->node_list, assnode, *this, K, F ); // nodal
+            // apply_mt( m->node_list, this->nb_threads_assemble_matrix, assnode, *this, K, F );
+            AssembleElem<false,true > asselem;
+            asselem.vectors = &vectors_;
+            apply( m->elem_list, asselem, *this , K, F ); // element (and skin elements)
+            // apply_mt( m->elem_list, this->nb_threads_assemble_matrix, asselem, *this, K, F );
         }
     }
     
@@ -1219,7 +1220,7 @@ public:
         // m->update_skin();
         assert( nb_global_unknowns == 0 /* add_global_matrix not yet implemeted */ );
         if ( assemble_mat ) {
-            AssembleNodeEq<true> assnodeeq;
+            AssembleNodeEq<true > assnodeeq;
             assnodeeq.vectors = &vectors_;
             // apply( m->node_list, assnodeeq, *this, C ); // nodal
             apply_mt( m->node_list, this->nb_threads_assemble_matrix, assnodeeq, *this, C ); // nodal
@@ -1248,11 +1249,11 @@ public:
         unsigned olda = 0;
         localOP->local_update( m, this );                         ///< Local loop
         return olda;
-    };
+    }
     //
     virtual void localOP_update_variables(){
        localOP->update_variables(m);
-    };
+    }
     ///
     virtual void assemble_constraints(Mat<ScalarType,Sym<>,SparseLine<> > &K, Vec<ScalarType> &F, Vec<Vec<ScalarType> > &vectors_, const ScalarType &M, bool assemble_mat=true,bool assemble_vec=true) {
         // constraints
@@ -1982,22 +1983,22 @@ public:
      */
     virtual void set_vectors_assembly( Vec<Vec<ScalarType> > &vec ){
         vectors_assembly = &vec;
-    };
+    }
     //
     virtual void set_indice_noda(Vec<unsigned> &vec){
         indice_noda = &vec;
-    };
+    }
     //
     virtual void set_indice_elem(Vec<unsigned>* vec){
         indice_elem = vec;
-    };
+    }
     //
     virtual void set_indice_glob(unsigned &val){
         indice_glob = &val;
-    };
+    }
     virtual void set_f_nodal(Vec<ScalarType>* vec){
         f_nodal = vec;
-    };
+    }
     virtual void call_after_solve() {
         if (vectors_assembly== NULL){
             if ( not allocated )
@@ -2548,7 +2549,7 @@ public:
             carac.set_nodal_unknowns(m->node_list[i],*this,vectors,(*indice_noda)[i]);
         apply( m->elem_list, UpdateVarElem(), *this );
         carac.set_global_unknowns(m,*this,vectors,*indice_glob);
-    };
+    }
     //
     virtual void update_variables(Vec<Vec<ScalarType> > &vectors_) {
         for(unsigned i=0;i<m->node_list.size();++i)
@@ -3121,6 +3122,6 @@ template<class a,class b,class c,class d,class e,class f,class g,class h,class i
 void add_internal_face_vector_der_var( const a&, const b&, const c&, const d&, const e&, const f&, const g&, const h&, const i& ) {
 }
 
-};
+}
 
 #endif // LMT_formulation_HEADER
