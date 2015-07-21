@@ -315,7 +315,7 @@ public:
     ptr_e est l'adresse de l'élément dans la mémoire de l'ordinateur.
     *ptr_e est l'élément lui-même (remarquer l'astérisque).
 
-    \friend samir.amrouche@lmt.ens-cachan.fr
+    riend samir.amrouche@lmt.ens-cachan.fr
 */
 
 
