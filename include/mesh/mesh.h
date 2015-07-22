@@ -24,7 +24,7 @@ struct MeshNbSubMeshes { enum { res = max_sub_meshes ? MIN( Carac::dim+1, max_su
         * une classe <strong> Carac </strong> qui contient les caractériques du maillage pour une formulation variationnelle.
         * un entier positif <strong> max_sub_meshes </strong> nul par défaut qui indique le nombre maximum de maillages enfants que possédera le maillage. si on ne connait pas le nombre de maillages enfants nécessaires, on laisse la valeur par défaut.
     Que représentent les maillages enfants ?
-    Si un maillage se compose d'éléments E, le premier maillage enfant distinct du maillage sera le maillage composé par les sous-éléments de E; Ppar exemple, si E est un tétraèdre (classe \a Tetra ) alors les sous-éléments sont des tiangles ( classes \a Triangle , \a Triangle_6 ) et ce maillage enfant sera un maillage de triangles. Et ainsi de suite le deuxième maillage enfant sera un maillage de barres (classes \a Bar , \a Bar_3 ).
+    Si un maillage se compose d'éléments E, le premier maillage enfant distinct du maillage sera le maillage composé par les sous-éléments de E. Par exemple, si E est un tétraèdre (classe \a Tetra ) alors les sous-éléments sont des triangles ( classes \a Triangle , \a Triangle_6 ) et ce maillage enfant sera un maillage de triangles. Et ainsi de suite le deuxième maillage enfant sera un maillage de barres (classes \a Bar , \a Bar_3 ).
     REMARQUE : la notion de maillage enfant ne doit pas être confondue avec celle de maillage peau. Si le maillage peau est un maillage de sous-éléments, il ne contient que ceux se trouvant sur le bord.
 
     La classe Mesh hérite de \a MeshGenericBis qui hérite à son tour de \a MeshGeneric . Elle hérite donc de leurs méthodes (e.g. sub_mesh() ).
