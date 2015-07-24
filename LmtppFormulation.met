@@ -1290,13 +1290,13 @@ class LmtppFormulationAncestor
                       gauss_point.prout( elem_enr, hdbk);
                       for (unsigned i=0;i<gauss_point.size();i++) {
                           double tmp_weight = length_frac*gauss_point[i].weight;
-                          double sauv_weigth = gauss_point[i].weight;
+                          double weigth = gauss_point[i].weight;
                           gauss_point.pos_and_wei[i].weight = tmp_weight;
                           if(/* pos_is_inside(*elem,gauss_point[i].positions,10e-4)*/ 1) {
                               add_elem_matrix_enriched_corr( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1, elem_enr2, elem_enr3, elem_enr4, elem_enr5, hdbk);
                               add_elem_matrix_enriched_coupl( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1, elem_enr2, elem_enr3, elem_enr4, elem_enr5, hdbk);
                               if (want_enr) {
-                                  gauss_point.pos_and_wei[i].weight = sauv_weigth;
+                                  gauss_point.pos_and_wei[i].weight = weigth;
                                   add_elem_matrix_enriched( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1,elem_enr2, elem_enr3, elem_enr4, elem_enr5, hdbk);
                               }
                           }
@@ -1308,13 +1308,13 @@ class LmtppFormulationAncestor
                       gauss_point.prout( elem_enr, hdbk);
                       for (unsigned i=0;i<gauss_point.size();i++) {
                           double tmp_weight = length_frac*gauss_point[i].weight;
-                          double sauv_weigth = gauss_point[i].weight;
+                          double weigth = gauss_point[i].weight;
                           gauss_point.pos_and_wei[i].weight = tmp_weight;
                           if(/* pos_is_inside(*elem,gauss_point[i].positions,10e-4)*/ 1) {
                               add_elem_matrix_enriched_corr( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1, elem_enr2, hdbk);
                               add_elem_matrix_enriched_coupl( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1, elem_enr2, hdbk);
                               if (want_enr) {
-                                  gauss_point.pos_and_wei[i].weight = sauv_weigth;
+                                  gauss_point.pos_and_wei[i].weight = weigth;
                                   add_elem_matrix_enriched( *f, K, F, f->vectors, *matrix_is_sym, *assemble_mat, *assemble_vec, *elem, indices, gauss_point[i], *id_group_hdbk, elem_enr, elem_enr1,elem_enr2, hdbk);
                               }
                           }
