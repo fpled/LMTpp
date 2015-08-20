@@ -97,7 +97,7 @@ namespace LMT {
                 * begin() retourne un pointeur (cad l'adresse) du premier élément  
                 * resize(int n) qui fixe la taille du vecteur à n,
                 * free() qui libère la mémoire,
-                * et ne pas oublier reserve( unsigned int n) qui réserve de la place pour n éléments. Ainsi s vous connaissez environ le nombre d'éléments à ajouter via push_back() par exemple, vos appels push_back() seront bien plus rapides si vous appelez préalablement reserve().
+                * et ne pas oublier reserve( unsigned int n) qui réserve de la place pour n éléments. Ainsi si vous connaissez environ le nombre d'éléments à ajouter via push_back() par exemple, vos appels push_back() seront bien plus rapides si vous appelez préalablement reserve().
                 * random( size_vec) qui est une méthode statique de Vec pour générer un vecteur aléatoire de double
 
             <strong> IMPORTANT : </strong> On ne peut pas parler de la classe Vec sans parler de la fonction \a apply et de ses varaintes qui permettent de manipuler les éléments d'un vecteur sans les parcourir avec une boucle for. Alors n'hésitez pas à consulter la doc de \a apply . 
