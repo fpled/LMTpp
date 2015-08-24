@@ -12,7 +12,7 @@
 #ifndef LMT_constraint_HEADER
 #define LMT_constraint_HEADER
 
-#include "codegen/codegen.h"
+#include "../codegen/codegen.h"
 
 namespace LMT {
 

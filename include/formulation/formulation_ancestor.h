@@ -3,8 +3,8 @@
 
 #include <pthread.h>
 
-#include "containers/mat.h"
-#include "io/xmlnode.h"
+#include "../containers/mat.h"
+#include "../io/xmlnode.h"
 
 namespace LMT {
 
@@ -237,6 +237,7 @@ public:
     virtual Vec<ScalarType> &get_result(unsigned num=0) = 0; ///
 
     virtual Vec<bool> constrained_nodes() const = 0; /// renvoie un vecteur de la taille égal au nombre de noeud et qui vaut vrai si le noeud est contraint.
+    virtual Vec<bool> constrained_nodes_in_dim( unsigned dim ) const = 0; /// renvoie un vecteur de la taille égal au nombre de noeud et qui vaut vrai si le noeud est contraint dans la direction dim.
 
     bool assume_constant_matrix; ///
     ScalarType default_iterative_criterium; /// iterative_criterium for conjugate gradient, GMRES, ... based on norm_inf( delta solution )

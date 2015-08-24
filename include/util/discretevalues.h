@@ -15,7 +15,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include "io/ioexception.h"
+#include "../io/ioexception.h"
 
 namespace LMT {
 

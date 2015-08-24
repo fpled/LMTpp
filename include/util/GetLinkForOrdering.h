@@ -1,7 +1,7 @@
 #ifndef GETLINKFORORDERING_H
 #define GETLINKFORORDERING_H
 
-#include "containers/vec.h"
+#include "../containers/vec.h"
 #include <algorithm>
 
 namespace LMT {

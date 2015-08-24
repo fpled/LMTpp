@@ -6,7 +6,7 @@ namespace LMT {
 \generic_comment apply_wi
 
     Cette fonction agit sur un vecteur comme \a apply mais en tenant compte de l'indice de l'élément (d'où le wi pour with index).
-    Par conséquent la classe-fonction doit définir correctment operator() de la façon suivante :
+    Par conséquent la classe-fonction doit définir correctement operator() de la façon suivante :
     \code 
         template <class Telement> struct operateur {
             void operator()( const Telement& e, int i ) const { bla bla }

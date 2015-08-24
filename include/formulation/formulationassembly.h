@@ -1,6 +1,6 @@
 #ifndef FORMULATION_ASSEMBLY_H
 #define FORMULATION_ASSEMBLY_H
-#include "containers/mat.h"
+#include "../containers/mat.h"
 
 #ifdef need_f_pointer
     extern LMT::Vec<double>* F_POINTER;

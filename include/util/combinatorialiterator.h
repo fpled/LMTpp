@@ -12,7 +12,7 @@
 #ifndef LMT_combinatorialiterator_HEADER
 #define LMT_combinatorialiterator_HEADER
 
-#include "containers/vec.h"
+#include "../containers/vec.h"
 
 namespace LMT {
 

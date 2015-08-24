@@ -12,10 +12,10 @@
 #ifndef LMT_tvrcformulation_HEADER
 #define LMT_tvrcformulation_HEADER
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 #include "tvrcgeomset.h"
-#include "containers/arglist.h"
-#include "containers/apply_ij.h"
+#include "../containers/arglist.h"
+#include "../containers/apply_ij.h"
 
 namespace LMT {
 

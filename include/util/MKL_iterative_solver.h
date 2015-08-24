@@ -25,7 +25,7 @@
 #include "MKL_common.h"
 #endif
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 
 /*!
     Cette classe encapsule la décomposition LDL ou Cholesky d'une matrice symétrique ou la décomposition LU d'une matrice carré quelconque à l'aide de la librairie MKL d'intel .

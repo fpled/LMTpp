@@ -13,6 +13,7 @@
 #define LMT_refinement_HEADER
 
 #include "mesh.h"
+#include "bar.h"
 #include "triangle.h"
 #include "quad.h"
 #include "tetra.h"
@@ -54,14 +55,14 @@ namespace LMTPRIVATE {
     }
 
     template<class TM,class TMParent,unsigned num_sub_mesh,unsigned max_num_sub_mesh>
-    struct Refinment {
+    struct Refinement {
         typedef typename TM::TNode TNode;
-        typedef Refinment<typename TM::TNext,TMParent,num_sub_mesh+1,max_num_sub_mesh> RNext;
+        typedef Refinement<typename TM::TNext,TMParent,num_sub_mesh+1,max_num_sub_mesh> RNext;
         typedef typename TM::Tpos T;
         typedef DynamicData<TNode *,TM::TElemList::nb_elem_type> TDN;
 
         ///
-        Refinment(TMParent *mp):m_parent(mp),cut("cut"),next(mp) {}
+        Refinement(TMParent *mp):m_parent(mp),cut("cut"),next(mp) {}
         
         ///
         template<class Op> struct RefineBars {
@@ -351,8 +352,8 @@ namespace LMTPRIVATE {
         bool appended_cut;
     };
     template<class TM,class TMParent,unsigned max_num_sub_mesh>
-    struct Refinment<TM,TMParent,max_num_sub_mesh,max_num_sub_mesh> {
-        Refinment(TMParent *mp) {}
+    struct Refinement<TM,TMParent,max_num_sub_mesh,max_num_sub_mesh> {
+        Refinement(TMParent *mp) {}
         template<class T> void update_cut(const TM &m,T max_length) const {}
     };
 };
@@ -403,10 +404,10 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
     m.update_elem_children( Number<TM::nvi-1>() );
     if ( TM::dim == 3 )
         m.update_elem_children( Number<TM::nvi-2>() );
-    LMTPRIVATE::Refinment<TM,TM,0,TM::dim+1> r( &m );
+    LMTPRIVATE::Refinement<TM,TM,0,TM::dim+1> r( &m );
     r.update_cut( m, op );
     
-    typename LMTPRIVATE::Refinment<TM,TM,0,TM::dim+1>::Control_two_cuts ctrl;
+    typename LMTPRIVATE::Refinement<TM,TM,0,TM::dim+1>::Control_two_cuts ctrl;
     
     do {
         ctrl.has_two_cuts = false;
@@ -558,7 +559,7 @@ bool level_set_cut( TM &m, const PhiExtract &p, bool spread_cut = false ) {
     opérateur créé pour la fonction \a refinement_if_length_sup .
 */
 template<class T>
-struct RafinementOpBasedOnLength {
+struct RefinementOpBasedOnLength {
     template<class TE> bool operator()(const TE &e) const { return length(e.node(1)->pos-e.node(0)->pos) > max_length; }
     T max_length;
 };
@@ -573,7 +574,7 @@ struct RafinementOpBasedOnLength {
 */
 template<class TM,class T>
 bool refinement_if_length_sup( TM &m, T max_length, bool spread_cut = false ) {
-    RafinementOpBasedOnLength<T> rl;
+    RefinementOpBasedOnLength<T> rl;
     rl.max_length = max_length;
     return refinement( m, rl, spread_cut );
 }

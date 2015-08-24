@@ -8,16 +8,16 @@
 #include <algorithm>
 #include <string.h> /// pour strcmp
 
-#include "mesh/write_mesh_vtk.h"
-#include "mesh/triangle.h"
-#include "mesh/triangle_6.h"
-#include "mesh/tetra.h"
-#include "mesh/quad.h"
-#include "mesh/hexa.h"
-#include "mesh/pyramid.h"
-#include "mesh/wedge.h"
-#include "mesh/quad_8.h"
-#include "io/xmlnode.h"
+#include "write_mesh_vtk.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "quad_8.h"
+#include "tetra.h"
+#include "hexa.h"
+#include "pyramid.h"
+#include "wedge.h"
+#include "../io/xmlnode.h"
 
 namespace LMT {
 

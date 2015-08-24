@@ -1,7 +1,7 @@
 #ifndef vec_mat_tools_h
 #define vec_mat_tools_h
 
-#include <containers/mat.h>
+#include "../containers/mat.h"
 
 ///                                                  ///////////////////
 /// ------------------------------------------------ /// conventions ///

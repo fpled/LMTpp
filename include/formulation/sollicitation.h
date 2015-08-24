@@ -15,7 +15,7 @@
 namespace LMT {
 
 /**
- * constraint in formulation. Can represent a penalty or a lagrangian constraint.
+ * sollicitation in formulation. Can represent a penalty or a lagrangian constraint.
  */
 template<class TF>
 class Sollicitation {

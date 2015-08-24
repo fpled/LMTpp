@@ -12,16 +12,16 @@
 #ifndef LMT_tvrcgeomset_HEADER
 #define LMT_tvrcgeomset_HEADER
 
-#include "geometry/geomset.h"
-#include "mesh/refinement.h"
-#include "containers/materialpoint.h"
-#include "util/discretevalues.h"
-#include "containers/heteroexplpack.h"
-#include "tvrc/tvrcmode.h"
-#include "tvrc/tvrcmaterial.h"
-#include "tvrc/meshcaractvrc.h"
-#include "tvrc/constraint.h"
-//#include "codegen/codegen.h"
+#include "../geometry/geomset.h"
+#include "../mesh/refinement.h"
+#include "../containers/materialpoint.h"
+#include "../util/discretevalues.h"
+#include "../containers/heteroexplpack.h"
+#include "tvrcmode.h"
+#include "tvrcmaterial.h"
+#include "meshcaractvrc.h"
+#include "constraint.h"
+//#include "../codegen/codegen.h"
 #include <set>
 
 namespace LMT {

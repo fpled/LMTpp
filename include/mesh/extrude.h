@@ -8,21 +8,21 @@
 
 namespace LMT {
 
+struct DefaultBehavior;
 struct Bar;
 struct Bar_3;
-struct Triangle_6;
 struct Triangle;
+struct Triangle_6;
 struct Quad;
 struct Quad_8;
 struct Quad_9;
 struct Quad_6;
 struct Quad_42;
-struct Hexa;
 struct Tetra;
-struct DefaultBehavior;
-struct Wedge;
-struct Hexa_20;
 struct Tetra_10;
+struct Hexa;
+struct Hexa_20;
+struct Wedge;
 struct Wedge_15;
 
 template< class Pvec_, class TNode_ >

@@ -166,7 +166,7 @@ void update_edge_ratio(const Element<Tetra,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio
         .            /
         .            1
 
-    J'ai choisi les schémas et les configurations de l'article avec la numération des noeuds et des barres suivante ( qui sont les mêmes que pécédemment ) :
+    J'ai choisi les schémas et les configurations de l'article avec la numération des noeuds et des barres suivante ( qui sont les mêmes que précédemment ) :
     \verbatim
         .                     D
         .                    /|\

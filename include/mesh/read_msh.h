@@ -12,11 +12,16 @@
 #ifndef LMT_READ_GID_HEADER
 #define LMT_READ_GID_HEADER
 
-#include "mesh/hexa.h"
-#include "mesh/tetra.h"
-#include "mesh/wedge.h"
-#include "mesh/tetra_10.h"
-#include "mesh/quad_9.h"
+#include "bar.h"
+#include "bar_3.h"
+#include "triangle.h"
+#include "triangle_6.h"
+#include "quad.h"
+#include "quad_9.h"
+#include "tetra.h"
+#include "tetra_10.h"
+#include "hexa.h"
+#include "wedge.h"
 
 #include <fstream>
 #include <map>
@@ -28,56 +33,56 @@ namespace LMT {
 
 /// put gmsh mesh in m
 template<class TM>
-void read_msh(TM &m,std::istream &is) throw(std::runtime_error) {
+void read_msh( TM &m, std::istream &is ) throw(std::runtime_error) {
     using namespace std;
-    string str;
     typedef typename TM::Pvec Pvec;
     typedef typename TM::TNode TNode;
     static const int dim = TM::dim;
     unsigned nb_nodes_elem[] = { 2, 3, 4, 4, 8, 6, 5, 3, 6, 9, 10, 27, 18, 14, 1, 8, 20, 15, 13 };
-    int ctxte=0;
     int nvi = TM::nvi;
     int nb_args;
-    //PRINT(nvi);
+    int ctxte = 0;
 
     // correspondance between number in file -> ref in mesh
     map<int,TNode *> map_num_node;
     string type_element;
     //
-    while (1) {
-        if (! is )
+    while ( 1 ) {
+        if ( ! is )
             throw std::runtime_error("msh file is corrupted : mark 'end elements' is absent");
+
+        string str;
         getline(is,str);
 
-        /// évaluation du contexte
-        if (str.find("$MeshFormat") != string::npos) {
+        // évaluation du contexte
+        if ( str.find("$MeshFormat") != string::npos ) {
             ctxte=-1;
             continue;     
         }
-        if (str.find("$EndMeshFormat") != string::npos) {
+        if ( str.find("$EndMeshFormat") != string::npos ) {
             ctxte=0;
             continue;     
         }     
-        if ((str.find("$ENDNOD") != string::npos) or (str.find("$EndNodes") != string::npos)) {
+        if ( (str.find("$ENDNOD") != string::npos) or (str.find("$EndNodes") != string::npos) ) {
             ctxte=0;
             continue;
         }
-        if ((str.find("$ENDELM") != string::npos) or (str.find("$EndElements") != string::npos)) {
+        if ( (str.find("$ENDELM") != string::npos) or (str.find("$EndElements") != string::npos) ) {
             break;
         }
-        if ((str.find("$NOD") != string::npos) or (str.find("$Nodes") != string::npos)) {
+        if ( (str.find("$NOD") != string::npos) or (str.find("$Nodes") != string::npos) ) {
             getline(is,str);
             ctxte=1;
             continue;
         }
-        if ((str.find("$ELM") != string::npos) or (str.find("$Elements") != string::npos)) {
+        if ( (str.find("$ELM") != string::npos) or (str.find("$Elements") != string::npos) ) {
             getline(is,str);
             ctxte=2;
             continue;
         }
 
-        /// utilisation du contexte
-        if (ctxte==-1) {
+        // utilisation du contexte
+        if ( ctxte==-1 ) {
             istringstream s(str);
             double format;
             s >> format;
@@ -86,7 +91,7 @@ void read_msh(TM &m,std::istream &is) throw(std::runtime_error) {
                 return;              
             }
         }
-        if (ctxte==1) {
+        if ( ctxte==1 ) {
             istringstream s(str);
             int number;
             s >> number;
@@ -97,7 +102,7 @@ void read_msh(TM &m,std::istream &is) throw(std::runtime_error) {
             map_num_node[number] = m.add_node(vec);
             continue;
         }
-        if (ctxte==2) {
+        if ( ctxte==2 ) {
             istringstream s(str);
             unsigned int number;
             s >> number;
@@ -201,7 +206,7 @@ Attention: importe seulement les Bar() et les Triangle()
 \keyword Maillage/Import
 */
 template<class TM>
-void read_msh(TM &m,const std::string &fic_name) throw(std::runtime_error) {
+void read_msh( TM &m, const std::string &fic_name ) throw(std::runtime_error) {
     // ouverture du fichier
     std::ifstream my_file( fic_name.c_str() );
     if ( ! my_file.is_open() )

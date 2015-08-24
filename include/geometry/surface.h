@@ -13,9 +13,9 @@
 #define LMT_surface_HEADER
 
 #include "curve.h"
-#include "mesh/meshcaracallnvi.h"
-#include "mesh/delaunay.h"
-#include "mesh/make_proj_periodic.h"
+#include "../mesh/meshcaracallnvi.h"
+#include "../mesh/delaunay.h"
+#include "../mesh/make_proj_periodic.h"
 
 namespace LMT {
 

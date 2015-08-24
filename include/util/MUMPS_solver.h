@@ -5,7 +5,7 @@
 #include "dmumps_c.h"
 #endif
 
-#include "containers/mat.h"
+#include "../containers/mat.h"
 
 #define ICNTL(I) icntl[(I)-1] /*! macro s.t. indices match documentation */
 

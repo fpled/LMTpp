@@ -17,7 +17,7 @@ struct ProjGrad {
 };
 
 template<class Pvec>
-struct MyRefinment {
+struct MyRefinement {
     template<class TE>
     double operator()( TE &e ) {
         int n0 = e.node( 0 )->number;
@@ -235,9 +235,9 @@ void cut_mesh( TM &m, const Vec<Pvec> &cuts ) {
 
 template<class TM>
 void crack_cut( TM &m, double lim = 0.5, typename TM::Pvec dir = typename TM::Pvec( 1 ) ) {
-    MyRefinment<typename TM::Pvec> mr;
+    MyRefinement<typename TM::Pvec> mr;
 
-    // rafinement
+    // raffinement
     for( int var = 0; ; ++var ) {
         // moyenne de epsilon
         Vec<double> vg, sg; vg.resize( m.node_list.size(), 0 ); sg.resize( m.node_list.size(), 0 );

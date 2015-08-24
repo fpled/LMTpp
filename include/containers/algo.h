@@ -37,8 +37,8 @@ Structure interne à la LMT++
 
     La fonction sort trie les éléments d'un vecteur. Ses syntaxes générales sont :
     \code
-        sort( vecteur)  // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
-        sort( vecteur,opérateur)
+        sort(vecteur)  // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
+        sort(vecteur,op)
 
     opérateur est une classe ou structure implémentant l'opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
     Cet opérateur sera la relation d'ordre et sa syntaxe sera par exemple :
@@ -165,8 +165,8 @@ namespace ALGOPRIVATE {
 
     La fonction sort_with_index trie les éléments d'un vecteur comme \a sort et de plus renvoie la permutation associée sous forme d'un vecteur d'entiers. Ses syntaxes générales sont :
     \code
-        sort_with_index( vecteur) // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
-        sort_with_index( vecteur,op)
+        sort_with_index(vecteur) // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
+        sort_with_index(vecteur,op)
 
     op est une instance de classe ou structure implémentant un opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
     Cet opérateur sera la relation d'ordre et sa syntaxe sera par exemple :
@@ -233,8 +233,8 @@ namespace ALGOPRIVATE {
 
     La fonction remove_doubles supprime les doublons d'un vecteur. Conséquence après l'opération, tous les éléments sont distincts. Ses syntaxes générales sont :
     \code
-        sort_with_index( vecteur) // dans ce cas c'est l'opérateur == défini dans la classe ou le == par défaut  qui est pris.
-        sort_with_index( vecteur,op)
+        remove_doubles(vecteur) // dans ce cas c'est l'opérateur == défini dans la classe ou le == par défaut  qui est pris.
+        remove_doubles(vecteur,op)
 
     op est une instance de classe ou structure implémentant un opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
     Cet opérateur sera la relation d'égalité et sa syntaxe sera par exemple :
@@ -544,8 +544,8 @@ namespace ALGOPRIVATE {
 
     Voici les syntaxes possibles de cette fonction :
     \code
-        max_element( vecteur )
-        max_element( vecteur, opérateur )
+        max_element(vecteur)
+        max_element(vecteur,op)
 
     Cette fonction retourne une copie du plus grand élément pour la première syntaxe.
     Pour la deuxième forme, l'opérateur doit prendre en paramètre un élément du vecteur et renvoyer un scalaire. La fonction renvoie le premier des éléments ayant la plus grande image par l'opérateur. 
@@ -564,7 +564,7 @@ namespace ALGOPRIVATE {
 
     Voici les syntaxes possibles de cette fonction :
     \code
-        min_element( vecteur, opérateur )
+        min_element(vecteur,op)
 
     \relates Vec
     \relates apply

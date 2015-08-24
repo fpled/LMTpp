@@ -27,10 +27,12 @@ found_swig = os.system('which swig')
 SharedLibrary(
     'codegen',
     src + [ [ "codegen_wrap.cc", "codegen.i" ][found_swig==0] ],
+    CC = 'gcc',
+    CXX = 'g++',
     SWIGFLAGS = "-python -c++",
     SHLIBPREFIX = "#_",
     SHLIBSUFFIX = ".so",
-    LINKFLAGS = "-flat_namespace -undefined suppress" * mac,
+    LINKFLAGS = "-flat_namespace -undefined suppress" * mac + " -L/usr/local/gfortran/lib",
     CPPFLAGS = os.popen("python-config --includes","r").read().strip() + " -I/usr/include/python2.7 -I/usr/include/python2.6 -I/usr/include/python2.5 -I/usr/include/python2.4 -I/usr/include/python2.3",
     SHOBJSUFFIX = "_" + arch + ".o"
 )

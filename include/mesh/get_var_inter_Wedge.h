@@ -1,9 +1,9 @@
 #ifndef GET_VAR_INTER__Wedge_H
 #define GET_VAR_INTER__Wedge_H
 
-#include "containers/system_Poly.h"
-#include "containers/reduction_resultant_for_element.h"
-#include "containers/newton_for_element.h"
+#include "../containers/system_Poly.h"
+#include "../containers/reduction_resultant_for_element.h"
+#include "../containers/newton_for_element.h"
 
 
 namespace LMT {

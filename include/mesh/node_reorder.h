@@ -12,7 +12,7 @@
 #ifndef LMT_node_reorder_HEADER
 #define LMT_node_reorder_HEADER
 
-#include "util/symrcm.h"
+#include "../util/symrcm.h"
 
 namespace LMT {
 

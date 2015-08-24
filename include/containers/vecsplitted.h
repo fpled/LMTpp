@@ -306,7 +306,7 @@ public:
 \generic_comment apply_wi_ptr
 
     Cette fonction réservée aux vecteurs  Vec<Splitted<TT,atomic_size>,-1,int> (cad un  Vec spécialisé par  Splitted) agit sur un vecteur comme  apply mais en tenant compte de l'indice de l'élément (d'où le wi pour with index) et l'accés à cet élément se fait par référence.
-    Par conséquent la classe-fonction doit définir correctment operator() de cette façon :
+    Par conséquent la classe-fonction doit définir correctement operator() de cette façon :
     \code 
         template <class Telement> struct operateur {
             void operator()( const Telement* ptr_e, int i ) const { bla bla }

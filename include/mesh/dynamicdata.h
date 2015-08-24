@@ -42,7 +42,7 @@ protected:
 /*!
 Liste de type T associée à des noeuds.
 
-Ça permet de faire comme un nouvel attribut par élément qui sera géré à l'affichage et pendant les sauvegarde (parce que si vous faites votre vecteur dans votre coin, rien ne dit aux procédures comme write_vtk() qu'il faudra l'enregistrer).
+Ça permet de faire comme un nouvel attribut par élément qui sera géré à l'affichage et pendant les sauvegardes (parce que si vous faites votre vecteur dans votre coin, rien ne dit aux procédures comme write_vtk() qu'il faudra l'enregistrer).
 
 Exemple d'utilisation :
 

@@ -1,6 +1,6 @@
 Import('env')
 
-lib = env.Library('LMT_mesh', [
+lib = env.Library('LMT_tvrc', [
     'repsphere.cpp',
   ]
 )

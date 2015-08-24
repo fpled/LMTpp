@@ -14,7 +14,6 @@
 
 namespace LMT {
 
-
 template<class TT,int sr,int sc>
 class Mat<TT,Gen<sr,sc>,SparseLU,void> {
 public:

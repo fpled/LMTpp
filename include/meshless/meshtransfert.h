@@ -12,7 +12,7 @@
 #ifndef MESH_TRANSFERT_H
 #define MESH_TRANSFERT_H
 
-#include "meshless/diffuseapproximation.h"
+#include "diffuseapproximation.h"
 
 namespace LMT {
 

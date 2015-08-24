@@ -20,9 +20,9 @@
 
 #endif
 
-#include "containers/mat.h"
-#include "containers/algo.h"  /// sort
-#include "containers/matinvsparse.h"
+#include "../containers/mat.h"
+#include "../containers/algo.h"  /// sort
+#include "../containers/matinvsparse.h"
 
 #ifdef WITH_MKL
 

@@ -90,7 +90,7 @@ namespace LMT {
                 Rat<nd,nx,T> R=P/Q; 
 
     \\friend camille.gouttebroze@lmt.ens-cachan.fr
-    \\friend raphael.pasquier@lmt.ens-cachan.fr
+    \\friend samir.amrouche@lmt.ens-cachan.fr
     \\friend hugo.leclerc@lmt.ens-cachan.fr
 
     \\keyword Mathématiques/Objet

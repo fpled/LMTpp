@@ -12,7 +12,7 @@
 #ifndef LMT_tvrcmodebeam_HEADER
 #define LMT_tvrcmodebeam_HEADER
 
-#include "util/materialpoint.h"
+#include "../util/materialpoint.h"
 
 namespace LMT {
 

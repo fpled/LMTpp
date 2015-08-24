@@ -149,7 +149,7 @@ T var_inter_insideness( const Triangle_6 &e, const TV &var_inter ) {
         la fonction renvoie vrai si pos est dans le triangle formé par les trois sommets et faux sinon ( sous la condition que le \a Triangle_6 est dans le plan ).
         
     paramètres :
-        Tirangle_6 : le type d'élément
+        Triangle_6 : le type d'élément
         pos_nodes : le position des sommets dans le plan
         pos : la position du point dans le plan
 
