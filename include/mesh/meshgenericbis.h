@@ -56,27 +56,27 @@ public:
     
     ///
     template<class TE,unsigned nvisubs> EA * const *get_children_of(const TE &e,const Number<nvisubs> &nnn) {
-        DEBUGASSERTWC( sub_mesh(nnn).date_last_elem_chidren_update == sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
+        DEBUGASSERTWC( this->sub_mesh(nnn).date_last_elem_chidren_update == this->sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
         static const unsigned nb_children = NbChildrenElement<typename TE::NE,nvisubs>::res;
         return &this->sub_mesh(nnn).elem_children[TE::num_in_elem_list][ e.number * nb_children ];
     }
     
     ///
     template<class TE,unsigned nvisubs> const EA * const *get_children_of(const TE &e,const Number<nvisubs> &nnn) const {
-        DEBUGASSERTWC( sub_mesh(nnn).date_last_elem_chidren_update == sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
+        DEBUGASSERTWC( this->sub_mesh(nnn).date_last_elem_chidren_update == this->sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
         static const unsigned nb_children = NbChildrenElement<typename TE::NE,nvisubs>::res;
         return &this->sub_mesh(nnn).elem_children[TE::num_in_elem_list][ e.number * nb_children ];
     }
     
     ///
     template<unsigned nvisubs> EA * const *get_children_of_EA( const EA *e,const Number<nvisubs> &nnn ) {
-        DEBUGASSERTWC( sub_mesh(nnn).date_last_elem_chidren_update == sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
+        DEBUGASSERTWC( this->sub_mesh(nnn).date_last_elem_chidren_update == this->sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
         return &this->sub_mesh(nnn).elem_children[ e->num_in_elem_list_virtual() ][ e->number * e->nb_children_virtual( nvisubs ) ];
     }
 
     ///
     template<class TE,unsigned nvisubs> const EA * const *get_children_of_EA(const EA *e,const Number<nvisubs> &nnn) const {
-        DEBUGASSERTWC( sub_mesh(nnn).date_last_elem_chidren_update == sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
+        DEBUGASSERTWC( this->sub_mesh(nnn).date_last_elem_chidren_update == this->sub_mesh(nnn).date_last_connectivity_change, "update_elem_children should have been called before get_children_of" );
         return &this->sub_mesh(nnn).elem_children[ e->num_in_elem_list_virtual() ][ e->number * e->nb_children_virtual( nvisubs ) ];
     }
 
