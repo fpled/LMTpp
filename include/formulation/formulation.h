@@ -112,8 +112,15 @@ public:
     typedef TM TMESH;
     typedef typename FormulationAncestor<ScalarType>::LinearizedConstraint LinearizedConstraint;
 
-    Formulation(TM &mm) {
-        m = &mm;
+    Formulation( TM &mm ) : m( &mm ) {
+        init();
+    }
+
+    Formulation() : m( 0 ) {
+        init();
+    }
+
+    void init() {
         localOP = new LocalOperator<NameFormulation, TM::dim, ScalarType>;
         mat_def_pos_if_sym = Carac::matrix_will_be_definite_positive;
         time = ScalarType(0);
@@ -137,8 +144,8 @@ public:
     }
     virtual std::string get_name() const { return Carac::name(); }
     virtual void set_mesh( void *m_ ) { m = reinterpret_cast<TM *>( m_ ); }
-    virtual unsigned get_nb_nodal_unknowns() { return nb_nodal_unknowns; }
-    virtual unsigned get_nb_global_unknowns(){ return nb_global_unknowns; }
+    virtual unsigned get_nb_nodal_unknowns() {return nb_nodal_unknowns ;};
+    virtual unsigned get_nb_global_unknowns(){return nb_global_unknowns ;};
     virtual unsigned get_nb_vectors(){ return nb_vectors; }
 
 private:
