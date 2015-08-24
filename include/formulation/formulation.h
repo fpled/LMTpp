@@ -144,8 +144,8 @@ public:
     }
     virtual std::string get_name() const { return Carac::name(); }
     virtual void set_mesh( void *m_ ) { m = reinterpret_cast<TM *>( m_ ); }
-    virtual unsigned get_nb_nodal_unknowns() {return nb_nodal_unknowns ;}
-    virtual unsigned get_nb_global_unknowns(){return nb_global_unknowns ;}
+    virtual unsigned get_nb_nodal_unknowns() { return nb_nodal_unknowns; }
+    virtual unsigned get_nb_global_unknowns(){ return nb_global_unknowns; }
     virtual unsigned get_nb_vectors(){ return nb_vectors; }
 
 private:
