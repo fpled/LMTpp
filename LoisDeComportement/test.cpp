@@ -1,6 +1,7 @@
 #include "../include/containers/gnuplot.h"
 #include "../include/containers/mat.h"
 #include "plast_impl_umat.h"
+
 using namespace LMT;
 
 int main() {
