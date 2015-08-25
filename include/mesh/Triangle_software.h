@@ -162,8 +162,6 @@ inline typename FloatType<typename TypeReduction<Multiplies,Vec<T,s> >::T>::T re
         env.BuildDir( 'build/LMT', 'LMT/include', duplicate=0 )
         libs = SConscript( 'LMT/include/SConscript', exports='env', build_dir='build/LMT' )
         
-        # --------------------------------------------------------------------------------------------------
-        
         env.Program( "main", ["main.cpp"] + libs + libs_Triangle_software, build_dir='build/LMT' ) 
 
 */

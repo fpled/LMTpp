@@ -45,13 +45,12 @@ avec le fichier SConstruct :
         CPPFLAGS = cppflags( ['xml2-config'] ),
         LINKFLAGS = linkflags( ['xml2-config'] )
     )
-    
-    # LMT
-    BuildDir('build/LMT', 'LMT/include', duplicate=0)
+    make_dep_py(env)
+
+    env.BuildDir( 'build/LMT', 'LMT/include', duplicate=0 )
     libs = SConscript( 'LMT/include/SConscript', exports='env', build_dir='build/LMT' )
     
-    make_dep_py(env)
-    env.Program( "test", ["tes.cpp"] + libs ) 
+    env.Program( "test", ["test.cpp"] + libs )
 
 et le fichier Makefile :
 \code

@@ -12,7 +12,7 @@
 #ifndef LMT_matlabplot_HEADER
 #define LMT_matlabplot_HEADER
 
-#include "containers/mat.h"
+#include "mat.h"
 #include <sstream>
 
 namespace LMT {
@@ -47,7 +47,7 @@ public:
         template<class TX,class TY> void operator()(const TY &val,const TX &x,FILE *tube) const { fprintf(tube,"%10.6f, %10.6f,\n",(double)x,(double)val); }
         template<class TX,class TY> void operator()(const TX &val,unsigned i,const TY &y,FILE *tube) const { fprintf(tube,"%10.6f, %10.6f,\n",(double)val,(double)y[i]); }
     };
-    /// Dans le cas o une seule variable est fournie. x=num�o. vec=ordonn�
+    /// Dans le cas où une seule variable est fournie. x=numéro. vec=ordonnée
     template<class T,int s,class O>
     void plot(const Vec<T,s,O> &vec,const char *params="") {
         fprintf(tube,"v = [\n");
@@ -57,7 +57,7 @@ public:
         fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
         fflush(tube);
     }
-    /// Dans le cas o une seule variable est fournie. x=num�o. vec=ordonn�
+    /// Dans le cas où une seule variable est fournie. x=numéro. vec=ordonnée
     template<class T1,int s1,class O1,class T2,int s2,class O2>
     void plot(const Vec<T1,s1,O1> &x,const Vec<T2,s2,O2> &y,const char *params="") {
         fprintf(tube,"v = [ \n");
@@ -67,7 +67,7 @@ public:
         fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
         fflush(tube);
     }
-    /// Dans le cas o une seule variable est fournie. x=num�o. vec=ordonn�
+    /// Dans le cas où une seule variable est fournie. x=numéro. vec=ordonnée
     template<class T1,int s1,class O1,class T2,int s2,class O2>
     void plot(const Vec<T1,s1,O1> &x,const Vec<T2,s2,O2> &y1,const Vec<T2,s2,O2> &y2,const char *params="") {
         //         if ( hold ) {
