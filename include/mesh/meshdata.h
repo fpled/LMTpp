@@ -288,7 +288,7 @@ namespace DM {
     template<class DMSet,class P>
     void get_ptr_on( DMSet &dmset, const char *name, P *&res ) { DMPRIVATE::get_ptr_on( dmset, name, res, Number<0>(), Number<NbFields<DMSet>::res>() ); }
 
-}; // namespace DM
+} // namespace DM
 
 template<class NameDM>
 struct ExtractDM {
@@ -299,6 +299,17 @@ struct ExtractDM {
     NameDM n;
 };
 
-}; // namespace LMT
+template<class NameDM>
+struct ExtractDMi {
+    ExtractDMi( int index ) : index( index ) {}
+    template<class TNode> struct ReturnType { typedef typename TNode::template SubTypeByName0<NameDM>::TT::template SubType<0>::T T; };
+    template<class TNode> struct ReturnType<TNode *> { typedef typename TNode::template SubTypeByName0<NameDM>::TT::template SubType<0>::T T; };
+    template<class TNode> const typename TNode::template SubTypeByName0<NameDM>::TT::template SubType<0>::T &operator()(const TNode &node) const { return node.member_named( n )[ index ]; }
+    template<class TNode> typename TNode::template SubTypeByName0<NameDM>::TT::template SubType<0>::T &operator()(TNode &node) const { return node.member_named( n )[ index ]; }
+    int    index;
+    NameDM n;
+};
+
+} // namespace LMT
 
 #endif

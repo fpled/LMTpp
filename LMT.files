@@ -511,3 +511,4 @@ include/mesh/elemlistapply.h.py
 include/mesh/nodelistapply.h.py
 include/__init__.py
 include/std_formulations/definition_probleme_elasticity_dep_static.h.py
+tests/test_ExtractDM.cpp
