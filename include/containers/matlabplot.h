@@ -1,5 +1,5 @@
 //
-// C++ Interface: gnuplot
+// C++ Interface: matlabplot
 //
 // Description: 
 //
