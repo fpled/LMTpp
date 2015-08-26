@@ -50,7 +50,7 @@ struct SubStructuredProblem;
                 dp.add_mesh( m, "tmp/ref", lp, i + 1 );
             }
              
-             dp.exec( "sauvegarde.pvd" );
+            dp.exec( "sauvegarde.pvd" );
 
     Explication du code et quelques commentaires:
     
