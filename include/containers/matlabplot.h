@@ -286,7 +286,7 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\figureheight'");
+        mp.matlab2tikz(output,",'height','\\figureheight'");
     else
         mp.mysaveas(output);
     mp.close();
@@ -297,7 +297,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     MatlabPlot mp;
     mp.go_to_cwd();
     mp.display_off();
-    mp.plot( vec, params );
+    mp.plot( vecx, vecy, params );
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize("16");
@@ -305,7 +305,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\figureheight'");
+        mp.matlab2tikz(output,",'height','\\figureheight'");
     else
         mp.mysaveas(output);
     mp.close();
@@ -324,7 +324,7 @@ void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char 
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\figureheight'");
+        mp.matlab2tikz(output,",'height','\\figureheight'");
     else
         mp.mysaveas(output);
     mp.close();
