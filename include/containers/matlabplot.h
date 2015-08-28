@@ -278,7 +278,7 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
     MatlabPlot mp;
     mp.go_to_cwd();
     mp.display_off();
-    mp.plot( mat, params );
+    mp.plot( vec, params );
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize("16");
@@ -297,7 +297,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     MatlabPlot mp;
     mp.go_to_cwd();
     mp.display_off();
-    mp.plot( mat, params );
+    mp.plot( vec, params );
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize("16");
