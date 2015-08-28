@@ -14,6 +14,7 @@
 
 #include "mat.h"
 #include <sstream>
+#include <string>
 
 namespace LMT {
 
@@ -21,8 +22,10 @@ namespace LMT {
     classe servant d'interface avec le celebre programme gnuplot.
     \author Hugo Leclerc
     \author Camille Gouttebroze
+    \author Florent Pled
     \friend hugo.leclerc@lmt.ens-cachan.fr
     \friend camille.gouttebroze@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
     \keyword Visualisation/2D
 */
 class GnuPlot {
@@ -32,22 +35,22 @@ public:
 
         HD() {}
 
-        HD( Vec<> x_, std::string p_ ) { params=p_; x = x_;}
+        HD( Vec<> x_, std::string p_ ) { params = p_; x = x_;}
 
         template <class OPY>
         HD( Vec<> x_, OPY y_, std::string p_ ) {
-            params=p_;
+            params = p_;
             x = x_;
             y.resize(x.size());
             for (int i=0;i<y.size();i++)
                 y[i] = y_(x[i]);
         }
 
-        HD( Vec<> x_, Vec<> y_, std::string p_ ) { params=p_; x = x_; y = y_; }
+        HD( Vec<> x_, Vec<> y_, std::string p_ ) { params = p_; x = x_; y = y_; }
 
         template <class OPZ>
         HD( Vec<> x_, Vec<> y_, OPZ z_, std::string p_ ) {
-            params=p_;
+            params = p_;
             x = x_;
             y = y_;
             z.resize(x.size());
@@ -55,7 +58,7 @@ public:
                 z[i] = z_(x[i],y[i]);
         }
 
-        HD( Vec<> x_, Vec<> y_, Vec<> z_, std::string p_ ) { params=p_; x = x_; y = y_; z = z_; }
+        HD( Vec<> x_, Vec<> y_, Vec<> z_, std::string p_ ) { params = p_; x = x_; y = y_; z = z_; }
 
         std::string params;
         Vec<> x,y,z;
@@ -64,7 +67,7 @@ public:
 
     GnuPlot() {
         hold = false;
-        if ((tube=popen("gnuplot","w"))==NULL) {
+        if ( (tube=popen("gnuplot","w")) == NULL ) {
             std::cerr << "gnuplot impossible a ouvrir" << std::endl;
             exit(1);
         }
@@ -74,6 +77,7 @@ public:
         pclose(tube);
     }
 
+    /// Print
     void print(const char *str = "") const {
         fprintf(tube,"%s",str);
         fflush(tube);
@@ -81,20 +85,24 @@ public:
 
     void set(const char *str = "") const { std::stringstream s; s << "set " << str << "\n"; print( s.str().c_str() ); } 
     void unset(const char *str = "") const { std::stringstream s; s << "unset " << str << "\n"; print( s.str().c_str() ); } 
-    void set_title(const char *str = "") const { std::stringstream s; s << "set title " << str << "\n"; print( s.str().c_str() ); } 
-    void unset_title(const char *str = "") const { std::stringstream s; s << "unset title " << str << "\n"; print( s.str().c_str() ); } 
-    void set_xlabel(const char *str = "") const { std::stringstream s; s << "set xlabel " << str << "\n"; print( s.str().c_str() ); } 
-    void unset_xlabel(const char *str = "") const { std::stringstream s; s << "unset xlabel " << str << "\n"; print( s.str().c_str() ); } 
-    void set_ylabel(const char *str = "") const { std::stringstream s; s << "set ylabel " << str << "\n"; print( s.str().c_str() ); } 
-    void unset_ylabel(const char *str = "") const { std::stringstream s; s << "unset ylabel " << str << "\n"; print( s.str().c_str() ); } 
-    void set_zlabel(const char *str = "") const { std::stringstream s; s << "set zlabel " << str << "\n"; print( s.str().c_str() ); } 
-    void unset_zlabel(const char *str = "") const { std::stringstream s; s << "unset zlabel " << str << "\n"; print( s.str().c_str() ); } 
     void set_terminal(const char *str = "") const { std::stringstream s; s << "set terminal " << str << "\n"; print( s.str().c_str() ); } 
     void unset_terminal(const char *str = "") const { std::stringstream s; s << "unset terminal " << str << "\n"; print( s.str().c_str() ); } 
     void set_terminal_epslatex(const char *str = "") const { std::stringstream s; s << "set terminal epslatex " << str << "\n"; print( s.str().c_str() ); } 
     void unset_terminal_epslatex(const char *str = "") const { std::stringstream s; s << "unset terminal epslatex " << str << "\n"; print( s.str().c_str() ); } 
     void set_output(const char *str = "") const { std::stringstream s; s << "set output " << str << "\n"; print( s.str().c_str() ); } 
     void unset_output(const char *str = "") const { std::stringstream s; s << "unset output " << str << "\n"; print( s.str().c_str() ); } 
+    void set_format(const char *str = "") const { std::stringstream s; s << "set format " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_format(const char *str = "") const { std::stringstream s; s << "unset format " << str << "\n"; print( s.str().c_str() ); } 
+    void set_title(const char *str = "") const { std::stringstream s; s << "set title " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_title(const char *str = "") const { std::stringstream s; s << "unset title " << str << "\n"; print( s.str().c_str() ); } 
+    void set_colorsequence(const char *str = "") const { std::stringstream s; s << "set colorsequence " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_colorsequence(const char *str = "") const { std::stringstream s; s << "unset colorsequence " << str << "\n"; print( s.str().c_str() ); } 
+    void set_xlabel(const char *str = "") const { std::stringstream s; s << "set xlabel " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_xlabel(const char *str = "") const { std::stringstream s; s << "unset xlabel " << str << "\n"; print( s.str().c_str() ); } 
+    void set_ylabel(const char *str = "") const { std::stringstream s; s << "set ylabel " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_ylabel(const char *str = "") const { std::stringstream s; s << "unset ylabel " << str << "\n"; print( s.str().c_str() ); } 
+    void set_zlabel(const char *str = "") const { std::stringstream s; s << "set zlabel " << str << "\n"; print( s.str().c_str() ); } 
+    void unset_zlabel(const char *str = "") const { std::stringstream s; s << "unset zlabel " << str << "\n"; print( s.str().c_str() ); } 
     void set_xrange(const char *str = "") const { std::stringstream s; s << "set xrange " << str << "\n"; print( s.str().c_str() ); } 
     void unset_xrange(const char *str = "") const { std::stringstream s; s << "unset xrange " << str << "\n"; print( s.str().c_str() ); } 
     void set_yrange(const char *str = "") const { std::stringstream s; s << "set yrange " << str << "\n"; print( s.str().c_str() ); } 
@@ -106,10 +114,10 @@ public:
     void set_key(const char *str = "") const { std::stringstream s; s << "set key " << str << "\n"; print( s.str().c_str() ); } 
     void unset_key(const char *str = "") const { std::stringstream s; s << "unset key " << str << "\n"; print( s.str().c_str() ); } 
 
-    /// Pour effacer les courbes d'avant
+    /// Set all graph-related options to their default values
     void reset() { print("reset\n\n"); }
 
-    /// Attendre une touche
+    /// Stop and wait until the carriage return is pressed
     void wait() {
         print("pause -1\n\n");
         std::cin.get();
@@ -119,28 +127,28 @@ public:
         template<class TX>
         void operator() (const TX &x, FILE *tube) const { fprintf(tube,"%e\n",double(x)); }
         template<class TX,class TY>
-        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf( tube, "%e %e\n", double(x), double(y(x)) ); }
+        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf(tube,"%e %e\n",double(x),double(y(x))); }
         template<class TX, class T, int s, class O>
-        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf( tube, "%e %e\n", double(x), double(y[i]) ); }
+        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf(tube,"%e %e\n",double(x),double(y[i])); }
         template<class TX, class TY, int sy, class OY, class TZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf( tube, "%e %e %e\n", double(x), double(y[i]), double(z(x,y[i])) ); }
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf(tube,"%e %e %e\n",double(x),double(y[i]),double(z(x,y[i]))); }
         template<class TX, class TY, int sy, class OY, class TZ, int sz, class OZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%e %e %e\n",double(x),double(y[i]),double(z[i]) ); }
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%e %e %e\n",double(x),double(y[i]),double(z[i])); }
     };
     
     /*!
         Cette méthode permet de représenter une surface discrétisée définie "au dessus" d'un rectangle.
         Entrées :
-            * mat est une matrice de trois colonnes , la premiere colonne regroupe les abscisses, la deuxième les ordonnées et la troisième les côtes. Il y a autant de lignes que de points.
+            * mat est une matrice de trois colonnes : la premiere colonne regroupe les abscisses, la deuxième les ordonnées et la troisième les côtes. Il y a autant de lignes que de points.
             * mins[ 0 ] est le minimum des abscisses
             * mins[ 1 ] est le minimum des ordonnées 
             * maxs[ 0 ] est le maximum des abscisses
             * maxs[ 1 ] est le maximum des ordonnées
-            * nb[ 0 ] le nombre points suivant l'axe des abscisses
-            * nb[ 1 ] le nombre points suivant l'axe des ordonnées
+            * nb[ 0 ] est le nombre points suivant l'axe des abscisses
+            * nb[ 1 ] est le nombre points suivant l'axe des ordonnées
             
-        Rem : le nombre de lignes de mat est donc nb[ 0 ] * nb[ 1 ]
-        ATENTION : pour éviter un affichage bizarre, éviter de vous tromper sur les nb[ 0 ] et nb[ 1 ]. 
+        Remarque : le nombre de lignes de mat est donc nb[ 0 ] * nb[ 1 ]
+        ATTENTION : pour éviter un affichage bizarre, éviter de vous tromper sur les nb[ 0 ] et nb[ 1 ].
            
     */
     template<class T,class STR,class STO>
@@ -150,8 +158,8 @@ public:
         oss << "set yrange [" << mins[ 1 ] << ":" << maxs[ 1 ] << "];";
         oss << "set dgrid3d " << nb[ 0 ] - 1 << "," <<  nb[ 1 ] - 1 << ";";
         oss << "set hidden3d;"; 
-        fprintf( tube, "%s\n", oss.str().c_str() );
-        fprintf(tube,"splot '-' using 1:2:3 %s with lines \n", params );
+        fprintf(tube,"%s\n",oss.str().c_str());
+        fprintf(tube,"splot '-' using 1:2:3 %s with lines \n", params);
         std::ostringstream ss; ss << mat;
         fprintf(tube,"%s\ne\n",ss.str().c_str());
         fflush(tube);
@@ -179,7 +187,7 @@ public:
     }
 
     template<class T0, class T1>
-    void plot( const T0 &data0, const T1 &data1, const char *params="",bool jump_lines = false) {
+    void plot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, params ) );
         }
@@ -198,7 +206,7 @@ public:
     }
 
     template<class T0, class T1, class T2>
-    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="",bool jump_lines = false) {
+    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, data2, params ) );
         }
@@ -217,7 +225,7 @@ public:
     }
 
     template<class T0, class T1, class T2>
-    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="",bool jump_lines = false) {
+    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, params ) );
             holded_data.push_back( HD( data0, data2, params ) );
@@ -241,7 +249,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3>
-    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="",bool jump_lines = false) {
+    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, data2, params ) );
             holded_data.push_back( HD( data0, data1, data3, params ) );
@@ -265,7 +273,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3>
-    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="",bool jump_lines = false) {
+    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, params ) );
             holded_data.push_back( HD( data0, data2, params ) );
@@ -294,7 +302,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3, class T4>
-    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="",bool jump_lines = false) {
+    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, data2, params ) );
             holded_data.push_back( HD( data0, data1, data3, params ) );
@@ -323,7 +331,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3, class T4>
-    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="",bool jump_lines = false) {
+    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, params ) );
             holded_data.push_back( HD( data0, data2, params ) );
@@ -357,7 +365,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3, class T4, class T5>
-    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="",bool jump_lines = false) {
+    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, data2, params ) );
             holded_data.push_back( HD( data0, data1, data3, params ) );
@@ -391,7 +399,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3, class T4, class T5>
-    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="",bool jump_lines = false) {
+    void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, params ) );
             holded_data.push_back( HD( data0, data2, params ) );
@@ -430,7 +438,7 @@ public:
     }
 
     template<class T0, class T1, class T2, class T3, class T4, class T5, class T6>
-    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const T6 &data6, const char *params="",bool jump_lines = false) {
+    void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const T6 &data6, const char *params="", bool jump_lines = false ) {
         if ( hold ) {
             holded_data.push_back( HD( data0, data1, data2, params ) );
             holded_data.push_back( HD( data0, data1, data3, params ) );
@@ -469,7 +477,7 @@ public:
     }
 
     template<class T,int s,class O>
-    void plot(const Vec<T,s,O> &vec,const char *params="", bool jump_lines = false) {
+    void plot( const Vec<T,s,O> &vec, const char *params="", bool jump_lines = false ) {
         if ( hold )
             holded_data.push_back( HD ( vec, params )  );
         else {
@@ -481,7 +489,7 @@ public:
     }
 
     template<class T,class STR,class STO>
-    void splot(const Mat<T,STR,STO> &mat,const char *params="", bool jump_lines = false) {
+    void splot( const Mat<T,STR,STO> &mat, const char *params="", bool jump_lines = false ) {
         fprintf(tube,"splot '-' matrix %s\n",params);
         std::ostringstream ss; ss << mat;
         fprintf(tube,"%s\ne\n",ss.str().c_str());
@@ -490,7 +498,7 @@ public:
 
     void hold_on() { hold = true; }
 
-    void hold_off(bool jump_lines = false) {
+    void hold_off( bool jump_lines = false ) {
         if ( holded_data.size()==0 ) return;
 
         if ( holded_data[0].z.size() )
@@ -518,11 +526,11 @@ public:
         hold = false;
     }
 
-    template <class TY>
-    void fprintf_jumping_lines ( const Vec<> &x, const TY &y ) {}
+    template<class TY>
+    void fprintf_jumping_lines( const Vec<> &x, const TY &y ) {}
 
-    template <class TZ>
-    void fprintf_jumping_lines ( const Vec<> &x, const Vec<> &y, const TZ &z ) {
+    template<class TZ>
+    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const TZ &z ) {
         double old_x = x[0];
         for (unsigned i=0;i<x.size();i++) {
             if (x[i]!=old_x) {
@@ -533,7 +541,7 @@ public:
         }
     }
 
-    void fprintf_jumping_lines ( const Vec<> &x, const Vec<> &y, const Vec<> &z ) {
+    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const Vec<> &z ) {
         double old_x = x[0];
         for (unsigned i=0;i<x.size();i++) {
             if (x[i]!=old_x) {
@@ -550,90 +558,372 @@ public:
 
 };
 
-template < class T0>
-void plot( const T0 &data0, const char *params="", bool jump_lines = false) {
+template<class T0>
+void plot( const T0 &data0, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, params, jump_lines);
+    gp.plot( data0, params, jump_lines );
     gp.wait();
 }
 
-template < class T0>
-void splot( const T0 &data0, const char *params="", bool jump_lines = false) {
+template<class T0>
+void splot( const T0 &data0, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, params, jump_lines);
+    gp.splot( data0, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1>
-void plot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false) {
+template<class T0>
+void save_plot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, data1, params, jump_lines);
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, params, jump_lines );
+}
+
+template<class T0>
+void save_splot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, params, jump_lines );
+}
+
+template<class T0,class T1>
+void plot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.plot( data0, data1, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1>
-void splot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false) {
+template<class T0,class T1>
+void splot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, data1, params, jump_lines);
+    gp.splot( data0, data1, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2>
-void plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false) {
+template<class T0,class T1>
+void save_plot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, data1, data2, params, jump_lines);
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, params, jump_lines );
+}
+
+template<class T0,class T1>
+void save_splot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, params, jump_lines );
+}
+
+template<class T0,class T1,class T2>
+void plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.plot( data0, data1, data2, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2>
-void splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2>
+void splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, data1, data2, params, jump_lines);
+    gp.splot( data0, data1, data2, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3>
-void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, data1, data2, data3, params, jump_lines);
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, params, jump_lines );
+}
+
+template<class T0,class T1,class T2>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3>
+void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.plot( data0, data1, data2, data3, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3>
-void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2,class T3>
+void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, data1, data2, data3, params, jump_lines);
+    gp.splot( data0, data1, data2, data3, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3, class T4>
-void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2,class T3>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, data1, data2, data3, data4, params, jump_lines);
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, data3, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, data3, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3,class T4>
+void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.plot( data0, data1, data2, data3, data4, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3, class T4>
-void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2,class T3,class T4>
+void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, data1, data2, data3, data4, params, jump_lines);
+    gp.splot( data0, data1, data2, data3, data4, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3, class T4, class T5>
-void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2,class T3,class T4>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.plot( data0, data1, data2, data3, data4, data5, params, jump_lines);
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, data3, data4, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3,class T4>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, data3, data4, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3,class T4,class T5>
+void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.plot( data0, data1, data2, data3, data4, data5, params, jump_lines );
     gp.wait();
 }
 
-template < class T0, class T1, class T2, class T3, class T4, class T5>
-void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false) {
+template<class T0,class T1,class T2,class T3,class T4,class T5>
+void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.splot( data0, data1, data2, data3, data4, data5, params, jump_lines);
+    gp.splot( data0, data1, data2, data3, data4, data5, params, jump_lines );
     gp.wait();
 }
 
-};
+template<class T0,class T1,class T2,class T3,class T4,class T5>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, data3, data4, data5, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3,class T4,class T5>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    std::stringstream s; s << output;
+    std::string filename( s.str() );
+    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+        gp.set_terminal_epslatex( "color colortext" );
+        gp.set_format("'$%g$'");
+    }
+    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+        gp.set_terminal( "pngcairo enhanced" );
+    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+        gp.set_terminal( "svg enhanced" );
+    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+        gp.set_terminal( "pdfcairo enhanced color" );
+    else
+        gp.set_terminal( "postscript eps enhanced color colortext" );
+    gp.set_output(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, data3, data4, data5, params, jump_lines );
+}
+
+}
 
 #endif // LMT_gnuplot_HEADER

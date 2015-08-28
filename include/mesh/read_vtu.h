@@ -55,7 +55,7 @@ struct GetListNamefieldAndCo {
 
 /*!
     Ce foncteur permet, via l'appel à DM::apply_with_names(), d' assigner une valeur T ou un vecteur Vec<T,s> à un champ nommé field_name.
-    index_node est l'indice du noeud courant et nb_comp est la taille du vecteur des composantes ( nb_comp == s à priori).
+    index_node est l'indice du noeud courant et nb_comp est la taille du vecteur des composantes ( nb_comp == s a priori).
 */
 template<class TDATA>
 struct SetFieldByName {
@@ -128,7 +128,7 @@ struct SetFieldByName {
 
 /*!
     Ce double foncteur permet, via l'appel apply(Vec< VecElemList<...> > ) puis à DM::appl_with_names(), d' assigner une valeur T ou un vecteur Vec<T,s> à un champ nommé field_name dans un élément.
-    index_elt est l'indice de l'élément courant et nb_comp est la taille du vecteur des composantes ( nb_comp == s à priori).
+    index_elt est l'indice de l'élément courant et nb_comp est la taille du vecteur des composantes ( nb_comp == s a priori).
 
     On fait un foncteur différent de SetNodeFieldByName car m.elem_list est un vecteur hétérogène.
 

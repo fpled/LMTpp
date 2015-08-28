@@ -31,9 +31,9 @@ namespace LMT {
 template<class NameFormulation, int dim, class ScalarType_>
 struct LocalOperator {
     template<class TM,class TF>
-    void local_update(TM *m ,TF *f){  };
+    void local_update(TM *m ,TF *f){  }
     template<class TM>
-    void update_variables(TM *m){ };
+    void update_variables(TM *m){ }
 };
 
 /*! To be redefined for each new formulations */

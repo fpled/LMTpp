@@ -22,7 +22,7 @@ bool term_supports_color(); /// return true if terminal supports escape color se
 // int compilation_to_so(const char *cpp, const char *so, bool disp_command );
 std::string absolute_filename( const std::string &f ); // ./grot//toto -> /pouet/grot/toto
 Int64 last_modification_time_or_zero_of_file_named( const std::string &n );
-void get_includes_of_cpp_named( std::vector<std::string> &dep, const char *s, unsigned si, bool &has_a_corresponding_cpp, bool &has_a_corresponding_generated_cpp ); // return true if has a correponding cpp
+void get_includes_of_cpp_named( std::vector<std::string> &dep, const char *s, unsigned si, bool &has_a_corresponding_cpp, bool &has_a_corresponding_generated_cpp ); // return true if has a corresponding cpp
 
 double time_of_day_in_sec();
 std::string directory_of( const char *s, int si );

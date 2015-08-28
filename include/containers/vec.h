@@ -418,7 +418,7 @@ namespace LMT {
             * \a apply_range_stride pour opérer sur des éléments régulièrement espacés.
             * \a apply_on_number pour opérér sur un seul élément (éxcepté pour les vecteurs hétérogènes, un simple v[i] est plus efficace). 
             * \a apply_range_by_n 
-            * \a apply_nz_wi est plutôt utilisée pour les vecteurs creux ( \a Vec<Sparse<TT>,static_size_> ) car le traitement n'est fait que sur les éléments instanciés (donc à priori non nul).
+            * \a apply_nz_wi est plutôt utilisée pour les vecteurs creux ( \a Vec<Sparse<TT>,static_size_> ) car le traitement n'est fait que sur les éléments instanciés (donc a priori non nul).
             * \a aply_mt et ses variantes permet de faire les calculs sur plusieurs threads d'un même processeur.
 
         = Deux vecteurs

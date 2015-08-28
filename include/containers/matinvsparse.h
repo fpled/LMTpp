@@ -571,7 +571,7 @@ bool lu_factorize( Mat<T,Gen<>,SparseLU> &m, Vec<int> &vector_permutation ) {
         // pseudo calcul de la vraie colonne j de L. Comme L est stckée en ligne les choses sont bien plus complexes que celles de U...
         // en même temps on recherche le meilleur pivot partiel.
         big_in_abs = m.U[j].data.back() ; // on y met le coefficient de la diagonale.
-        ipivot = j ; // pivot à priori
+        ipivot = j ; // pivot a priori
         for(i=j+1;i<n;i++) {
             // on détermine s'il y a un coefficient non nul à la colonne j.
             for( k=0;k<m.L[i].indices.size();++k)
