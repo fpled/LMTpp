@@ -135,22 +135,18 @@ public:
     /// Delete all figures
     void reset() {
         print("clear all\n");
-        print("close all\n\n");
+        print("close all\n");
     }
 
     /// Clear current figure window
-    void clear() {
-        print("clf\n");
-    }
+    void clear() { print("clf\n"); }
 
     /// Close current figure window
-    void close() {
-        print("close\n");
-    }
+    void close() { print("close\n"); }
 
     /// Stop and wait for you to press any key before continuing
     void wait() {
-        print("pause \n\n");
+        print("pause \n");
         std::cin.get();
     }
 
@@ -207,44 +203,28 @@ public:
     }
     
     /// Retain the current graph and add another graph to it
-    void hold_on() {
-        fprintf(tube,"hold on\n");
-    }
+    void hold_on() { print("hold on\n"); }
 
     /// Reset hold state to the default behavior, in which MATLAB clears the existing graph and resets axes properties to their defaults before drawing new plots
-    void hold_off() {
-        fprintf(tube,"hold off\n");
-    }
+    void hold_off() { print("hold off\n"); }
 
     /// Add major grid lines to the current axes
-    void grid_on() {
-        fprintf(tube,"grid on\n");
-    }
+    void grid_on() { print("grid on\n"); }
 
     /// Remove all grid lines from the current axes
-    void grid_off() {
-        fprintf(tube,"grid off\n");
-    }
+    void grid_off() { print("grid off\n"); }
 
     /// Display the boundary of the current axes
-    void box_on() {
-        fprintf(tube,"box on\n");
-    }
+    void box_on() { print("box on\n"); }
 
     /// Do not display the boundary of the current axes
-    void box_off() {
-        fprintf(tube,"box off\n");
-    }
+    void box_off() { print("box off\n"); }
     
     /// Enable the display of figure windows
-    void display_on() {
-        fprintf(tube,"set(0,'DefaultFigureVisible','on');\n");
-    }
+    void display_on() { print("set(0,'DefaultFigureVisible','on');\n"); }
 
     /// Disable the display of figure windows
-    void display_off() {
-        fprintf(tube,"set(0,'DefaultFigureVisible','off');\n");
-    }
+    void display_off() { print("set(0,'DefaultFigureVisible','off');\n"); }
 
     ///
     FILE *tube;
