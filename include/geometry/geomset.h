@@ -16,8 +16,8 @@
 #include "stdsurfaces.h"
 #include "stdcurves.h"
 #include "volume.h"
-#include "mesh/refinement.h"
-//#include "mesh/meshcaracstd.h"
+#include "../mesh/refinement.h"
+//#include "../mesh/meshcaracstd.h"
 
 namespace LMT {
 
