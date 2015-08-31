@@ -74,7 +74,7 @@ public:
     void pdfcrop(const char *str = "") const { std::stringstream s; s << "pdfcrop " << str << "..pdf &"; system( s.str().c_str() ); }
 
     /// Go to the current working directory
-    void go_to_cwd() const {
+    void cd_cwd() const {
         char *cwd;
         cwd = (char*) malloc( FILENAME_MAX * sizeof(char) );
         std::stringstream s; s << "cd " << getcwd(cwd,FILENAME_MAX) << "\n"; print( s.str().c_str() );
@@ -256,7 +256,7 @@ void ml_plot( const Mat<T,STR,STO> &mat, const char *params="" ) {
 template<class T,int s,class O>
 void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
     MatlabPlot mp;
-    mp.go_to_cwd();
+    mp.cd_cwd();
     mp.display_off();
     mp.plot( vec, params );
     mp.grid_on();
@@ -275,7 +275,7 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
 template<class TX,int sx,class OX,class TY,int sy,class OY>
 void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
     MatlabPlot mp;
-    mp.go_to_cwd();
+    mp.cd_cwd();
     mp.display_off();
     mp.plot( vecx, vecy, params );
     mp.grid_on();
@@ -294,7 +294,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
 template<class T,class STR,class STO>
 void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
     MatlabPlot mp;
-    mp.go_to_cwd();
+    mp.cd_cwd();
     mp.display_off();
     mp.plot( mat, params );
     mp.grid_on();
