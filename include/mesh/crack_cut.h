@@ -1,8 +1,8 @@
 #ifndef CRACK_CUT_H
 #define CRACK_CUT_H
 
-#include <mesh/refinement.h>
-#include <mesh/sep_mesh.h>
+#include "refinement.h"
+#include "sep_mesh.h"
 
 namespace LMT {
 

@@ -26,16 +26,16 @@ namespace LMT {
 namespace LMTPRIVATE {
     /*!
         Objectif : 
-            Cette fonction sert à ajouter un noeud à une barre pour la découpe d'un maillage
+            Cette fonction sert à ajouter un noeud à une barre pour la découpe d'un maillage.
             
         Paramètres :
             * m est le maillage de barres que l'on souhaite couper.
             * m_parent est le maillage globale.  m est l'avant-dernier sous-maillage de m_parent.
-            * cut est la liste des noeuds où l'on coupe le maillage
+            * cut est la liste des noeuds où l'on coupe le maillage.
             * *e est une barre du maillage m ( de type \a Element ou \a ElementAncestor ).
             * p0 et p1 sont les poids barycentriques de chaque sommet de l'arête. 
     */
-    template<class TM,class TMParent, unsigned nb_elem_type, class TE, class T >
+    template<class TM,class TMParent, unsigned nb_elem_type, class TE, class T>
     void append_node_cut_at_bar( TM &m, 
                                  TMParent &m_parent, 
                                  DynamicData<typename TM::TNode*, nb_elem_type > &cut, 
@@ -107,37 +107,48 @@ namespace LMTPRIVATE {
             apply( m.elem_list, rb );
         }
         ///
-        template<class TE> bool div(TE &e,const Number<0> &nnn) { return false; }
-        template<class TE> bool div(TE &e,const Number<1> &nnn) {
+        template<class TE>
+        bool div(TE &e,const Number<0> &nnn) { return false; }
+
+        template<class TE>
+        bool div(TE &e,const Number<1> &nnn) {
             TNode *nn[] = { m_parent->elem_list.get_data(cut,e) };
             return divide_element( e, *m_parent, nn );
         }
-        template<class TE> bool div(TE &e,const Number<2> &nnn) {
+
+        template<class TE>
+        bool div(TE &e,const Number<2> &nnn) {
             static const unsigned nb_children = NbChildrenElement<typename TE::NE,1>::res;
             TNode *nn[ nb_children ];
             for(unsigned i = 0; i < nb_children; ++i )
                 nn[i] = m_parent->template sub_mesh<1>().elem_list.get_data(next.cut, *m_parent->get_children_of(e,Number<1>())[i] );
             return divide_element( e, *m_parent, nn );
         }
-        template<class TE> bool div(TE &e,const Number<3> &nnn) {
+
+        template<class TE>
+        bool div(TE &e,const Number<3> &nnn) {
             static const unsigned nb_children = NbChildrenElement<typename TE::NE,2>::res;
             TNode *nn[ nb_children ];
             for(unsigned i = 0; i < nb_children; ++i )
                 nn[i] = m_parent->template sub_mesh<2>().elem_list.get_data(next.next.cut, *m_parent->get_children_of(e,Number<2>())[i] );
             return divide_element( e, *m_parent, nn );
         }
-        ///
-        template<class TE> bool operator()(TE &e) { return div(e,Number<TE::nb_var_inter>()); }
+
+        /// premier foncteur
+        template<class TE>
+        bool operator()( TE &e ) {
+            return div(e,Number<TE::nb_var_inter>());
+        }
                 
-        /// A tous les éléments 2D qui ont au moins deux arêtes coupés, on coupe tous les autres arêtes
+        /// A tous les éléments 2D qui ont au moins deux arêtes coupées, on coupe toutes les autres arêtes.
         /// Number<dim> représente la dimension du maillage initial.
-        template<class TE> 
+        template<class TE>
         void append_constrained_cut( TE &e, const Number<0> &nnn ) { }
-        
-        template<class TE> 
+
+        template<class TE>
         void append_constrained_cut( TE &e, const Number<1> &nnn ) { }
-        
-        template<class TE> 
+
+        template<class TE>
         void append_constrained_cut( TE &e, const Number<2> &nnn ) {
             static const unsigned nb_children = NbChildrenElement<typename TE::NE,1>::res;
             TNode *nn[ nb_children ];
@@ -159,8 +170,7 @@ namespace LMTPRIVATE {
                                                 .5 );
             }
         }
-        
-        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle .
+        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle.
         template<class TE> 
         void append_constrained_cut( TE &e, const Number<3> &nnn ) {
             static const unsigned nb_bar = 3;
@@ -194,22 +204,27 @@ namespace LMTPRIVATE {
         }
 
         /// deuxième foncteur
-        template<class TE, unsigned num> void operator()( TE &e, const Number<num> &nnn ) { 
+        template<class TE, unsigned num>
+        void operator()( TE &e, const Number<num> &nnn ) {
             append_constrained_cut( e, nnn ); 
         }
         
+        ///
         struct Control_two_cuts {
             Control_two_cuts() : has_two_cuts( false ) {}
             
             bool has_two_cuts;
         };
+        ///
         template<class TE> 
         void has_two_cuts( TE &e, const Number<0> &nnn, Control_two_cuts &ctrl ) { }
+
         template<class TE> 
         void has_two_cuts( TE &e, const Number<1> &nnn, Control_two_cuts &ctrl ) { }
+
         template<class TE> 
         void has_two_cuts( TE &e, const Number<2> &nnn, Control_two_cuts &ctrl ) { }
-        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle .
+        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle.
         template<class TE> 
         void has_two_cuts( TE &e, const Number<3> &nnn, Control_two_cuts &ctrl ) {
             static const unsigned nb_bar = 3;
@@ -230,16 +245,17 @@ namespace LMTPRIVATE {
                 ctrl.has_two_cuts = true;
         }
         
+        /// troisième foncteur
         template<class TE, unsigned num>
         void operator() ( TE &e, const Number<num> &nnn, Control_two_cuts &ctrl ) {
             has_two_cuts( e, nnn, ctrl );
         }
 
-        /// on étend la coupe si l'arête coupée n'est pas la plus longue de l'élément 
+        /// On étend la coupe si l'arête coupée n'est pas la plus longue de l'élément.
         /// Number<dim> représente la dimension du maillage initial.
         template<class TN> 
         void spread_cut( ElementAncestor<TN> *ea, const Number<0> &nnn ) { }
-        
+
         template<class TN> 
         void spread_cut( ElementAncestor<TN> *ea, const Number<1> &nnn ) { }
         
@@ -363,13 +379,13 @@ namespace LMTPRIVATE {
 
     Ça veut dire, que ça divise les éléments Tetra, Hexa, etc... qui contiennent ces barres.
 
-    L'opérateur op peut soit renvoyer  un booléen soit un double. Il prend aussi forcément un élément de type barre en paramètre. 
+    L'opérateur op peut soit renvoyer un booléen soit un double. Il prend aussi forcément un élément de type barre en paramètre.
     
-    Si c'est 0 -> on ne coupe pas
+    Si c'est 0 (=false) -> on ne coupe pas.
     
-    Si c'est 1 (=true) -> on coupe au milieu
+    Si c'est 1 (=true) -> on coupe au milieu.
     
-    Si c'est dans ] 0, 1 [ il coupe par de façon proportionnelle ( 0 -> vers le noeud 0, 1 -> vers le noeud 1).
+    Si c'est dans ] 0, 1 [ -> on coupe de façon proportionnelle (0 -> vers le noeud 0, 1 -> vers le noeud 1).
         
     C'est-à-dire qu'il est au moins de la forme :
     \code C/C++
@@ -381,7 +397,7 @@ namespace LMTPRIVATE {
         };
     où RET est soit un type flottant, soit un booléen.
     S'il renvoie un booléen, il y a opération de division au milieu de la barre s'il renvoie vrai.
-    S'il renvoie un double r, rien n'est fait lorsque r=0, il divise la barre lorsque r est compris entre 0 et 1. La position de la division dépend de r suivant les points barycentrique ( pos(0); 1 - r ) ( pos(1); r ) . Lorsque r=1, il divise au milieu.
+    S'il renvoie un double r, il divise la barre lorsque r est compris entre 0 et 1. La position de la division dépend de r suivant les points barycentriques ( pos(0); 1 - r ) ( pos(1); r ). Lorsque r=1, il divise au milieu. Lorsque r=0, il ne fait rien.
     Enfin refinement() renvoie vrai si elle divise au moins une barre et faux sinon.
 
     \keyword Maillage/Elément/Opération
@@ -488,7 +504,7 @@ struct LevelSetRemoveNeg {
         * <strong> PhiExtract </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
            
     Retour :
-        renvoie vrai s'il y a eu des changements et faux sinon. 
+        Cette fonction renvoie vrai s'il y a eu des changements et faux sinon.
         
     Voici un exemple de code. Il faudra adapter le MeshCarac ( cf le MeshCarac venant juste après le code C++ ).
     \code C/C++
@@ -565,9 +581,10 @@ struct RefinementOpBasedOnLength {
 };
 
 /*!
-
-    Cette fonction divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à max_length.
-    Elle renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite que toutes les barres soient inférieures à max_length, on relancera la fonction autant de fois que nécessaire.
+    Objectif :
+        Cette fonction divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à max_length.
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite que toutes les barres soient inférieures à max_length, on relancera la fonction autant de fois que nécessaire.
 
     \keyword Maillage/Opération
     subdivide each element bar e such as length(e)>max_length (true means subdivision).
@@ -646,7 +663,7 @@ struct LevelSetImageRefinement {
 
 /*!
     Objectif :
-        Ce foncteur est conçu pour la fonction \a refinement () . Il permet de raffiner localement un maillage autour d'un point. Pour plus de renseignement, voir l'explication à la fin.
+        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un point. Pour plus de renseignement, voir l'explication à la fin.
         
     Attributs :
         * <strong> c </strong> le centre de la zone que l'on veut raffiner. c n'est pas forcément un point dans le maillage.
@@ -654,7 +671,7 @@ struct LevelSetImageRefinement {
         * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au point c.
         
     Description :
-        on décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le centre c.
+        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le centre c.
          
     Exemple de code :
     \code C/C++
@@ -689,7 +706,7 @@ struct Local_refinement {
 
 /*!
     Objectif :
-        Ce foncteur est conçu pour la fonction \a refinement () . Il permet de raffiner localement un maillage autour d'un cercle. Pour plus de renseignement, voir l'explication à la fin.
+        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un cercle. Pour plus de renseignement, voir l'explication à la fin.
         
     Attributs :
         * <strong> c </strong> le centre du cercle autour duquel on veut raffiner. c n'est pas forcément un point dans le maillage.
@@ -698,7 +715,7 @@ struct Local_refinement {
         * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au point c.
         
     Description :
-        on décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le cercle de centre c et de rayon R.
+        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le cercle de centre c et de rayon R.
          
     Exemple de code :
     \code C/C++
@@ -769,7 +786,7 @@ namespace LMTPRIVATE {
 }
 
 /*!
-    coupe d'un maillage par un masque. Un élément est coupé quand un bord a mask < lim_inf et l'autre a mask >= lim_sup
+    Cette fonction découpe un maillage par un masque. Un élément est coupé quand un bord a mask < lim_inf et l'autre a mask >= lim_sup.
     \keyword Maillage/Opération
 */
 template<class TM,class MA,class I>
@@ -820,6 +837,6 @@ bool mask_cut( TM &m, const MA &mask, I lim_inf, I lim_sup, I dist_disp, bool re
 
 
 
-};
+}
 
 #endif // LMT_refinement_HEADER

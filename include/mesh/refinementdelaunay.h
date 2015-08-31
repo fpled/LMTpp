@@ -54,6 +54,6 @@ bool refinementdelaunay_if_length_sup(TM &m,T max_length) {
 }
 
 
-};
+}
 
 #endif // LMT_refinementdelaunay_HEADER

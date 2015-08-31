@@ -1,7 +1,7 @@
 #ifndef SEP_MESH_H
 #define SEP_MESH_H
 
-#include <containers/vec.h>
+#include "../containers/vec.h"
 
 namespace LMT {
 
