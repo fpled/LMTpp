@@ -7,10 +7,8 @@
 namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
-
 /*!
-    Hexa représente un pavé quelconque.
-    
+    Pavé à 8 noeuds
     \verbatim
         .                
         .          4____7
@@ -26,6 +24,7 @@ namespace LMT {
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
+
 struct Hexa {
     static const unsigned nb_var_inter = 3;
     static const unsigned nb_nodes = 8;
@@ -80,6 +79,13 @@ void append_skin_elements(Element<Hexa,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<
     het.add_element(e,ch,NodalElement(),e.node(6));
     het.add_element(e,ch,NodalElement(),e.node(7));
 }
+
+// --------------------------------------------------------------------------------------------------------
+// template<class TN,class TNG,class TD,unsigned NET,class Pvec,class T>
+// void update_circum_center(const Element<Hexa,TN,TNG,TD,NET> &e,Pvec &C,T &R) {
+//     C = getCenterOfCircumSphere( e.node(0)->pos, e.node(1)->pos, e.node(2)->pos, e.node(3)->pos, e.node(4)->pos, e.node(5)->pos, e.node(6)->pos, e.node(7)->pos );
+//     R = length( e.node(0)->pos - C );
+// }
 
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Hexa,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
@@ -196,20 +202,6 @@ T V = 0.;
 
 return abs(V);
 }
-
-
-// --------------------------------------------------------------------------------------------------------
-// template<class TN,class TNG,class TD,unsigned NET,class Pvec,class T>
-// void update_circum_center(const Element<Hexa,TN,TNG,TD,NET> &e,Pvec &C,T &R) {
-//     C = getCenterOfCircumSphere( e.node(0)->pos, e.node(1)->pos, e.node(2)->pos, e.node(3)->pos, e.node(4)->pos, e.node(5)->pos, e.node(6)->pos, e.node(7)->pos );
-//     R = length( e.node(0)->pos - C );
-// }
-
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<Hexa,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-std::cout << "Surdiscretisation non implementee pour les Hexa" << std::endl;
-return false;
-};
 
 template<class TN,class TNG,class TD,unsigned NET,class TM>
 bool divide_element(Element<Hexa,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
@@ -339,7 +331,12 @@ bool divide_element(Element<Hexa,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
 //    return false;
 //   
 //}
-//
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Hexa,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
+}
+
 /** new_nodes are independant nodes created to make a fine grid for integration. Used in TvrcFormulation
 //    \relates Hexa
 //    \todo actually, we divide element n times, with n = max(edge length) / max_dist. For flat elements, it's far from optimallity

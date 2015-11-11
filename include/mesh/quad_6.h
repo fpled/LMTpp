@@ -20,6 +20,7 @@ namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
 /*!
+    Carré à 6 noeuds
     A faire
 
     \keyword Maillage/Elément
@@ -60,6 +61,7 @@ void append_skin_elements(Element<Quad_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numbe
     het.add_element(e,ch,NodalElement(),e.node(5));
 }
 
+// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Quad_6,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
     T edge_length_0 = (m.get_children_of( e, Number<1>() )[ 0 ])->measure_virtual();
@@ -71,9 +73,21 @@ void update_edge_ratio(const Element<Quad_6,TN,TNG,TD,NET> &e,TM &m,T &edge_rati
 
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Quad_6,TN,TNG,TD,NET> &e ) {
-    std::cerr << "measure pour Quad_6 n'est pas implémentée" << std::endl;
+    std::cerr << "measure not implemented for Quad_6" << std::endl;
     assert(0);
     return typename TypePromote<Abs,typename TNG::T>::T(-1.);
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<Quad_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Quad_6" << std::endl;
+    assert(0);
+    return false;
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Quad_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
 }
 
 template<class TV,class T>
@@ -95,7 +109,7 @@ T var_inter_insideness( const Quad_6 &e, const TV &var_inter ) {
     param :
         Quad_6 : le type d'élément
         pos_nodes : le position des sommets dans le plan. Il faut que le Quad ne soit pas "croisé".
-        po : la position du point dans le plan
+        pos : la position du point dans le plan
 
 */
 template< class PosNodes, class Pvec > 

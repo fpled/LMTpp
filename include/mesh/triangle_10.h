@@ -7,7 +7,9 @@
 
 namespace LMT {
 
+// --------------------------------------------------------------------------------------------------------
 /*!
+    Triangle à 10 noeuds
     \verbatim
             2
             | \
@@ -16,16 +18,12 @@ namespace LMT {
             |    \
             |     \
             0__3___1
-
-
     \relates Mesh
     \keyword Maillage/Elément 
     \author Hugo LECLERC
     \friend rapahel.pasquier@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
-
-// --------------------------------------------------------------------------------------------------------
 struct Triangle_10 {
     static const unsigned nb_var_inter = 2;
     static const unsigned nb_nodes = 10;
@@ -69,36 +67,7 @@ void append_skin_elements(Element<Triangle_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,
     het.add_element(e,ch,NodalElement(),e.node(5));
 }
 
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element(Element<Triangle_10,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-   std::cout << "divide_element not implemented for Triangle_10" << std::endl;
-   assert(0);
-   return false;
-}
-
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<Triangle_10,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-    return divide_element(e,m,nnodes);
-}
-
 // --------------------------------------------------------------------------------------------------------
-template<class TN,class TNG,class TD,unsigned NET>
-typename TNG::Pvec sample_normal(const Element<Triangle_10,TN,TNG,TD,NET> &e) {
-    assert( 0 );
-    // TODO
-    DEBUGASSERT( (TNG::dim==3) );
-    typename TNG::Pvec res = vect_prod( e.node(1)->pos-e.node(0)->pos, e.node(2)->pos-e.node(0)->pos );
-    return res / length( res );
-}
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle_10,TN,TNG,TD,NET> &e ) {
-    assert( 0 );
-    // TODO
-    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, N = normalized(P1-P0);
-    P2 -= dot(P2-P0,N)*N;
-    return abs( 0.5 * length( P1-P0 ) * length( P2-P0 ) );
-}
-
 /*!
     Cette fonction retourne l'isobarycentre des sommets du triangle.
 
@@ -113,6 +82,36 @@ typename TNG::Pvec center(const Element<Triangle_10,TN,TNG,TD,NET> &e) {
     for(unsigned i=0;i<3;++i)
         res += e.pos(i);
     return res / 3;
+}
+
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle_10,TN,TNG,TD,NET> &e ) {
+    assert( 0 );
+    // TODO
+    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, N = normalized(P1-P0);
+    P2 -= dot(P2-P0,N)*N;
+    return abs( 0.5 * length( P1-P0 ) * length( P2-P0 ) );
+}
+
+template<class TN,class TNG,class TD,unsigned NET>
+typename TNG::Pvec sample_normal(const Element<Triangle_10,TN,TNG,TD,NET> &e) {
+    assert( 0 );
+    // TODO
+    DEBUGASSERT( (TNG::dim==3) );
+    typename TNG::Pvec res = vect_prod( e.node(1)->pos-e.node(0)->pos, e.node(2)->pos-e.node(0)->pos );
+    return res / length( res );
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<Triangle_10,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Triangle_10" << std::endl;
+    assert(0);
+    return false;
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Triangle_10,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
 }
 
 template<class TV,class T>
@@ -166,8 +165,8 @@ bool is_inside_linear( const Triangle_10 &elem, const PosNodes &pos_nodes, const
         return false;
 }
 
-
 };
+
 #include "element_Triangle_10.h"
 
 #endif

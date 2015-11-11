@@ -19,7 +19,7 @@ namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
 /*!
-    Bar représente un segment ou bien une tige sans épaisseur. 
+    Barre sans dimension ou segment à 2 noeuds
     \verbatim
     .                    0--1
     \relates Mesh
@@ -38,10 +38,7 @@ struct Bar {
 // --------------------------------------------------------------------------------------------------------
 template<> struct NbChildrenElement<Bar,1> { static const unsigned res = 2; };
 
-
-
 template<unsigned n> struct TypeChildrenElement<Bar,1,n> { typedef NodalElement T; };
-
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Bar,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
@@ -69,6 +66,10 @@ void intersection(const Element<Bar,TN,TNG,TD,NET> &e,Pvec P1,Pvec P2,T &numP1P2
     dist_ext = (dist_ext>0.5) * (dist_ext-1.0) - (dist_ext<=0.5) * dist_ext;
 }
 
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar,TN,TNG,TD,NET> &e ) {
+    return abs( length( e.node(1)->pos - e.node(0)->pos ) );
+}
 
 template<class TN,class TNG,class TD,unsigned NET>
 typename TNG::Pvec sample_normal(const Element<Bar,TN,TNG,TD,NET> &e) {
@@ -94,7 +95,6 @@ bool divide_element(Element<Bar,TN,TNG,TD,NET> &e,TM &m,TNG **nodes) {
 }
 
 /** 
-
     new_nodes are independant nodes created to make a fine grid for integration. Used in TvrcFormulation
     \keyword Elément/Opération
     \friend samir.amrouche@lmt.ens-cachan.fr
@@ -119,11 +119,6 @@ void subdivision_element(const Element<Bar,TN,TNG,TD,NET> &e,Vec<TNG> &new_nodes
         };
         DM::get_ponderation( pond_list, 2, *nn );
     }
-}
-
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar,TN,TNG,TD,NET> &e ) {
-    return abs( length( e.node(1)->pos - e.node(0)->pos ) );
 }
 
 inline unsigned vtk_num( StructForType<Bar> ) { return 3; }

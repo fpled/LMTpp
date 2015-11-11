@@ -20,7 +20,7 @@ namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
 /*!
-    C'est une pyramide à base carrée dans le plan xOy.
+    Pyramide à 5 noeuds, à base carrée dans le plan xOy.
     
     Dans l'espace de référence cela correspond au volume de points M(x,y,z) tels que :
         * x, y , z >= 0
@@ -79,6 +79,7 @@ void append_skin_elements(Element<Pyramid,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numb
     het.add_element(e,ch,NodalElement(),e.node(4));
 }
 
+// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Pyramid,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
     T edge_length_0 = (m.get_children_of( e, Number<1>() )[ 0 ])->measure_virtual();
@@ -91,6 +92,20 @@ void update_edge_ratio(const Element<Pyramid,TN,TNG,TD,NET> &e,TM &m,T &edge_rat
     T edge_max_1 = max( edge_length_0, edge_length_1, edge_length_2 );
     T edge_max_2 = max( edge_length_3, edge_length_4 );
     edge_ratio = min( edge_min_1, edge_min_2 ) / max( edge_max_1, edge_max_2 );
+}
+
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Pyramid,TN,TNG,TD,NET> &e ) {
+    std::cerr << "measure not implemented for Pyramid" << std::endl;
+    assert(0);
+    return typename TypePromote<Abs,typename TNG::T>::T(-1.);
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<Pyramid,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Pyramid" << std::endl;
+    assert(0);
+    return false;
 }
 
 // extern unsigned valid_pyramid_face_center[];
@@ -110,6 +125,10 @@ void update_edge_ratio(const Element<Pyramid,TN,TNG,TD,NET> &e,TM &m,T &edge_rat
 //     }
 //     return *( div_pyramid_face_center + index * 32 ) >= 0;
 // }
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Pyramid,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
+}
 
 template<class TV,class T>
 bool var_inter_is_inside( const Pyramid &, const TV &var_inter, T tol = 0 ) {
@@ -125,6 +144,8 @@ template<class T,class TV>
 T var_inter_insideness( const Pyramid &e, const TV &var_inter ) {
     return min( min( min( var_inter[0], var_inter[1] ), 1 - var_inter[0] - var_inter[2] ), 1 - var_inter[1] - var_inter[2] );
 }
+
+inline unsigned vtk_num( StructForType<Pyramid> ) { return 14; }
 
 };
 

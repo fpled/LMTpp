@@ -5,9 +5,9 @@
 
 namespace LMT {
 
+// --------------------------------------------------------------------------------------------------------
 /*!
-
-    Tétraèdre
+    Tétraèdre à 10 noeuds
     \verbatim
         .                          3
         .                         /|\
@@ -21,8 +21,6 @@ namespace LMT {
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
-
-// --------------------------------------------------------------------------------------------------------
 struct Tetra_10 {
     static const unsigned nb_var_inter = 3;
     static const unsigned nb_nodes = 10;
@@ -131,16 +129,27 @@ void update_edge_ratio(const Element<Tetra_10,TN,TNG,TD,NET> &e,TM &m,T &edge_ra
     edge_ratio = min( edge_length_0, edge_length_1, edge_length_2, edge_length_3 ) / max( edge_length_0, edge_length_1, edge_length_2, edge_length_3 );
 }
 
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Tetra_10,TN,TNG,TD,NET> &e ) {
+    typedef typename TNG::T P_T_pos;
+    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, P3 = e.node(3)->pos;
+    P_T_pos D0 = P1[0]-P0[0]; P_T_pos D1 = P2[0]-P0[0]; P_T_pos D2 = P3[0]-P0[0]; P_T_pos D3 = P2[1]-P0[1];
+    P_T_pos D4 = P3[1]-P0[1]; P_T_pos D5 = P1[1]-P0[1]; P_T_pos D6 = P2[2]-P0[2]; P_T_pos D7 = D4*D6;
+    P_T_pos D8 = P3[2]-P0[2]; P_T_pos D9 = D3*D8; D7 = D9-D7; D0 = D0*D7; D7 = D8*D5; D8 = P1[2]-P0[2];
+    D4 = D4*D8; D4 = D7-D4; D1 = D1*D4; D0 = D0-D1; D1 = D6*D5; D3 = D3*D8; D1 = D1-D3; D1 = D1*D2; D0 = D0+D1; D1 = 0.075*D0;
+    D0 = 0.133333*D0; D0 = D1-D0; D0 = D0+D1; D0 = D0+D1; D0 = D0+D1; return typename TypePromote<Abs,typename TNG::T>::T(abs(D0));
+}
+
 template<class TN,class TNG,class TD,unsigned NET,class TM>
 bool divide_element(Element<Tetra_10,TN,TNG,TD,NET> &e,TM &m,TNG **nodes) {
- std::cout << "Divide elem non implemente pour les Tetra_10" <<std::endl; assert(0);
-return false;
+    std::cout << "divide_element not implemented for Tetra_10" <<std::endl;
+    assert(0);
+    return false;
 }
 
 template<class TN,class TNG,class TD,unsigned NET,class TM>
 bool divide_element_using_elem_children(Element<Tetra_10,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-    std::cout << "Divide elem non implemente pour les Tetra_10" <<std::endl; assert(0);
-    return false;
+    return divide_element(e,m,nnodes);
 }
 
 /** new_nodes are independant nodes created to make a fine grid for integration. Used in TvrcFormulation
@@ -176,17 +185,6 @@ bool subdivision_element(const Element<Tetra_10,TN,TNG,TD,NET> &e,Vec<TNG> &new_
         }
     }
     return true;
-}
-
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Tetra_10,TN,TNG,TD,NET> &e ) {
-    typedef typename TNG::T P_T_pos;
-    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, P3 = e.node(3)->pos;
-    P_T_pos D0 = P1[0]-P0[0]; P_T_pos D1 = P2[0]-P0[0]; P_T_pos D2 = P3[0]-P0[0]; P_T_pos D3 = P2[1]-P0[1]; 
-    P_T_pos D4 = P3[1]-P0[1]; P_T_pos D5 = P1[1]-P0[1]; P_T_pos D6 = P2[2]-P0[2]; P_T_pos D7 = D4*D6; 
-    P_T_pos D8 = P3[2]-P0[2]; P_T_pos D9 = D3*D8; D7 = D9-D7; D0 = D0*D7; D7 = D8*D5; D8 = P1[2]-P0[2]; 
-    D4 = D4*D8; D4 = D7-D4; D1 = D1*D4; D0 = D0-D1; D1 = D6*D5; D3 = D3*D8; D1 = D1-D3; D1 = D1*D2; D0 = D0+D1; D1 = 0.075*D0; 
-    D0 = 0.133333*D0; D0 = D1-D0; D0 = D0+D1; D0 = D0+D1; D0 = D0+D1; return typename TypePromote<Abs,typename TNG::T>::T(abs(D0));
 }
 
 /// >= 0 -> inside, < 0 -> outside

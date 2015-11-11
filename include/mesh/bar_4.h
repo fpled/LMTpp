@@ -19,7 +19,7 @@ namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
 /*!
-    Bar_4 représente une barre sans dimension ou segment avec quatre noeuds dessus.  
+    Barre sans dimension ou segment à 4 noeuds
     \verbatim
     .                    0--2--3--1
     \relates Mesh
@@ -27,7 +27,6 @@ namespace LMT {
     \keyword Maillage/Elément
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
-
 struct Bar_4 {
     static const unsigned nb_var_inter = 1;
     static const unsigned nb_nodes = 4;
@@ -47,6 +46,11 @@ void append_skin_elements(Element<Bar_4,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number
 }
 
 // --------------------------------------------------------------------------------------------------------
+/* TODO : exact computation */
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar_4,TN,TNG,TD,NET> &e ) {
+    return abs( length( e.node(1)->pos - e.node(0)->pos ) );
+}
 
 template<class TN,class TNG,class TD,unsigned NET>
 typename TNG::Pvec sample_normal(const Element<Bar_4,TN,TNG,TD,NET> &e) {
@@ -57,13 +61,7 @@ typename TNG::Pvec sample_normal(const Element<Bar_4,TN,TNG,TD,NET> &e) {
     return res;
 }
 
-
-/* TODO : exact computation */
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar_4,TN,TNG,TD,NET> &e ) {
-    return abs( length( e.node(1)->pos - e.node(0)->pos ) );
-}
-
+inline unsigned vtk_num( StructForType<Bar_4> ) { return 4; }
 
 };
 

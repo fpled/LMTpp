@@ -23,7 +23,6 @@ struct NodalElement {
     static const char *can_directly_be_represented_by() { return "NodalElement"; }
 };
 
-
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<NodalElement,TN,TNG,TD,NET> &e ) {
     return typename TypePromote<Abs,typename TNG::T>::T(0);

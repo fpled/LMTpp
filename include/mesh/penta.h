@@ -11,6 +11,13 @@
 namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
+/*!
+    Pentaèdre à 5 noeuds
+
+    \keyword Maillage/Elément
+    \friend samir.amrouche@lmt.ens-cachan.fr
+    \friend hugo.leclerc@lmt.ens-cachan.fr
+*/
 struct Penta {
     static const unsigned nb_var_inter = 2;
     static const unsigned nb_nodes = 5;
@@ -44,6 +51,7 @@ void append_skin_elements(Element<Penta,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number
     het.add_element(e,ch,NodalElement(),e.node(4));
 }
 
+// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Penta,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
     T edge_length_0 = (m.get_children_of( e, Number<1>() )[ 0 ])->measure_virtual();
@@ -57,22 +65,31 @@ void update_edge_ratio(const Element<Penta,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio
     T edge_max_2 = max( edge_length_3, edge_length_4 );
     edge_ratio = min( edge_min_1, edge_min_2 ) / max( edge_max_1, edge_max_2 );
 }
-// --------------------------------------------------------------------------------------------------------
+
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Penta,TN,TNG,TD,NET> &e ) {
-	std::cout << "Error measure not implemented for type Penta - do it if you need it" << std::endl;
+    std::cout << "measure not implemented for Penta" << std::endl;
 	assert(0);
 }
 
-
-// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Penta,TN,TNG,TD,NET> &e ) {
-	std::cout << "Error measure not implemented for type Penta - do it if you need it" << std::endl;
-	assert(0);
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Quad_42,TN,TNG,TD,NET> &e ) {
+    std::cerr << "measure not implemented for Quad_42" << std::endl;
+    assert(0);
+    return typename TypePromote<Abs,typename TNG::T>::T(-1.);
 }
 
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Quad_42" << std::endl;
+    assert(0);
+    return false;
+}
 
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
+}
 
 };
 

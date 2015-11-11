@@ -7,6 +7,7 @@
 
 namespace LMT {
 
+// --------------------------------------------------------------------------------------------------------
 /*!
     Triangle à 6 noeuds
     \verbatim
@@ -24,8 +25,6 @@ namespace LMT {
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
-
-// --------------------------------------------------------------------------------------------------------
 struct Triangle_6 {
     static const unsigned nb_var_inter = 2;
     static const unsigned nb_nodes = 6;
@@ -64,6 +63,20 @@ void append_skin_elements(Element<Triangle_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,N
 }
 
 // --------------------------------------------------------------------------------------------------------
+/*!
+    Cette fonction retourne l'isobarycentre des sommets du triangle.
+
+    \friend samir.amrouche@lmt.ens-cachan.fr
+    \friend hugo.leclerc@lmt.ens-cachan.fr
+*/
+template<class TN,class TNG,class TD,unsigned NET>
+typename TNG::Pvec center(const Element<Triangle_6,TN,TNG,TD,NET> &e) {
+    typename TNG::Pvec res = 0.0;
+    for(unsigned i=0;i<3;++i)
+        res += e.pos(i);
+    return res / 3;
+}
+
 template<class TN,class TNG,class TD,unsigned NET,class Pvec,class T>
 void update_circum_center(const Element<Triangle_6,TN,TNG,TD,NET> &e,Pvec &C,T &R) {
     C = getCenterOfCircumCircle( e.node(0)->pos, e.node(1)->pos, e.node(2)->pos );
@@ -93,25 +106,6 @@ void update_edge_ratio(const Element<Triangle_6,TN,TNG,TD,NET> &e,TM &m,T &edge_
     edge_ratio = min( edge_length_0, edge_length_1, edge_length_2 ) / max( edge_length_0, edge_length_1, edge_length_2 );
 }
 
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element(Element<Triangle_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-   std::cout << "divide_element not implemented for Triangle_6" << std::endl;
-   assert(0);
-   return false;
-}
-
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<Triangle_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-    return divide_element(e,m,nnodes);
-}
-
-// --------------------------------------------------------------------------------------------------------
-template<class TN,class TNG,class TD,unsigned NET>
-typename TNG::Pvec sample_normal(const Element<Triangle_6,TN,TNG,TD,NET> &e) {
-    DEBUGASSERT( (TNG::dim==3) );
-    typename TNG::Pvec res = vect_prod( e.node(1)->pos-e.node(0)->pos, e.node(2)->pos-e.node(0)->pos );
-    return res / length( res );
-}
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle_6,TN,TNG,TD,NET> &e ) {
     typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, N = normalized(P1-P0);
@@ -119,18 +113,23 @@ typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle_6,T
     return abs( 0.5 * length( P1-P0 ) * length( P2-P0 ) );
 }
 
-/*!
-    Cette fonction retourne l'isobarycentre des sommets du triangle.
-
-    \friend samir.amrouche@lmt.ens-cachan.fr
-    \friend hugo.leclerc@lmt.ens-cachan.fr
-*/
 template<class TN,class TNG,class TD,unsigned NET>
-typename TNG::Pvec center(const Element<Triangle_6,TN,TNG,TD,NET> &e) {
-    typename TNG::Pvec res = 0.0;
-    for(unsigned i=0;i<3;++i)
-        res += e.pos(i);
-    return res / 3;
+typename TNG::Pvec sample_normal(const Element<Triangle_6,TN,TNG,TD,NET> &e) {
+    DEBUGASSERT( (TNG::dim==3) );
+    typename TNG::Pvec res = vect_prod( e.node(1)->pos-e.node(0)->pos, e.node(2)->pos-e.node(0)->pos );
+    return res / length( res );
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<Triangle_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Triangle_6" << std::endl;
+    assert(0);
+    return false;
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Triangle_6,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
 }
 
 template<class TV,class T>
@@ -181,6 +180,7 @@ bool is_inside_linear( const Triangle_6 &elem, const PosNodes &pos_nodes, const 
 inline unsigned vtk_num( StructForType<Triangle_6> ) { return 22; }
 
 };
+
 #include "element_Triangle_6.h"
 
 #endif // LMTTRIANGLE6_H

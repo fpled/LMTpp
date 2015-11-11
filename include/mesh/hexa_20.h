@@ -6,8 +6,9 @@
 
 namespace LMT {
 
+// --------------------------------------------------------------------------------------------------------
 /*!
-    Cube à 20 noeuds.
+    Cube à 20 noeuds
     \verbatim
         .                7 ---14----6
         .               /|         /|
@@ -27,20 +28,6 @@ namespace LMT {
     \friend hugo.leclerc@lmt.ens-cachan.fr
 */
 
-//     7 ---14----6
-//    /|         /|
-//  15 |       13 |
-//  /  19      /  18
-// 4---|-12---5   |
-// |   |      |   |
-// |   3---10-|-- 2
-// 16 /      17  /
-// |11        | 9
-// |/         |/
-// 0-----8----1
-
-
-// --------------------------------------------------------------------------------------------------------
 struct Hexa_20 {
     static const unsigned nb_var_inter = 3;
     static const unsigned nb_nodes = 20;
@@ -107,6 +94,13 @@ void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numb
     het.add_element(e,ch,NodalElement(),e.node(19));
 }
 
+// --------------------------------------------------------------------------------------------------------
+// template<class TN,class TNG,class TD,unsigned NET,class Pvec,class T>
+// void update_circum_center(const Element<Hexa_20,TN,TNG,TD,NET> &e,Pvec &C,T &R) {
+//     C = getCenterOfCircumSphere( e.node(0)->pos, e.node(1)->pos, e.node(2)->pos, e.node(3)->pos, e.node(4)->pos, e.node(5)->pos, e.node(6)->pos, e.node(7)->pos );
+//     R = length( e.node(0)->pos - C );
+// }
+
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Hexa_20,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
     T edge_length_0 = (m.get_children_of( e, Number<1>() )[ 0 ])->measure_virtual();
@@ -128,35 +122,12 @@ typename TNG::T V = 0.25*((0.045875854768068491385*elem.pos(4)[0]-(0.04587585476
 return abs(V);
 }
 
-
-// --------------------------------------------------------------------------------------------------------
-// template<class TN,class TNG,class TD,unsigned NET,class Pvec,class T>
-// void update_circum_center(const Element<Hexa_20,TN,TNG,TD,NET> &e,Pvec &C,T &R) {
-//     C = getCenterOfCircumSphere( e.node(0)->pos, e.node(1)->pos, e.node(2)->pos, e.node(3)->pos, e.node(4)->pos, e.node(5)->pos, e.node(6)->pos, e.node(7)->pos );
-//     R = length( e.node(0)->pos - C );
-// }
-
-template<class TV,class T>
-bool var_inter_is_inside( const Hexa_20 &, const TV &var_inter, T tol = 0 ) {
-    return heaviside( var_inter[0] + tol ) * heaviside( 1 - var_inter[0] + tol ) * 
-           heaviside( var_inter[1] + tol ) * heaviside( 1 - var_inter[1] + tol ) *
-           heaviside( var_inter[2] + tol ) * heaviside( 1 - var_inter[2] + tol );
-}
-
-/// >= 0 -> inside, < 0 -> outside
-template<class T,class TV>
-T var_inter_insideness( const Hexa_20 &e, const TV &var_inter ) {
-    return min( min( min( min( var_inter[0], var_inter[1] ), 1 - var_inter[0] ), 1 - var_inter[1] ), 1 - var_inter[2] );
-}
-
-inline unsigned vtk_num( StructForType<Hexa_20> ) { return 25; }
-
 template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<Hexa_20,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-std::cout << "Surdiscretisation non implementee pour les Hexa_20" << std::endl;
-return false;
-};
-
+bool divide_element(Element<Hexa_20,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for Hexa_20" << std::endl;
+    assert(0);
+    return false;
+}
 //template<class TN,class TNG,class TD,unsigned NET,class TM>
 //bool divide_element(Element<Hexa_20,TN,TNG,TD,NET> &e,TM &m,TNG **nodes) {
 //    const unsigned valid_tetra[] = {
@@ -279,7 +250,12 @@ return false;
 //    return false;
 //   
 //}
-//
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<Hexa_20,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
+}
+
 /*! new_nodes are independant nodes created to make a fine grid for integration. Used in TvrcFormulation
      \relates Hexa_20
     \todo actually, we divide element n times, with n = max(edge length) / max_dist. For flat elements, it's far from optimallity
@@ -314,6 +290,21 @@ return false;
 //    }
 //    return true;
 //}
+
+template<class TV,class T>
+bool var_inter_is_inside( const Hexa_20 &, const TV &var_inter, T tol = 0 ) {
+    return heaviside( var_inter[0] + tol ) * heaviside( 1 - var_inter[0] + tol ) *
+           heaviside( var_inter[1] + tol ) * heaviside( 1 - var_inter[1] + tol ) *
+           heaviside( var_inter[2] + tol ) * heaviside( 1 - var_inter[2] + tol );
+}
+
+/// >= 0 -> inside, < 0 -> outside
+template<class T,class TV>
+T var_inter_insideness( const Hexa_20 &e, const TV &var_inter ) {
+    return min( min( min( min( var_inter[0], var_inter[1] ), 1 - var_inter[0] ), 1 - var_inter[1] ), 1 - var_inter[2] );
+}
+
+inline unsigned vtk_num( StructForType<Hexa_20> ) { return 25; }
 
 };
 

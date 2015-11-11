@@ -7,23 +7,22 @@
 
 namespace LMT {
 
+// --------------------------------------------------------------------------------------------------------
 /*!
+    Triangle à 3 noeuds
     \verbatim
-                            2
-                            |\
-                            | \
-                            |  \
-                            |   \
-                            0----1
-
+            2
+            |\
+            | \
+            |  \
+            |   \
+            0----1
     \relates Mesh
     \keyword Maillage/Elément
     \author Hugo LECLERC
     \friend hugo.leclerc@lmt.ens-cachan.fr
     \friend samir.amrouche@lmt.ens-cachan.fr
 */
-
-// --------------------------------------------------------------------------------------------------------
 struct Triangle {
     static const unsigned nb_var_inter = 2;
     static const unsigned nb_nodes = 3;
@@ -106,13 +105,18 @@ void intersection(const Element<Triangle,TN,TNG,TD,NET> &e,Pvec P1,Pvec P2,T &nu
         dist_ext = min(min(fabs(dist0),fabs(dist1)),fabs(dist2));
 }
 
+template<class TN,class TNG,class TD,unsigned NET>
+typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle,TN,TNG,TD,NET> &e ) {
+    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, N = normalized(P1-P0);
+    P2 -= dot(P2-P0,N)*N;
+    return abs( 0.5 * length( P1-P0 ) * length( P2-P0 ) );
+}
 
 template<class PV>
 typename PV::T sample_normal( Triangle, const PV &pos ) {
     typename PV::T res = vect_prod( Pvec( pos[ 1 ] - pos[ 0 ] ), Pvec( pos[ 2 ] - pos[ 0 ] ) );
     return res / length( res );
 }
-
 
 template<class TN,class TNG,class TD,unsigned NET>
 typename TNG::Pvec sample_normal(const Element<Triangle,TN,TNG,TD,NET> &e) {
@@ -240,6 +244,7 @@ bool divide_element(Element<Triangle,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
 
     return ( nnodes[0] || nnodes[1] || nnodes[2] );
 }
+
 template<class TN,class TNG,class TD,unsigned NET,class TM>
 bool divide_element_using_elem_children(Element<Triangle,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
     return divide_element(e,m,nnodes);
@@ -271,14 +276,6 @@ bool subdivision_element(const Element<Triangle,TN,TNG,TD,NET> &e,Vec<TNG> &new_
     }
     return true;
 }
-
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Triangle,TN,TNG,TD,NET> &e ) {
-    typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, N = normalized(P1-P0);
-    P2 -= dot(P2-P0,N)*N;
-    return abs( 0.5 * length( P1-P0 ) * length( P2-P0 ) );
-}
-
 
 template<class TV,class T>
 bool var_inter_is_inside( const Triangle &e, const TV &var_inter, T tol = 0 ) {

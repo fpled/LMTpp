@@ -84,6 +84,7 @@ void append_skin_elements(Element<Quad_36,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numb
     het.add_element(e,ch,NodalElement(),e.node(19));
 }
 
+// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET,class TM,class T>
 void update_edge_ratio(const Element<Quad_36,TN,TNG,TD,NET> &e,TM &m,T &edge_ratio) {
     T edge_length_0 = (m.get_children_of( e, Number<1>() )[ 0 ])->measure_virtual();
@@ -93,7 +94,6 @@ void update_edge_ratio(const Element<Quad_36,TN,TNG,TD,NET> &e,TM &m,T &edge_rat
     edge_ratio = min( edge_length_0, edge_length_1, edge_length_2, edge_length_3 ) / max( edge_length_0, edge_length_1, edge_length_2, edge_length_3 );
 }
 
-// --------------------------------------------------------------------------------------------------------
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Quad_36,TN,TNG,TD,NET> &e ) {
     typedef typename TNG::T P_T_pos;
