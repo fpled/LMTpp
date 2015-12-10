@@ -1,5 +1,5 @@
 //
-// C++ Interface: hexa
+// C++ Interface: Hexa
 //
 // Description:
 //
@@ -12,7 +12,7 @@
 #ifndef LMTHEXA_H
 #define LMTHEXA_H
 
-#include "quad.h"
+#include "Quad.h"
 
 namespace LMT {
 

@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../../../include/containers/vec.h"
-#include "../../../include/mesh/pyramid.h"
+#include "../../../include/mesh/Pyramid.h"
 
 using namespace LMT;
 

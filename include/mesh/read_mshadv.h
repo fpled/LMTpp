@@ -1,8 +1,8 @@
-#include "triangle.h"
-#include "triangle_6.h"
-#include "tetra.h"
-#include "hexa.h"
-#include "wedge.h"
+#include "Triangle.h"
+#include "Triangle_6.h"
+#include "Tetra.h"
+#include "Hexa.h"
+#include "Wedge.h"
 #include <stdexcept>
 #include <map>
 using namespace std;

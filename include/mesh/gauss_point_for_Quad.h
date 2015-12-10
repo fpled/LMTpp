@@ -1,8 +1,8 @@
 #ifndef LMT_gauss_point_for_Quad_H
 #define LMT_gauss_point_for_Quad_H
 
-#include "quad.h"
-#include "bar.h"
+#include "Quad.h"
+#include "Bar.h"
 #include "gauss_point_for_Bar.h"
 
 namespace LMT {

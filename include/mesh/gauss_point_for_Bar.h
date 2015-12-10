@@ -1,7 +1,7 @@
 #ifndef LMT_gauss_point_for_simplex_Bar_H
 #define LMT_gauss_point_for_simplex_Bar_H
 
-#include "bar.h"
+#include "Bar.h"
 
 namespace LMT {
 

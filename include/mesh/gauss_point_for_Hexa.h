@@ -1,8 +1,8 @@
 #ifndef LMT_gauss_point_for_simplex_Hexa_H
 #define LMT_gauss_point_for_simplex_Hexa_H
 
-#include "hexa.h"
-#include "bar.h"
+#include "Hexa.h"
+#include "Bar.h"
 #include "gauss_point_for_Bar.h"
 
 namespace LMT {

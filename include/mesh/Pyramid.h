@@ -1,5 +1,5 @@
 //
-// C++ Interface: pyramid
+// C++ Interface: Pyramid
 //
 // Description: 
 //
@@ -12,9 +12,9 @@
 #ifndef LMTPYRAMID_H
 #define LMTPYRAMID_H
 
-#include "quad.h"
-#include "triangle.h"
-#include "tetra.h"
+#include "Quad.h"
+#include "Triangle.h"
+#include "Tetra.h"
 
 namespace LMT {
 

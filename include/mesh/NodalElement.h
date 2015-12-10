@@ -1,5 +1,5 @@
 //
-// C++ Interface: nodalelement
+// C++ Interface: NodalElement
 //
 // Description: 
 //

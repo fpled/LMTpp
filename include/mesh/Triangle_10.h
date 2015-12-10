@@ -1,5 +1,5 @@
 //
-// C++ Interface: triangle_10
+// C++ Interface: Triangle_10
 //
 // Description:
 //
@@ -14,7 +14,7 @@
 
 #include "../containers/staticassert.h"
 #include "../containers/basicops.h"
-#include "bar_4.h"
+#include "Bar_4.h"
 
 namespace LMT {
 

@@ -1,5 +1,5 @@
 //
-// C++ Interface: tetra
+// C++ Interface: Tetra
 //
 // Description: 
 //
@@ -12,7 +12,7 @@
 #ifndef LMTTETRA_H
 #define LMTTETRA_H
 
-#include "triangle.h"
+#include "Triangle.h"
 
 #ifdef METIL_COMP_DIRECTIVE
 #pragma src_file refine_tetra_face.cpp

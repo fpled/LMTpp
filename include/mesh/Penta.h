@@ -1,5 +1,5 @@
 //
-// C++ Interface: penta
+// C++ Interface: Penta
 //
 // Description:
 //
@@ -12,7 +12,7 @@
 #ifndef LMTPENTA_H
 #define LMTPENTA_H
 
-#include "bar.h"
+#include "Bar.h"
 
 namespace LMT {
 

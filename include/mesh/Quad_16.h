@@ -1,5 +1,5 @@
 //
-// C++ Interface: quad_16
+// C++ Interface: Quad_16
 //
 // Description:
 //
@@ -13,7 +13,7 @@
 #define LMTQUAD_16_H
 
 #include "../containers/basicops.h"
-#include "bar_4.h"
+#include "Bar_4.h"
 
 namespace LMT {
 

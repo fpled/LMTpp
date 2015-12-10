@@ -1,7 +1,7 @@
 #ifndef LMT_gauss_point_for_simplex_Tetra_H
 #define LMT_gauss_point_for_simplex_Tetra_H
 
-#include "tetra.h"
+#include "Tetra.h"
 
 namespace LMT {
 

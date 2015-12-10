@@ -1,5 +1,5 @@
 //
-// C++ Interface: wedge
+// C++ Interface: Wedge
 //
 // Description: 
 //
@@ -12,8 +12,8 @@
 #ifndef LMTWEDGE_H
 #define LMTWEDGE_H
 
-#include "quad.h"
-#include "tetra.h"
+#include "Quad.h"
+#include "Tetra.h"
 
 namespace LMT {
 

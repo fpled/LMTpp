@@ -9,14 +9,14 @@
 #include <string.h> /// pour strcmp
 
 #include "write_mesh_vtk.h"
-#include "triangle.h"
-#include "triangle_6.h"
-#include "quad.h"
-#include "quad_8.h"
-#include "tetra.h"
-#include "hexa.h"
-#include "pyramid.h"
-#include "wedge.h"
+#include "Triangle.h"
+#include "Triangle_6.h"
+#include "Quad.h"
+#include "Quad_8.h"
+#include "Tetra.h"
+#include "Hexa.h"
+#include "Pyramid.h"
+#include "Wedge.h"
 #include "../io/xmlnode.h"
 
 namespace LMT {

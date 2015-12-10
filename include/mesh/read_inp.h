@@ -12,8 +12,8 @@
 #ifndef LMT_READ_INP_HEADER
 #define LMT_READ_INP_HEADER
 
-#include "tetra.h"
-#include "tetra_10.h"
+#include "Tetra.h"
+#include "Tetra_10.h"
 #include "hexa.h"
 #include "wedge.h"
 #include "../containers/indexof.h"

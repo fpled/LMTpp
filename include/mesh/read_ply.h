@@ -22,7 +22,7 @@
 #include <map>
 #include <sstream>
 
-#include "triangle.h"
+#include "Triangle.h"
 //#include "element_Triangle.h"
 
 /// put gid mesh in m

@@ -10,9 +10,9 @@
 #ifndef LMT_READ_BDF_HEADER
 #define LMT_READ_BDF_HEADER
 
-#include "bar.h"
-#include "triangle.h"
-#include "tetra.h"
+#include "Bar.h"
+#include "Triangle.h"
+#include "Tetra.h"
 #include "hexa.h"
 #include "wedge.h"
 

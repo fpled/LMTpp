@@ -3,8 +3,8 @@
 
 #include <map>
 #include "make_rect.h"
-#include "triangle.h"
-#include "quad.h"
+#include "Triangle.h"
+#include "Quad.h"
 
 namespace LMT {
 

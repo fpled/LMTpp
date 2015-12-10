@@ -12,16 +12,16 @@
 #ifndef LMT_READ_GID_HEADER
 #define LMT_READ_GID_HEADER
 
-#include "bar.h"
-#include "bar_3.h"
-#include "triangle.h"
-#include "triangle_6.h"
-#include "quad.h"
-#include "quad_9.h"
-#include "tetra.h"
-#include "tetra_10.h"
-#include "hexa.h"
-#include "wedge.h"
+#include "Bar.h"
+#include "Bar_3.h"
+#include "Triangle.h"
+#include "Triangle_6.h"
+#include "Quad.h"
+#include "Quad_9.h"
+#include "Tetra.h"
+#include "Tetra_10.h"
+#include "Hexa.h"
+#include "Wedge.h"
 
 #include <fstream>
 #include <map>

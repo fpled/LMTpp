@@ -1,5 +1,5 @@
 //
-// C++ Interface: tetra_10
+// C++ Interface: Tetra_10
 //
 // Description:
 //
@@ -12,7 +12,7 @@
 #ifndef LMTTETRA_10_H
 #define LMTTETRA_10_H
 
-#include "triangle_6.h"
+#include "Triangle_6.h"
 
 namespace LMT {
 

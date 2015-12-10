@@ -13,7 +13,7 @@
 #define LMT_READ_STL_HEADER
 
 #include "mesh.h"
-#include "triangle.h"
+#include "Triangle.h"
 
 #include <fstream>
 #include <string.h>

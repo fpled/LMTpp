@@ -1,5 +1,5 @@
 //
-// C++ Interface: bar_7
+// C++ Interface: Bar_7
 //
 // Description: 
 //
@@ -13,7 +13,7 @@
 #define LMTBAR_7_H
 
 #include "../containers/staticassert.h"
-#include "nodalelement.h"
+#include "NodalElement.h"
 
 namespace LMT {
 

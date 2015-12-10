@@ -1,7 +1,7 @@
 #ifndef LMT_gauss_point_for_simplex_NodalElement_H
 #define LMT_gauss_point_for_simplex_NodalElement_H
 
-#include "nodalelement.h"
+#include "NodalElement.h"
 
 namespace LMT {
 

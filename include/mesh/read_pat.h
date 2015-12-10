@@ -15,9 +15,9 @@
 #include <map>
 #include <sstream>
 
-#include "triangle.h"
-#include "tetra.h"
-#include "hexa.h"
+#include "Triangle.h"
+#include "Tetra.h"
+#include "Hexa.h"
 //#include "mesh/extract_scalar.h"
 
 /// read elements

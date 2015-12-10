@@ -14,17 +14,17 @@
 
 #include "mesh.h"
 #include "element.h"
-#include "bar.h"
-#include "bar_3.h"
-#include "triangle.h"
-#include "triangle_6.h"
-#include "quad.h"
-#include "quad_8.h"
-#include "quad_9.h"
-#include "tetra.h"
-#include "tetra_10.h"
-#include "hexa.h"
-#include "hexa_20.h"
+#include "Bar.h"
+#include "Bar_3.h"
+#include "Triangle.h"
+#include "Triangle_6.h"
+#include "Quad.h"
+#include "Quad_8.h"
+#include "Quad_9.h"
+#include "Tetra.h"
+#include "Tetra_10.h"
+#include "Hexa.h"
+#include "Hexa_20.h"
 
 namespace LMT {
 

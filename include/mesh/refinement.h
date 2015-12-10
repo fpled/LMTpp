@@ -13,10 +13,10 @@
 #define LMT_refinement_HEADER
 
 #include "mesh.h"
-#include "bar.h"
-#include "triangle.h"
-#include "quad.h"
-#include "tetra.h"
+#include "Bar.h"
+#include "Triangle.h"
+#include "Quad.h"
+#include "Tetra.h"
 #include "../util/rectilinear_iterator.h"
 
 #include <list>

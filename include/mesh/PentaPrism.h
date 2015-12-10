@@ -1,5 +1,5 @@
 //
-// C++ Interface: pentaprism
+// C++ Interface: PentaPrism
 //
 // Description:
 //
@@ -12,8 +12,8 @@
 #ifndef LMTPENTAPRISM_H
 #define LMTPENTAPRISM_H
 
-#include "quad.h"
-#include "penta.h"
+#include "Quad.h"
+#include "Penta.h"
 
 namespace LMT {
 

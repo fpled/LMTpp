@@ -1,5 +1,5 @@
 //
-// C++ Interface: quad_42
+// C++ Interface: Quad_42
 //
 // Description: 
 //
@@ -14,8 +14,8 @@
 
 #include "../containers/staticassert.h"
 #include "../containers/basicops.h"
-#include "bar.h"
-#include "bar_4.h"
+#include "Bar.h"
+#include "Bar_4.h"
 
 namespace LMT {
 

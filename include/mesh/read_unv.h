@@ -15,11 +15,11 @@
 #include <map>
 #include <sstream>
 
-#include "bar.h"
-#include "triangle.h"
-#include "quad.h"
-#include "tetra.h"
-#include "hexa.h"
+#include "Bar.h"
+#include "Triangle.h"
+#include "Quad.h"
+#include "Tetra.h"
+#include "Hexa.h"
 
 /// read nodes
 template<class TM>
