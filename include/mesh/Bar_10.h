@@ -1,5 +1,5 @@
 //
-// C++ Interface:Bar_10
+// C++ Interface: Bar_10
 //
 // Description: 
 //
