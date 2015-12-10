@@ -13,8 +13,8 @@
 #include "Bar.h"
 #include "Triangle.h"
 #include "Tetra.h"
-#include "hexa.h"
-#include "wedge.h"
+#include "Hexa.h"
+#include "Wedge.h"
 
 #include <fstream>
 #include <map>

@@ -14,8 +14,8 @@
 
 #include "Tetra.h"
 #include "Tetra_10.h"
-#include "hexa.h"
-#include "wedge.h"
+#include "Hexa.h"
+#include "Wedge.h"
 #include "../containers/indexof.h"
 
 #include <fstream>
