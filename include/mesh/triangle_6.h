@@ -1,5 +1,16 @@
-#ifndef LMTTRIANGLE6_H
-#define LMTTRIANGLE6_H
+//
+// C++ Interface: triangle_6
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTTRIANGLE_6_H
+#define LMTTRIANGLE_6_H
 
 #include "../containers/staticassert.h"
 #include "../containers/basicops.h"
@@ -183,4 +194,4 @@ inline unsigned vtk_num( StructForType<Triangle_6> ) { return 22; }
 
 #include "element_Triangle_6.h"
 
-#endif // LMTTRIANGLE6_H
+#endif // LMTTRIANGLE_6_H

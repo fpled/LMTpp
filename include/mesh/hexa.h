@@ -1,6 +1,16 @@
-
-#ifndef LMTHexa_H
-#define LMTHexa_H
+//
+// C++ Interface: hexa
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTHEXA_H
+#define LMTHEXA_H
 
 #include "quad.h"
 
@@ -391,4 +401,4 @@ inline unsigned vtk_num( StructForType<Hexa> ) { return 12; }
 
 #include "element_Hexa.h"
 
-#endif // LMTHexa_H
+#endif // LMTHEXA_H

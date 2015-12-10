@@ -1,6 +1,16 @@
-
-#ifndef LMTHexa_20_H
-#define LMTHexa_20_H
+//
+// C++ Interface: hexa_20
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTHEXA_20_H
+#define LMTHEXA_20_H
 
 #include "quad_8.h"
 
@@ -310,4 +320,4 @@ inline unsigned vtk_num( StructForType<Hexa_20> ) { return 25; }
 
 #include "element_Hexa_20.h"
 
-#endif // LMTHexa_20_H
+#endif // LMTHEXA_20_H

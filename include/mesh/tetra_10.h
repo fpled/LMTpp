@@ -1,3 +1,14 @@
+//
+// C++ Interface: tetra_10
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef LMTTETRA_10_H
 #define LMTTETRA_10_H
 

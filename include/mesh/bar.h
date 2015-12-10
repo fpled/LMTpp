@@ -1,5 +1,5 @@
 //
-// C++ Interface: node
+// C++ Interface: bar
 //
 // Description: 
 //

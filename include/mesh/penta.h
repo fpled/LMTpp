@@ -1,10 +1,16 @@
+//
+// C++ Interface: penta
+//
+// Description:
+//
+//
 // Author: Alain CAIGNOT <caignot@lmt.ens-cachan.fr>, (C) 2005
 //
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef LMT_penta_HEADER
-#define LMT_penta_HEADER
+#ifndef LMTPENTA_H
+#define LMTPENTA_H
 
 #include "bar.h"
 
@@ -93,4 +99,6 @@ bool divide_element_using_elem_children(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,
 
 };
 
-#endif // LMT_penta_HEADER
+//#include "element_Penta.h"
+
+#endif // LMTPENTA_H

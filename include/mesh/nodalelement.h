@@ -1,5 +1,5 @@
 //
-// C++ Interface: node
+// C++ Interface: nodalelement
 //
 // Description: 
 //
@@ -37,5 +37,7 @@ void subdivision_element(const Element<NodalElement,TN,TNG,TD,NET> &e,Vec<TNG> &
 inline unsigned vtk_num( StructForType<NodalElement> ) { return 1; }
 
 };
+
+#include "element_NodalElement.h"
 
 #endif // LMTNODALELEMENT_H

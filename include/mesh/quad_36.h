@@ -1,3 +1,14 @@
+//
+// C++ Interface: quad_36
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef LMTQUAD_36_H
 #define LMTQUAD_36_H
 
@@ -204,5 +215,7 @@ bool is_inside_linear( const Quad_36 &elem, const PosNodes &pos_nodes, const Pve
 }
 
 };
+
+//#include "element_Quad_36.h"
 
 #endif // LMTQUAD_36_H

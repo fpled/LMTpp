@@ -1,3 +1,14 @@
+//
+// C++ Interface: quad_9
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef LMTQUAD_9_H
 #define LMTQUAD_9_H
 

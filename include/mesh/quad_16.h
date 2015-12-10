@@ -1,3 +1,14 @@
+//
+// C++ Interface: quad_16
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef LMTQUAD_16_H
 #define LMTQUAD_16_H
 
@@ -149,5 +160,7 @@ bool var_inter_is_inside( const Quad_16 &, const TV &var_inter, T tol = 0 ) {
 }
 
 };
+
+//#include "element_Quad_16.h"
 
 #endif // LMTQUAD_16_H

@@ -1,5 +1,16 @@
-#ifndef LMT_Wedge_15_HEADER
-#define LMT_Wedge_15_HEADER
+//
+// C++ Interface: wedge_15
+//
+// Description:
+//
+//
+// Author: Alain CAIGNOT <caignot@lmt.ens-cachan.fr>, (C) 2005
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTWEDGE_15_H
+#define LMTWEDGE_15_H
 
 #include "quad_8.h"
 #include "triangle_6.h"
@@ -130,5 +141,4 @@ inline unsigned vtk_num( StructForType<Wedge_15> ) { return 26; }
 
 #include "element_Wedge_15.h"
 
-#endif // LMT_wedge_HEADER
-
+#endif // LMTWEDGE_15_H

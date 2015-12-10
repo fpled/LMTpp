@@ -1,3 +1,14 @@
+//
+// C++ Interface: quad
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
 #ifndef LMTQUAD_H
 #define LMTQUAD_H
 

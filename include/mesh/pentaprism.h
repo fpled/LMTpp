@@ -1,6 +1,16 @@
-
-#ifndef LMTPentaPrism_H
-#define LMTPentaPrism_H
+//
+// C++ Interface: pentaprism
+//
+// Description:
+//
+//
+// Author: Alain CAIGNOT <caignot@lmt.ens-cachan.fr>, (C) 2005
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTPENTAPRISM_H
+#define LMTPENTAPRISM_H
 
 #include "quad.h"
 #include "penta.h"
@@ -99,4 +109,4 @@ typename TypePromote<Abs,typename TNG::T>::T measure( const Element<PentaPrism,T
 
 //#include "element_PentaPrism.h"
 
-#endif //LMTPentaPrism_H
+#endif // LMTPENTAPRISM_H

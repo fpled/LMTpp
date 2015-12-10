@@ -1,5 +1,5 @@
 //
-// C++ Interface: node
+// C++ Interface: bar_10
 //
 // Description: 
 //
@@ -9,10 +9,10 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef LMTBAR10_H
-#define LMTBAR10_H
+#ifndef LMTBAR_10_H
+#define LMTBAR_10_H
 
-#include "containers/staticassert.h"
+#include "../containers/staticassert.h"
 #include "nodalelement.h"
 
 namespace LMT {
@@ -68,4 +68,6 @@ typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar_10,TN,TN
 
 };
 
-#endif
+//#include "element_Bar_10.h"
+
+#endif // LMTBAR_10_H

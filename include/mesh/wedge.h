@@ -9,8 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef LMT_wedge_HEADER
-#define LMT_wedge_HEADER
+#ifndef LMTWEDGE_H
+#define LMTWEDGE_H
 
 #include "quad.h"
 #include "tetra.h"
@@ -166,5 +166,4 @@ inline unsigned vtk_num( StructForType<Wedge> ) { return 13; }
 
 #include "element_Wedge.h"
 
-#endif // LMT_wedge_HEADER
-
+#endif // LMTWEDGE_H

@@ -1,5 +1,16 @@
-#ifndef LMTTRIANGLE10_H
-#define LMTTRIANGLE10_H
+//
+// C++ Interface: triangle_10
+//
+// Description:
+//
+//
+// Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef LMTTRIANGLE_10_H
+#define LMTTRIANGLE_10_H
 
 #include "../containers/staticassert.h"
 #include "../containers/basicops.h"
@@ -167,6 +178,6 @@ bool is_inside_linear( const Triangle_10 &elem, const PosNodes &pos_nodes, const
 
 };
 
-#include "element_Triangle_10.h"
+//#include "element_Triangle_10.h"
 
-#endif
+#endif // LMTTRIANGLE_10_H

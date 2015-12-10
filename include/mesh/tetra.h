@@ -1,5 +1,5 @@
 //
-// C++ Interface: node
+// C++ Interface: tetra
 //
 // Description: 
 //

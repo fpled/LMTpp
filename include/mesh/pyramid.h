@@ -9,8 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef LMT_pyramid_HEADER
-#define LMT_pyramid_HEADER
+#ifndef LMTPYRAMID_H
+#define LMTPYRAMID_H
 
 #include "quad.h"
 #include "triangle.h"
@@ -149,4 +149,6 @@ inline unsigned vtk_num( StructForType<Pyramid> ) { return 14; }
 
 };
 
-#endif // LMT_pyramid_HEADER
+//#include "element_Pyramid.h"
+
+#endif // LMTPYRAMID_H

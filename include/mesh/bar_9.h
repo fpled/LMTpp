@@ -1,5 +1,5 @@
 //
-// C++ Interface: node
+// C++ Interface: bar_9
 //
 // Description: 
 //
@@ -9,8 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef LMTBAR9_H
-#define LMTBAR9_H
+#ifndef LMTBAR_9_H
+#define LMTBAR_9_H
 
 #include "../containers/staticassert.h"
 #include "nodalelement.h"
@@ -65,4 +65,6 @@ inline unsigned vtk_num( StructForType<Bar_9> ) { return 4; }
 
 };
 
-#endif
+//#include "element_Bar_9.h"
+
+#endif // LMTBAR_9_H
