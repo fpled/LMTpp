@@ -29,12 +29,12 @@ void replace_char( std::string& str, char c, char subs) {
 /// retourne le nombre de caractères c à partir de la position start
 unsigned compter_caractere( const std::string& s, char c, int start = 0 ) {
 
-    unsigned l,co,p ;
+    unsigned l,co,p;
 
-    l = s.size() ;
-    co = 0 ;
-    for( p = start ; p < l; p++ )
-        if (s[ p ] == c ) co++ ;
+    l = s.size();
+    co = 0;
+    for( p = start; p < l; p++ )
+        if (s[ p ] == c ) co++;
     return co;
 }
 
@@ -195,7 +195,7 @@ struct ReaderINP {
                 v[ i ] = pos[ i ];
         }
         
-        Vec<double> pos; 
+        Vec<double> pos;
     };
     
     typedef std::map<unsigned, NodeInp> Map_num_node;
@@ -226,11 +226,11 @@ struct ReaderINP {
                 
                 it = match_inode_inp_lmtpp.find( list_node[ j ] );
                 if ( it != match_inode_inp_lmtpp.end() ) {
-                    vnlocal[ j ] = &mesh.node_list[ it->second ];    
+                    vnlocal[ j ] = &mesh.node_list[ it->second ];
                 } else {
                     mapNode[ list_node[ j ] ].copy_to( v );
                     vnlocal[ j ] = mesh.add_node( v );
-                    match_inode_inp_lmtpp[ list_node[ j ] ] = match_inode_inp_lmtpp.size() - 1; 
+                    match_inode_inp_lmtpp[ list_node[ j ] ] = match_inode_inp_lmtpp.size() - 1;
                 }
             }
 
@@ -253,8 +253,8 @@ struct ReaderINP {
             if ( name == "Bar")
                 return mesh.add_element( Bar(),DefaultBehavior(), vnlocal.ptr() );
             if ( name == "NodalElement")
-                return mesh.add_element( NodalElement(),DefaultBehavior(), vnlocal.ptr() ); 
-            std::cerr << "WARNING ReaderINP : the element " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl; 
+                return mesh.add_element( NodalElement(),DefaultBehavior(), vnlocal.ptr() );
+            std::cerr << "WARNING ReaderINP : the element " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl;
             return NULL;
         }
         
@@ -307,11 +307,11 @@ struct ReaderINP {
                         index[ 0 ] = list_node[ 0 ];
                         index[ 1 ] = list_node[ 3 ];
                         index[ 2 ] = list_node[ 7 ];
-                        index[ 3 ] = list_node[ 4 ]; 
+                        index[ 3 ] = list_node[ 4 ];
                         return;
                     default : 
                         std::cerr << "WARNING ReaderINP : bad id face of Hexa" << std::endl;
-                        return;                        
+                        return;
                 }
             }
             std::cerr << "WARNING ReaderINP : the surface element of type " << name << " is not unknown by MatchElement_INP_LMTpp. TODO" << std::endl;
@@ -333,13 +333,13 @@ struct ReaderINP {
                     
                     vnlocal.resize( 4 );
                     for( unsigned j = 0; j < index.size(); ++j ) {                    
-                        it = match_inode_inp_lmtpp.find( index[ j ] );  /// le noeud est-il déjà dans le "mesh" ?
+                        it = match_inode_inp_lmtpp.find( index[ j ] ); /// le noeud est-il déjà dans le "mesh" ?
                         if ( it != match_inode_inp_lmtpp.end() ) {
-                            vnlocal[ j ] = &mesh.node_list[ it->second ];    
+                            vnlocal[ j ] = &mesh.node_list[ it->second ];
                         } else {
                             mapNode[ index[ j ] ].copy_to( v );
                             vnlocal[ j ] = mesh.add_node( v );
-                            match_inode_inp_lmtpp[ index[ j ] ] = match_inode_inp_lmtpp.size() - 1; 
+                            match_inode_inp_lmtpp[ index[ j ] ] = match_inode_inp_lmtpp.size() - 1;
                         }
                     }
 //                     for( unsigned i = 0; i < index.size(); ++i ) {
@@ -351,7 +351,7 @@ struct ReaderINP {
                     return;
                 }
             }
-            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl; 
+            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl;
         }
         
         std::string name; /// nom LMT++ de l'élément ( e.g. Triangle, Hexa )
@@ -395,13 +395,13 @@ struct ReaderINP {
             
             unsigned operator*() const {
                 if ( p->isGenerate )
-                    return p->data[ 3 * i ] + h * p->data[ 3 * i + 2 ];  
+                    return p->data[ 3 * i ] + h * p->data[ 3 * i + 2 ];
                 else
-                    return p->data[ i ];            
+                    return p->data[ i ];
             }
             
             bool operator!=( const iterator &it ) const {
-                return ( it.p != p ) or ( it.i != i ) or ( it.h != h );  
+                return ( it.p != p ) or ( it.i != i ) or ( it.h != h );
             }
             
             void display() const {
@@ -412,7 +412,7 @@ struct ReaderINP {
         iterator begin() const { 
             iterator iter( this );
             iter.i = 0;
-            iter.h = 0; 
+            iter.h = 0;
             return iter;
         }
     
@@ -432,7 +432,7 @@ struct ReaderINP {
                 for( unsigned i = 0; i < data.size(); i += 3 ) {
                     sum += ( 1 + data[ i + 1 ] - data[ i ]) / data[ i + 2 ];
                 }
-                return sum ; 
+                return sum;
             } else {
                 return data.size();
             }
@@ -443,9 +443,9 @@ struct ReaderINP {
     };
 
     struct NodeSet : public ClusterList<> {
-        NodeSet() { this->isGenerate = false; withCoordinate = true;}
+        NodeSet() { this->isGenerate = false; withCoordinate = true; }
         NodeSet( const std::string& str ) {
-            if ((str.find("GENERATE") != std::string::npos) or (str.find("generate") != std::string::npos))
+            if ((str.find( "GENERATE" ) != std::string::npos) or (str.find( "generate" ) != std::string::npos))
                 this->isGenerate = true;
             else
                 this->isGenerate = false;
@@ -487,8 +487,7 @@ struct ReaderINP {
         }
         
         void display() const {
-            std::cout << " isGenerate = " << this->isGenerate << std::endl;
-            std::cout << " withCoordinate = " << withCoordinate << std::endl;
+            std::cout << " Number of nodes = " << this->nb_elements() << std::endl;
             typename NodeSet::iterator it;
             for( it = this->begin(); it != this->end(); ++it )
                 std::cout << *it << " ";
@@ -539,23 +538,23 @@ struct ReaderINP {
 
             replace_char( str, ',', ' ' );
             normalize_end_line( str );
-            std::istringstream s( str );
+            std::istringstream iss( str );
 
             if ( type.size() ) {
-                s >> number;
+                iss >> number;
                 this->data.push_back( number );
                 //vn.resize( nb_nodes );
                 vninp.resize( nb_nodes );
                 for ( unsigned i = 0; i < nb_nodes; i++ ) {
-                    s >> number2;
+                    iss >> number2;
                     //vn[ i ] = map_num_node[ number2 ];
                     vninp[ i ] = number2;
                 }
                 map_num_element[ number ] = MatchElement_INP_LMTpp( type.c_str(), NULL, vninp );
                 map_num_element[ number ].ptrEA = map_num_element[ number ].add_element_at( m, match_inode_inp_lmtpp, mapNode );
             } else {
-                while( not( s.eof() ) ) {
-                    s >> number;
+                while( not( iss.eof() ) ) {
+                    iss >> number;
                     //PRINT( number );
                     this->data.push_back( number );
                 }
@@ -563,7 +562,7 @@ struct ReaderINP {
         }
         
         void display() const {
-            std::cout << " NOMBRE D'ELEMENTS = " << this->nb_elements() << std::endl;
+            std::cout << " Number of elements = " << this->nb_elements() << std::endl;
             typename ElementSet::iterator it;
             for( it = this->begin(); it != this->end(); ++it )
                 std::cout << *it << " ";
@@ -576,22 +575,20 @@ struct ReaderINP {
     
     struct Orientation {
         Orientation( const std::string& str ) {
-            std::string s;
-
-            s = value( str, "SYSTEM=", "system=" );
-            if ( ( s.size() == 0 ) or ( s == "R" ) )
-                rectangular = true;
-            else
-                rectangular = false;
+            syst = value( str, "SYSTEM=", "system=" );
+            if ( ( syst.size() == 0 ) or ( syst == "R" ) or ( syst == "r" ) )
+                syst = "rectangular";
+            if ( ( syst == "C" ) or ( syst == "c" ) )
+                syst = "cylindrical";
         }
         
         void read( std::string& str ) { 
             replace_char( str, ',', ' ' );
             std::istringstream iss( str );
-            if ( rectangular ) {
+            if ( syst == "rectangular" ) {
                 iss >> v1 >> v2;
             } else {
-                std::cerr << "WARNING ReaderINP : TODO Orientation::cylindrical " << std::endl;
+                std::cerr << "WARNING ReaderINP : TODO Orientation::" << syst << std::endl;
             }
         }
         
@@ -599,14 +596,29 @@ struct ReaderINP {
             ptrEA->set_field( std::string( "v1" ), v1, false );
             ptrEA->set_field( std::string( "v2" ), v2, false );
         }
+
+        virtual void display() const {
+            if ( syst == "rectangular" ) {
+                std::cout << " Orientation " << std::endl;
+                std::cout << " system = " << syst << std::endl;
+                std::cout << " v1     = " ;
+                for( unsigned i = 0; i < v1.size(); i++ )
+                    std::cout << v1[ i ] << " ";
+                std::cout << std::endl;
+                std::cout << " v2     = " ;
+                for( unsigned i = 0; i < v2.size(); i++ )
+                    std::cout << v2[ i ] << " ";
+                std::cout << std::endl;
+            } else {
+                std::cerr << "WARNING ReaderINP : TODO Orientation::" << syst << std::endl;
+            }
+        }
         
-        /// A revoir l'utilisation de Pvec ????
-        Pvec v1, v2;
-        bool rectangular; /// system = rectangular or cylindrical
+        std::string syst; /// syst = rectangular or cylindrical
+        Pvec v1, v2; /// a revoir l'utilisation de Pvec ????
     };
     
     struct Material_property {
-        virtual void display() const {}
         virtual void setData( std::string& str ) {
             std::cerr << "WARNING ReaderINP : hum... you use Material_property::setData() " << std::endl;
         }
@@ -614,14 +626,14 @@ struct ReaderINP {
             std::cerr << "WARNING ReaderINP : hum... you use Material_property::setProperty() " << std::endl;
         }
         virtual void setProperty( EA* pea , const double &conversion_factor ) const { 
-            if (type == "ISO") {
+            if (data.size() == 2) {
                 pea->set_field( std::string( "elastic_modulus_1" ), data[ 0 ], false );
                 pea->set_field( std::string( "elastic_modulus_2" ), data[ 0 ], false );
                 pea->set_field( std::string( "elastic_modulus_3" ), data[ 0 ], false );
                 pea->set_field( std::string( "poisson_ratio_12" ), data[ 1 ], false );
                 pea->set_field( std::string( "poisson_ratio_13" ), data[ 1 ], false );
                 pea->set_field( std::string( "poisson_ratio_23" ), data[ 1 ], false );
-                double t = data[ 0 ] / ( 2 * ( 1 + data[ 1 ] ) ); 
+                double t = data[ 0 ] / ( 2 * ( 1 + data[ 1 ] ) );
                 pea->set_field( std::string( "shear_modulus_12" ), t, false );
                 pea->set_field( std::string( "shear_modulus_13" ), t, false );
                 pea->set_field( std::string( "shear_modulus_23" ), t, false );
@@ -637,45 +649,42 @@ struct ReaderINP {
                 pea->set_field( std::string( "shear_modulus_23" ), data[ 8 ]/conversion_factor, false );
             }
         }
+        virtual void display() const {}
         
         std::string type;
         Vec<double> data;
     };
     
     struct Elastic_property : public Material_property {
-        Elastic_property( const std::string& s ) { type = s;}
-        
-        virtual void display() const {
-            std::cout << " type = " << type << std::endl;
-            std::cout << " data = " ;
-            for( unsigned i = 0; i < data.size() ;i++ )
-                std::cout << data[ i ] << " ";
-            std::cout << std::endl;
+        Elastic_property( const std::string& str ) {
+            type = value( str, "TYPE=", "type=" );
+            if ( ( type.size() == 0 ) or ( type == "ISO" ) or ( type == "iso" ) )
+                type = "iso";
         }
         
         virtual void setData( std::string& str ) {
             replace_char( str, ',', ' ' );
             std::istringstream iss( str );
-            if (type != "ISO") {
-                data.resize( 9 );
-                for( unsigned i = 0; i < 9; i++ ) 
+            if (type == "iso") {
+                data.resize( 2 );
+                for( unsigned i = 0; i < 2; i++ )
                     iss >> data[i];
             } else {
-                data.resize( 2 );
-                for( unsigned i = 0 ; i < 2 ; i++ ) 
+                data.resize( 9 );
+                for( unsigned i = 0; i < 9; i++ )
                     iss >> data[i];
             }
         }
         
         virtual void setProperty( EA* pea , const double &conversion_factor ) const { 
-            if (type == "ISO") {
+            if (type == "iso") {
                 pea->set_field( std::string( "elastic_modulus_1" ), data[ 0 ], false );
                 pea->set_field( std::string( "elastic_modulus_2" ), data[ 0 ], false );
                 pea->set_field( std::string( "elastic_modulus_3" ), data[ 0 ], false );
                 pea->set_field( std::string( "poisson_ratio_12" ), data[ 1 ], false );
                 pea->set_field( std::string( "poisson_ratio_13" ), data[ 1 ], false );
                 pea->set_field( std::string( "poisson_ratio_23" ), data[ 1 ], false );
-                double t = data[ 0 ] / ( 2 * ( 1 + data[ 1 ] ) ); 
+                double t = data[ 0 ] / ( 2 * ( 1 + data[ 1 ] ) );
                 pea->set_field( std::string( "shear_modulus_12" ), t, false );
                 pea->set_field( std::string( "shear_modulus_13" ), t, false );
                 pea->set_field( std::string( "shear_modulus_23" ), t, false );
@@ -692,6 +701,14 @@ struct ReaderINP {
             }
         }
         
+        virtual void display() const {
+            std::cout << " type = " << type << std::endl;
+            std::cout << " data = " ;
+            for( unsigned i = 0; i < data.size(); i++ )
+                std::cout << data[ i ] << " ";
+            std::cout << std::endl;
+        }
+
         std::string type;
         Vec<double> data;
     };
@@ -702,18 +719,11 @@ struct ReaderINP {
             OPTION_DENSITY       = 1,
             OPTION_ELASTIC       = 2,
         } Option_material_ID;
-        Material() { material_property = NULL; density = 0.;}
-        ~Material() { if ( material_property ) delete material_property ; }
-        void display() { 
-            std::cout << " density =" << density << std::endl;
-            std::cout << " property = " << std::endl;
-            if ( material_property )
-                material_property->display();
-            else
-                std::cout << " WARNING ReaderINP : not property..." << std::endl;
-        }
+        Material() { material_property = NULL; density = 0.; }
+        ~Material() { if ( material_property ) delete material_property; }
+
         std::string parse( std::ifstream& is ) {
-            std::string str,str2;
+            std::string str, str2;
             unsigned c;
             Option_material_ID ctxte = OPTION_IGNORED;
 
@@ -723,40 +733,62 @@ struct ReaderINP {
                 if ( !is.good() )
                     break;
                 normalize_end_line( str );
-                    
+
                 for( c = 0; c < nb_principale_keyword; ++c )
-                    if ( str.find( list_principale_keyword[ c ]) != std::string::npos )
+                    if ( str.find( list_principale_keyword[ c ] ) != std::string::npos )
                         return str;
+
+                /// évaluation du contexte
                 if ( str.size() == 0 )
                     continue;
-                    
                 if (str[ 0 ] == '*') {
-                    if (str[ 1 ] == '*') { ctxte = OPTION_IGNORED; continue; }/// c'est un commentaire
-                    if ((str.find ( "DENSITY", 1 ) == 1) or (str.find ( "Density", 1 ) == 1)) { ctxte = OPTION_DENSITY; continue; }
-                    if ((str.find ( "ELASTIC", 1 ) == 1) or (str.find ( "Elastic", 1 ) == 1)) { 
-                        ctxte = OPTION_ELASTIC; 
-                        material_property = new Elastic_property( value( str, "TYPE=", "type=", ",\n" ) );
-                        continue; 
+                    if (str[ 1 ] == '*') { /// c'est un commentaire
+                        ctxte = OPTION_IGNORED;
+                        continue;
+                    }
+                    if ((str.find( "DENSITY", 1 ) == 1) or (str.find( "Density", 1 ) == 1)) {
+                        ctxte = OPTION_DENSITY;
+                        continue;
+                    }
+                    if ((str.find( "ELASTIC", 1 ) == 1) or (str.find( "Elastic", 1 ) == 1)) {
+                        ctxte = OPTION_ELASTIC;
+                        material_property = new Elastic_property( str );
+                        continue;
                     }
                     ctxte = OPTION_IGNORED; /// na !
                     continue;
                 }
+
                 /// utilisation du contexte
                 switch( ctxte ) {
-                    case OPTION_DENSITY : density = atof( str.c_str() ); break;
+                    case OPTION_DENSITY :
+                        density = atof( str.c_str() );
+                        break;
                     case OPTION_ELASTIC : 
-                        str2.clear();
-                        getline( is, str2 );
-                        if ( !is.good() )
-                            return ""; /// je ne sais pas trop quoi renvoyer...
-                        normalize_end_line( str );
-                        str += str2;
+//                        /// malheureusement l'info de *Elastic est parfois mise sur deux lignes...
+//                        str2.clear();
+//                        getline ( is, str2 );
+//                        if ( !is.good() )
+//                            return "";
+//                        normalize_end_line( str );
+//                        str += str2;
                         material_property->setData( str );
                         break;
-                    case OPTION_IGNORED : break;
+                    case OPTION_IGNORED :
+                        //std::cerr << "WARNING ReaderINP : OPTION_IGNORED line " << str << std::endl;
+                        break;
                 }
             }
             return "";
+        }
+
+        void display() {
+            std::cout << " Material properties " << std::endl;
+            std::cout << " density = " << density << std::endl;
+            if ( material_property )
+                material_property->display();
+            else
+                std::cout << "WARNING ReaderINP : no material property..." << std::endl;
         }
         
         double density;
@@ -764,12 +796,6 @@ struct ReaderINP {
     };
     
     struct ContactPair {
-        void display() const {
-            std::cout << " name 1 is \"" << s_surface_1 << "\"" << std::endl;
-            std::cout << " name 2 is \"" << s_surface_2 << "\"" << std::endl;
-            std::cout << " data   is  |" << s_data << "|" << std::endl;
-        }
-        
         std::string parse( std::ifstream& is ) {
             std::string str;
             unsigned c;
@@ -782,7 +808,7 @@ struct ReaderINP {
             s_surface_1 = str.substr( 0, i );
             s_surface_2 = str.substr( i + 2 ); /// + 2 pour sauter le , et l'espace
             if ( !is.good() )
-                    return "";
+                return "";
             while( true ) {
                 str.clear();
                 getline( is, str );
@@ -794,16 +820,22 @@ struct ReaderINP {
                         s_data += str + "\n"; /// pas super comme traitement ;-)
                         break;
                     }
-                if ( c < nb_keyword ) 
-                    continue;   
+                if ( c < nb_keyword )
+                    continue;
                 for( c = 0; c < nb_principale_keyword; ++c )
-                    if ( str.find( list_principale_keyword[ c ] ) != std::string::npos ) {
+                    if ( str.find( list_principale_keyword[ c ] ) != std::string::npos )
                         return str;
-                    }
                 s_data += str + "\n";
             }
             return "";
-        }            
+        }
+
+        void display() const {
+            std::cout << " Contact pair " << std::endl;
+            std::cout << " surface 1 = " << s_surface_1 << std::endl;
+            std::cout << " surface 2 = " << s_surface_2 << std::endl;
+            std::cout << " data      =  " << s_data << std::endl;
+        }
     
         std::string s_surface_1, s_surface_2, s_data;
         
@@ -813,22 +845,11 @@ struct ReaderINP {
     
     struct Surface {
         Surface( const std::string &str ) {
-            std::string s_type = value( str, "TYPE=", "Type=" ); 
+            std::string s_type = value( str, "TYPE=", "type=" );
             if ( ( s_type == "ELEMENT" ) or ( s_type == "Element" ) )
-                type = 0;
+                type = 0; /// Element
             else 
                 type = 1; /// Node
-        }
-        void display() const {
-            if ( type == 0 ) { 
-                std::cout << "this type is ELEMENT" << std::endl; 
-                for( unsigned i = 0; i < indice.size() ; ++i )
-                    std::cout << " element " << indice[ i ] << " and id face = " << id_face[ i ] << std::endl;
-            } else {
-                std::cout << "this type is NODE" << std::endl;
-                for( unsigned i = 0; i < indice.size() ; ++i )
-                    std::cout << " node " << indice[ i ] << std::endl;
-            }         
         }
         
         void read( std::string& str ) {
@@ -846,8 +867,21 @@ struct ReaderINP {
                     id_face.push_back( str[ p + 1 ] - '0' );
                 else {
                     std::cerr << "WARNING ReaderINP : ID face of Surface is unknown" << std::endl;
-                    id_face.push_back( 0 );        
+                    id_face.push_back( 0 );
                 }
+            }
+        }
+
+        void display() const {
+            std::cout << " Surface " << std::endl;
+            if ( type == 0 ) {
+                std::cout << " Number of elements = " << indice.size() << std::endl;
+                for( unsigned i = 0; i < indice.size(); ++i )
+                    std::cout << " element " << indice[ i ] << " and id face " << id_face[ i ] << std::endl;
+            } else {
+                std::cout << " Number of nodes = " << indice.size() << std::endl;
+                for( unsigned i = 0; i < indice.size(); ++i )
+                    std::cout << " node " << indice[ i ] << std::endl;
             }
         }
 
@@ -858,15 +892,19 @@ struct ReaderINP {
     
     struct SolidSection {
         SolidSection( const std::string& str ) { 
-            s_material = value( str, "MATERIAL=", "material=" ); 
-            s_orientation = value( str, "ORIENTATION=", "orientation=" ); 
+            s_material = value( str, "MATERIAL=", "material=" );
+            s_orientation = value( str, "ORIENTATION=", "orientation=" );
             material = NULL;
             orientation = NULL;
         }
-        void setData( Material* pma, Orientation* por ) { material = pma; orientation = por; }
+        void setData( Material* pma, Orientation* por ) {
+            material = pma;
+            orientation = por;
+        }
         void display() {
-            std::cout << " s_material    = ||" << s_material << "||" << std::endl;
-            std::cout << " s_orientation = ||" << s_orientation << "||" << std::endl;
+            std::cout << " Solid section " << s_material << std::endl;
+            std::cout << " material    = " << s_material << std::endl;
+            std::cout << " orientation = " << s_orientation << std::endl;
             if ( material )
                 material->display();
             if ( orientation )
@@ -892,7 +930,7 @@ struct ReaderINP {
                     por = map_Orientation[ it4->second->s_orientation ];
                 else
                     por = NULL;
-                it4->second->setData( pmat, por ) ;
+                it4->second->setData( pmat, por );
             }
     }
     
@@ -929,17 +967,17 @@ struct ReaderINP {
     }
     
     static Status_ID setStatus( const std::string& str ) {
-        if (str[1] == '*')                                                              { return STATUS_IGNORED; }/// c'est un commentaire
-        if ((str.find ("Node",1) == 1) or (str.find ("NODE",1 ) == 1) )                 { return STATUS_NODE; }
-        if ((str.find ("Element",1) == 1) or (str.find ("ELEMENT",1) == 1))             { return STATUS_ELEMENT; }
-        if ((str.find ("NSET",1) == 1) or (str.find ("Nset",1) == 1))                   { return STATUS_NSET; }
-        if ((str.find ("ELSET",1) == 1)  or (str.find ("Elset",1) == 1))                { return STATUS_ELSET; }
-        if ((str.find ("ORIENTATION",1) == 1) or (str.find ("Orientation",1) == 1))     { return STATUS_ORIENTATION; }
-        if ((str.find ("SOLID SECTION",1) == 1) or (str.find ("Solid Section",1) == 1)) { return STATUS_SOLID_SECTION; }
-        if ((str.find ("MATERIAL",1) == 1) or (str.find ("Material",1) == 1))           { return STATUS_MATERIAL; }
-        if ((str.find ("STEP",1) == 1) or (str.find ("Step",1) == 1))                   { return STATUS_STEP; }
-        if ((str.find ("CONTACT PAIR",1) == 1) or (str.find ("Contact Pair",1) == 1))   { return STATUS_CONTACT_PAIR; }
-        if ((str.find ("SURFACE",1) == 1) or (str.find ("Surface",1) == 1))             { return STATUS_SURFACE; }
+        if (str[1] == '*')                                                            { return STATUS_IGNORED; } /// c'est un commentaire
+        if ((str.find("NODE",1) == 1) or (str.find("Node",1) == 1) )                  { return STATUS_NODE; }
+        if ((str.find("ELEMENT",1) == 1) or (str.find("Element",1) == 1))             { return STATUS_ELEMENT; }
+        if ((str.find("NSET",1) == 1) or (str.find("Nset",1) == 1))                   { return STATUS_NSET; }
+        if ((str.find("ELSET",1) == 1)  or (str.find("Elset",1) == 1))                { return STATUS_ELSET; }
+        if ((str.find("ORIENTATION",1) == 1) or (str.find("Orientation",1) == 1))     { return STATUS_ORIENTATION; }
+        if ((str.find("SOLID SECTION",1) == 1) or (str.find("Solid Section",1) == 1)) { return STATUS_SOLID_SECTION; }
+        if ((str.find("MATERIAL",1) == 1) or (str.find("Material",1) == 1))           { return STATUS_MATERIAL; }
+        if ((str.find("STEP",1) == 1) or (str.find("Step",1) == 1))                   { return STATUS_STEP; }
+        if ((str.find("CONTACT PAIR",1) == 1) or (str.find("Contact Pair",1) == 1))   { return STATUS_CONTACT_PAIR; }
+        if ((str.find("SURFACE",1) == 1) or (str.find("Surface",1) == 1))             { return STATUS_SURFACE; }
         std::cerr << "WARNING ReaderINP : ignored option = " << value( str, "*", "*", ",\n") << std::endl;
         return STATUS_IGNORED; /// option non traitée
     }
@@ -973,6 +1011,7 @@ struct ReaderINP {
                     break;
                 normalize_end_line( str );
             }
+
             /// évaluation du contexte
             if ( str.size() == 0 )
                 continue;
@@ -984,9 +1023,11 @@ struct ReaderINP {
                     case STATUS_NSET          : pns  = map_NodeSet[ value( str, "NSET=","nset=" ) ] = new NodeSet( str ); break;
                     case STATUS_ELSET         : pes  = map_ElementSet[ value( str, "ELSET=", "elset=" ) ] = new ElementSet( str ); break;
                     case STATUS_ORIENTATION   : por  = map_Orientation[ value( str, "NAME=", "name=" ) ] = new Orientation( str ); break;
-                    case STATUS_SOLID_SECTION : pss  = map_SolidSection[ value( str, "ELSET=", "elset=" ) ] = new SolidSection( str ); break;
+                    case STATUS_SOLID_SECTION : pss  = map_SolidSection[ value( str, "ELSET=", "elset=" ) ] = new SolidSection( str );
+                                                //pss->display();
+                                                break;
                     case STATUS_STEP          : str2 = jump( is, "*END STEP" ); break; /// STEP est aussi un "conteneur".
-                    case STATUS_MATERIAL      : pma  = map_Material[ value( str, "NAME=", "name=" ) ] = new Material() ; 
+                    case STATUS_MATERIAL      : pma  = map_Material[ value( str, "NAME=", "name=" ) ] = new Material();
                                                 str  = pma->parse( is );
                                                 //pma->display();
                                                 break;
@@ -995,17 +1036,19 @@ struct ReaderINP {
                                                 //pcp->display();
                                                 break;
                     case STATUS_SURFACE       : ps = map_Surface[ value( str, "NAME=", "Name=" ) ] = new Surface( str ); break;
-                    case STATUS_IGNORED       : ; //std::cerr << "WARNING ReaderINP : STATUS_IGNORED line " << str << std::endl;  
+                    case STATUS_IGNORED       : //std::cerr << "WARNING ReaderINP : STATUS_IGNORED line " << str << std::endl;
+                                                break;
                 }
                 continue;
             }
+
             /// utilisation du contexte
             switch( ctxte ) {
                 case STATUS_NODE : case STATUS_NSET : 
                     pns->read( m, str, map_num_node );
                     continue;
                 case STATUS_ELEMENT : case STATUS_ELSET :
-                    /// malheureusement l'info de *ELEMENT est parfois mise sur deux lignes...
+                    /// malheureusement l'info de *Element ou *Elset est parfois mise sur deux lignes...
                     n = pes->nb_nodes;
                     if ( ( n > 0 ) and ( compter_caractere( str, ',' ) < n ) ) {
                         str2.clear();
@@ -1018,19 +1061,21 @@ struct ReaderINP {
                     pes->read( m, str, match_inode_inp_lmtpp, map_num_node, map_num_element );
                     continue;
                 case STATUS_ORIENTATION :
-                    /// malheureusement l'info est parfois mise sur deux lignes...
+                    /// malheureusement l'info de *Orientation est parfois mise sur deux lignes...
                     if (compter_caractere(str,',') == 5 or compter_caractere(str,',') == 6) {
                         str2.clear();
                         getline ( is, str2 );
                         if ( !is.good() )
                             break;
-                        normalize_end_line( str );    
+                        normalize_end_line( str );
                         str += str2;
                     }
                     por->read( str );
+                    por->display();
                     continue;
                 case STATUS_SURFACE :
                     ps->read( str );
+                    ps->display();
                     continue;
                 case STATUS_IGNORED : case STATUS_SOLID_SECTION : case STATUS_MATERIAL : case STATUS_STEP : case STATUS_CONTACT_PAIR : break;
             }
@@ -1058,7 +1103,7 @@ struct ReaderINP {
                 map_num_element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_num_node );
             }
         } else 
-            std::cerr << "WARNING ReaderINP : you wish to create a mesh by unknown ElSet " << nameElSet << " ." << std::endl; 
+            std::cerr << "WARNING ReaderINP : unknown ElSet name = " << nameElSet << " ." << std::endl;
     }
     
     template<class TMESH>
@@ -1073,9 +1118,9 @@ struct ReaderINP {
                 for( unsigned i = 0; i < surf->indice.size(); ++i )
                     map_num_element[ surf->indice[ i ] ].add_surface_element_at( mesh, match_inode_inp_lmtpp, map_num_node, surf->id_face[ i ] );
             } else
-                std::cerr << "WARNING ReaderINP : does not create surface defined by node : TODO" << std::endl;
+                std::cerr << "WARNING ReaderINP : TODO : create mesh by surface defined by nodes" << std::endl;
         } else {
-            std::cerr << "WARNING ReaderINP : you use create_mesh_by_surface() with un unknown name " << nameSurface << std::endl;
+            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
         }
     }
     
@@ -1092,7 +1137,7 @@ struct ReaderINP {
                     if ( it2->second.ptrEA )
                         it2->second.ptrEA->set_field( nameTag, 0., false );
                     else
-                        std::cerr << "WARNING ReaderINP : buzzzzzzzzzzz "  << std::endl;
+                        std::cerr << "WARNING ReaderINP : it2->second.ptrEA == NULL ..."  << std::endl;
                
                 for( unsigned i = 0; i < surf->indice.size(); ++i )
                     if ( map_num_element[ surf->indice[ i ] ].ptrEA )
@@ -1100,9 +1145,9 @@ struct ReaderINP {
                     else
                         std::cerr << "WARNING ReaderINP : problem to tag the element " << surf->indice[ i ] << std::endl;
             } else
-                std::cerr << "WARNING ReaderINP : does not tag mesh by surface defined by node : TODO" << std::endl;
+                std::cerr << "WARNING ReaderINP : TODO : tag mesh by surface defined by nodes" << std::endl;
         } else {
-            std::cerr << "WARNING ReaderINP : you use tag_mesh_by_surface() with un unknown name " << nameSurface << std::endl;
+            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
         }
     }
     
@@ -1157,7 +1202,7 @@ struct ReaderINP {
                 return index.size();
             }
         } else {
-            std::cerr << "WARNING ReaderINP : you use get_index_node_of_surface() with un unknown name " << nameSurface << std::endl;
+            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
             return 0;
         }
     }
@@ -1189,16 +1234,16 @@ struct ReaderINP {
                                 if ( ori )
                                     ori->setProperty( ptrEA );
                                 //else
-                                    //std::cerr << "WARNING ReaderINP : ori == NULL  material = " << nameMaterial << std::endl;
+                                    //std::cerr << "WARNING ReaderINP : orientation == NULL ..." << std::endl;
                                 if ( material ) {
                                     if ( material->material_property ) 
                                         material->material_property->setProperty( ptrEA,conversion_factor );
                                     //else
-                                        //std::cerr << "WARNING ReaderINP : material->material_property == NULL" << std::endl;
+                                        //std::cerr << "WARNING ReaderINP : material->material_property == NULL ..." << std::endl;
                                 } else
-                                    std::cerr << "WARNING ReaderINP : material == NULL" << std::endl;
+                                    std::cerr << "WARNING ReaderINP : material == NULL ..." << std::endl;
                             } else
-                                std::cerr << "WARNING ReaderINP : ptrEA == NULL" << std::endl;
+                                std::cerr << "WARNING ReaderINP : ptrEA == NULL ..." << std::endl;
                         }
                     }
                 }
@@ -1415,7 +1460,7 @@ const char* ReaderINP<TM>::ContactPair::list_keyword[ ReaderINP<TM>::ContactPair
     "SURFACE INTERACTION",
     "Surface Interaction"
     //""
-};    
+};
 
 };
 
