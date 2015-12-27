@@ -28,9 +28,7 @@ void replace_char( std::string& str, char c, char subs) {
 
 /// retourne le nombre de caractères c à partir de la position start
 unsigned compter_caractere( const std::string& s, char c, int start = 0 ) {
-
     unsigned l,co,p;
-
     l = s.size();
     co = 0;
     for( p = start; p < l; p++ )
@@ -63,7 +61,7 @@ std::string value( const std::string& str, const char* param1, const char* param
 }
 
 std::string jump( std::ifstream& is, const char* descripteur) {
-    std::string str,res;
+    std::string str, res;
     while( true ) {
         str.clear();
         getline( is,str );
@@ -83,7 +81,7 @@ std::string jump( std::ifstream& is, const char* descripteur) {
   cette fonction récupère le texte juqu'à atteindre l'un des descripteurs de la liste descrpteur[] (le dernier de cette liste devant être de longueur nulle i.e. "").
 */
 std::string jump( std::ifstream& is, const char* descripteur[], std::string& line ) {
-    std::string str,res;
+    std::string str, res;
     int c;
 
     line.clear();
@@ -144,6 +142,7 @@ std::string jump( std::ifstream& is, const char* descripteur[], std::string& lin
         map<string, Orientation*> map_Orientation;
         map<string, SolidSection*> map_SolidSection;
         map<string, Material*> map_Material;
+        map<string, Step*> map_Step;
         map<string, Contact_Pair*> map_Conctact_Pair;
         map<string, Surface*> map_Surface;
 
@@ -166,7 +165,7 @@ struct ReaderINP {
         STATUS_MATERIAL             = 7,
         STATUS_STEP                 = 8,
         STATUS_CONTACT_PAIR         = 9,
-//         STATUS_SURFACE_INTERACTION  = 10,
+//        STATUS_SURFACE_INTERACTION  = 10,
         STATUS_SURFACE              = 11
     } Status_ID;
     
@@ -176,7 +175,7 @@ struct ReaderINP {
         NodeInp() {}
         NodeInp( const Vec<double> &posi ) : pos( posi ) {}
         
-        /// malheureusement le conversion est doublée par un constructeur très générique...
+        /// malheureusement la conversion est doublée par un constructeur très générique...
         template< class T, int _s >
         operator Vec<T,_s>() const {
             Vec<T,_s> ret;
@@ -205,13 +204,13 @@ struct ReaderINP {
         MatchElement_INP_LMTpp( const char* n, EA* p, Vec<unsigned> &lnode ) : name( n ), ptrEA( p ), list_node( lnode ) {}
 
         /*!
-            Cette méthode ajoute à "mesh" l'élément concerné. 
-            Pour des raisons de performance on a besoin du conteneur "match_inode_inp_lmtpp" qui fait la correspondance entre l'indice du noeud dans le fichier Inp d'Abaqus et l'indice du noeud de "mesh" dans la liste node_list. Son utilisé est d'éviter les doublons de noeuds dans le maillage LMT++ sans utiliser leurs coordonnées. 
+            Cette méthode ajoute à "mesh" l'élément concerné.
+            Pour des raisons de performance on a besoin du conteneur "match_inode_inp_lmtpp" qui fait la correspondance entre l'indice du noeud dans le fichier Inp d'Abaqus et l'indice du noeud de "mesh" dans la liste node_list. Son utilisé est d'éviter les doublons de noeuds dans le maillage LMT++ sans utiliser leurs coordonnées.
             On a choisi un map et pas un simple vector ou Vec car la méthode find() de map est en complexité O( ln( N ) ) et non O( N ) comme les conteneurs précédents.
         */
         template<class TMESH>
         typename TMESH::MA::EA* add_element_at( TMESH &mesh, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_num_node &mapNode ) const {
-            //typedef typename TM::MA::EA EALocal;
+            //typedef typename TMESH::MA::EA EALocal;
             typedef typename TMESH::TNode TNodeLocal;
             typedef typename TMESH::Pvec PvecLocal;
             typedef typename TMESH::TNode::T TLocal;
@@ -222,7 +221,7 @@ struct ReaderINP {
             
             vnlocal.resize( list_node.size() );
 
-            for( unsigned j = 0; j < list_node.size(); j++ ) {
+            for( unsigned j = 0; j < list_node.size(); ++j ) {
                 
                 it = match_inode_inp_lmtpp.find( list_node[ j ] );
                 if ( it != match_inode_inp_lmtpp.end() ) {
@@ -332,7 +331,7 @@ struct ReaderINP {
                 if ( index.size() == 4 ) {
                     
                     vnlocal.resize( 4 );
-                    for( unsigned j = 0; j < index.size(); ++j ) {                    
+                    for( unsigned j = 0; j < index.size(); ++j ) {
                         it = match_inode_inp_lmtpp.find( index[ j ] ); /// le noeud est-il déjà dans le "mesh" ?
                         if ( it != match_inode_inp_lmtpp.end() ) {
                             vnlocal[ j ] = &mesh.node_list[ it->second ];
@@ -361,7 +360,7 @@ struct ReaderINP {
     };
 
     typedef std::map<unsigned, MatchElement_INP_LMTpp > Map_num_element;
-    //typedef map<int,EA*> Map_num_element;
+    //typedef map<int, EA*> Map_num_element;
     //typedef map<int, void*> Map_num_element;
     
     /*!
@@ -369,7 +368,6 @@ struct ReaderINP {
     Dans le format Inp de Abaqus, un Elset ( ou un NSet ) peut contenir soit :
         * une liste d'indices toute simple soit, 
         * une liste de triplets d'entiers  start, end, step qui signifie que le Elset contient tous les indices de la forme start + i * step où i parcourt les entiers positifs ou nul tout en vérifiant start + i * step <= end ( attention le end est toujours compris pour un step égal à un ).    
-    
     
     */
     template<class T = unsigned>
@@ -487,7 +485,7 @@ struct ReaderINP {
         }
         
         void display() const {
-            std::cout << " Number of nodes = " << this->nb_elements() << std::endl;
+            std::cout << "Number of nodes = " << this->nb_elements() << std::endl;
             typename NodeSet::iterator it;
             for( it = this->begin(); it != this->end(); ++it )
                 std::cout << *it << " ";
@@ -545,7 +543,7 @@ struct ReaderINP {
                 this->data.push_back( number );
                 //vn.resize( nb_nodes );
                 vninp.resize( nb_nodes );
-                for ( unsigned i = 0; i < nb_nodes; i++ ) {
+                for ( unsigned i = 0; i < nb_nodes; ++i ) {
                     iss >> number2;
                     //vn[ i ] = map_num_node[ number2 ];
                     vninp[ i ] = number2;
@@ -562,7 +560,7 @@ struct ReaderINP {
         }
         
         void display() const {
-            std::cout << " Number of elements = " << this->nb_elements() << std::endl;
+            std::cout << "Number of elements = " << this->nb_elements() << std::endl;
             typename ElementSet::iterator it;
             for( it = this->begin(); it != this->end(); ++it )
                 std::cout << *it << " ";
@@ -588,29 +586,29 @@ struct ReaderINP {
             if ( syst == "rectangular" ) {
                 iss >> v1 >> v2;
             } else {
-                std::cerr << "WARNING ReaderINP : TODO Orientation::" << syst << std::endl;
+                std::cerr << "WARNING ReaderINP : Orientation::" << syst << ". TODO" << std::endl;
             }
         }
         
-        void setProperty( EA* ptrEA ) const {
+        void set_property( EA* ptrEA ) const {
             ptrEA->set_field( std::string( "v1" ), v1, false );
             ptrEA->set_field( std::string( "v2" ), v2, false );
         }
 
-        virtual void display() const {
+        void display() const {
+            //std::cout << "Orientation " << std::endl;
             if ( syst == "rectangular" ) {
-                std::cout << " Orientation " << std::endl;
                 std::cout << " system = " << syst << std::endl;
                 std::cout << " v1     = " ;
-                for( unsigned i = 0; i < v1.size(); i++ )
+                for( unsigned i = 0; i < v1.size(); ++i )
                     std::cout << v1[ i ] << " ";
                 std::cout << std::endl;
                 std::cout << " v2     = " ;
-                for( unsigned i = 0; i < v2.size(); i++ )
+                for( unsigned i = 0; i < v2.size(); ++i )
                     std::cout << v2[ i ] << " ";
                 std::cout << std::endl;
             } else {
-                std::cerr << "WARNING ReaderINP : TODO Orientation::" << syst << std::endl;
+                std::cerr << "WARNING ReaderINP : Orientation::" << syst << ". TODO" << std::endl;
             }
         }
         
@@ -619,35 +617,17 @@ struct ReaderINP {
     };
     
     struct Material_property {
-        virtual void setData( std::string& str ) {
-            std::cerr << "WARNING ReaderINP : hum... you use Material_property::setData() " << std::endl;
+        virtual void read( std::string& str ) {
+            std::cerr << "WARNING ReaderINP : call Material_property::read() " << std::endl;
         }
-        virtual void setProperty( EA* pea ) const { 
-            std::cerr << "WARNING ReaderINP : hum... you use Material_property::setProperty() " << std::endl;
+        virtual void set_property( EA* pea ) const {
+            std::cerr << "WARNING ReaderINP : call Material_property::set_property() " << std::endl;
         }
-        virtual void setProperty( EA* pea , const double &conversion_factor ) const { 
-            if (data.size() == 2) {
-                pea->set_field( std::string( "elastic_modulus_1" ), data[ 0 ], false );
-                pea->set_field( std::string( "elastic_modulus_2" ), data[ 0 ], false );
-                pea->set_field( std::string( "elastic_modulus_3" ), data[ 0 ], false );
-                pea->set_field( std::string( "poisson_ratio_12" ), data[ 1 ], false );
-                pea->set_field( std::string( "poisson_ratio_13" ), data[ 1 ], false );
-                pea->set_field( std::string( "poisson_ratio_23" ), data[ 1 ], false );
-                double t = data[ 0 ] / ( 2 * ( 1 + data[ 1 ] ) );
-                pea->set_field( std::string( "shear_modulus_12" ), t, false );
-                pea->set_field( std::string( "shear_modulus_13" ), t, false );
-                pea->set_field( std::string( "shear_modulus_23" ), t, false );
-            } else {
-                pea->set_field( std::string( "elastic_modulus_1" ), data[ 0 ]/conversion_factor, false );
-                pea->set_field( std::string( "elastic_modulus_2" ), data[ 1 ]/conversion_factor, false );
-                pea->set_field( std::string( "elastic_modulus_3" ), data[ 2 ]/conversion_factor, false );
-                pea->set_field( std::string( "poisson_ratio_12" ), data[ 3 ], false );
-                pea->set_field( std::string( "poisson_ratio_13" ), data[ 4 ], false );
-                pea->set_field( std::string( "poisson_ratio_23" ), data[ 5 ], false );
-                pea->set_field( std::string( "shear_modulus_12" ), data[ 6 ]/conversion_factor, false );
-                pea->set_field( std::string( "shear_modulus_13" ), data[ 7 ]/conversion_factor, false );
-                pea->set_field( std::string( "shear_modulus_23" ), data[ 8 ]/conversion_factor, false );
-            }
+        virtual void set_property( EA* pea, const double &conversion_factor ) const {
+            std::cerr << "WARNING ReaderINP : call Material_property::set_property() " << std::endl;
+        }
+        virtual void set_iso_property( EA* pea ) const {
+            std::cerr << "WARNING ReaderINP : call Material_property::set_iso_property() " << std::endl;
         }
         virtual void display() const {}
         
@@ -662,21 +642,21 @@ struct ReaderINP {
                 type = "iso";
         }
         
-        virtual void setData( std::string& str ) {
+        virtual void read( std::string& str ) {
             replace_char( str, ',', ' ' );
             std::istringstream iss( str );
             if (type == "iso") {
                 data.resize( 2 );
-                for( unsigned i = 0; i < 2; i++ )
+                for( unsigned i = 0; i < 2; ++i )
                     iss >> data[i];
             } else {
                 data.resize( 9 );
-                for( unsigned i = 0; i < 9; i++ )
+                for( unsigned i = 0; i < 9; ++i )
                     iss >> data[i];
             }
         }
         
-        virtual void setProperty( EA* pea , const double &conversion_factor ) const { 
+        virtual void set_property( EA* pea, const double &conversion_factor ) const {
             if (type == "iso") {
                 pea->set_field( std::string( "elastic_modulus_1" ), data[ 0 ], false );
                 pea->set_field( std::string( "elastic_modulus_2" ), data[ 0 ], false );
@@ -700,11 +680,21 @@ struct ReaderINP {
                 pea->set_field( std::string( "shear_modulus_23" ), data[ 8 ]/conversion_factor, false );
             }
         }
+
+        virtual void set_iso_property( EA* pea ) const {
+            if (type == "iso") {
+                pea->set_field( std::string( "young" ), data[ 0 ], false );
+                pea->set_field( std::string( "poisson" ), data[ 1 ], false );
+            } else {
+                std::cerr << "WARNING ReaderINP : no isotropic elastic material..." << std::endl;
+            }
+        }
         
         virtual void display() const {
+            std::cout << "Elastic properties " << std::endl;
             std::cout << " type = " << type << std::endl;
             std::cout << " data = " ;
-            for( unsigned i = 0; i < data.size(); i++ )
+            for( unsigned i = 0; i < data.size(); ++i )
                 std::cout << data[ i ] << " ";
             std::cout << std::endl;
         }
@@ -772,7 +762,7 @@ struct ReaderINP {
 //                            return "";
 //                        normalize_end_line( str );
 //                        str += str2;
-                        material_property->setData( str );
+                        material_property->read( str );
                         break;
                     case OPTION_IGNORED :
                         //std::cerr << "WARNING ReaderINP : OPTION_IGNORED line " << str << std::endl;
@@ -783,7 +773,7 @@ struct ReaderINP {
         }
 
         void display() {
-            std::cout << " Material properties " << std::endl;
+            //std::cout << "Material properties " << std::endl;
             std::cout << " density = " << density << std::endl;
             if ( material_property )
                 material_property->display();
@@ -795,6 +785,123 @@ struct ReaderINP {
         Material_property* material_property;
     };
     
+    struct Boundary {
+        Boundary( const std::string& str ) {
+            std::string amp = value( str, "AMPLITUDE=", "amplitude=" );
+            if ( amp.size() != 0 )
+                amplitude = atof( amp.c_str() );
+            else
+                amplitude = 0.;
+        }
+
+        void read( std::string& str ) {
+            unsigned number, dim;
+            double data;
+
+            char *pchar = strpbrk( str.c_str(), "." );
+            int i;
+            if ( pchar ) i = pchar - str.c_str(); else i = str.size();
+            str = str.substr( i + 1 ); /// + 1 pour sauter le point .
+            replace_char( str, ',', ' ' );
+            std::istringstream iss( str );
+            iss >> number;
+            this->number.push_back( number );
+            iss >> dim;
+            this->dim.push_back( dim );
+            iss >> data;
+            this->data.push_back( data );
+        }
+
+        template<class TMESH>
+        void write( TMESH &mesh ) const {
+            for( unsigned i = 0; i < number.size(); ++i )
+                mesh.node_list[ number[i]-1 ].dep[ dim[i]-1 ] = data[i];
+        }
+
+        void display() const {
+            std::cout << "Boundary " << std::endl;
+            std::cout << " amplitude = " << amplitude << std::endl;
+            for( unsigned i = 0; i < number.size(); ++i ) {
+                std::cout << " node[" << number[i]-1 << "].dep[" << dim[i]-1 << "] == " << data[i] << std::endl;
+            }
+        }
+
+        double amplitude;
+        Vec<unsigned> number;
+        Vec<unsigned> dim;
+        Vec<double> data;
+    };
+
+    struct Step {
+        typedef enum {
+            OPTION_IGNORED       = 0,
+            OPTION_BOUNDARY      = 1,
+        } Option_step_ID;
+        Step() { boundary = NULL; }
+        ~Step() { if ( boundary ) delete boundary; }
+
+        std::string parse( std::ifstream& is ) {
+            std::string str, str2;
+            unsigned c;
+            Option_step_ID ctxte = OPTION_IGNORED;
+
+            while( true ) {
+                str.clear();
+                getline( is, str );
+                if ( !is.good() )
+                    break;
+                normalize_end_line( str );
+
+                if ((str.find( "END STEP", 1 ) == 1) or (str.find( "End Step", 1 ) == 1)) {
+//                    str.clear();
+//                    getline( is, str );
+//                    if ( !is.good() )
+//                        break;
+//                    normalize_end_line( str );
+                    return str;
+                }
+
+                /// évaluation du contexte
+                if ( str.size() == 0 )
+                    continue;
+                if (str[ 0 ] == '*') {
+                    if (str[ 1 ] == '*') { /// c'est un commentaire
+                        ctxte = OPTION_IGNORED;
+                        continue;
+                    }
+                    if ((str.find( "BOUNDARY", 1 ) == 1) or (str.find( "Boundary", 1 ) == 1)) {
+                        ctxte = OPTION_BOUNDARY;
+                        boundary = new Boundary( str );
+                        continue;
+                    }
+                    ctxte = OPTION_IGNORED; /// na !
+                    continue;
+                }
+
+                /// utilisation du contexte
+                switch( ctxte ) {
+                    case OPTION_BOUNDARY :
+                        boundary->read( str );
+                        break;
+                    case OPTION_IGNORED :
+                        //std::cerr << "WARNING ReaderINP : OPTION_IGNORED line " << str << std::endl;
+                        break;
+                }
+            }
+            return "";
+        }
+
+        void display() {
+            //std::cout << "Step " << std::endl;
+            if ( boundary )
+                boundary->display();
+            else
+                std::cout << "WARNING ReaderINP : no boundary condition..." << std::endl;
+        }
+
+        Boundary* boundary;
+    };
+
     struct ContactPair {
         std::string parse( std::ifstream& is ) {
             std::string str;
@@ -806,7 +913,7 @@ struct ReaderINP {
             int i;
             if ( pchar ) i = pchar - str.c_str(); else i = str.size();
             s_surface_1 = str.substr( 0, i );
-            s_surface_2 = str.substr( i + 2 ); /// + 2 pour sauter le , et l'espace
+            s_surface_2 = str.substr( i + 2 ); /// + 2 pour sauter la virgule , et l'espace
             if ( !is.good() )
                 return "";
             while( true ) {
@@ -831,7 +938,7 @@ struct ReaderINP {
         }
 
         void display() const {
-            std::cout << " Contact pair " << std::endl;
+            //std::cout << "Contact pair " << std::endl;
             std::cout << " surface 1 = " << s_surface_1 << std::endl;
             std::cout << " surface 2 = " << s_surface_2 << std::endl;
             std::cout << " data      =  " << s_data << std::endl;
@@ -873,7 +980,7 @@ struct ReaderINP {
         }
 
         void display() const {
-            std::cout << " Surface " << std::endl;
+            //std::cout << "Surface " << std::endl;
             if ( type == 0 ) {
                 std::cout << " Number of elements = " << indice.size() << std::endl;
                 for( unsigned i = 0; i < indice.size(); ++i )
@@ -889,7 +996,7 @@ struct ReaderINP {
         Vec<unsigned> id_face; /// la valeur correspond à l'identifiant de face de Abaqus
         unsigned type; /// 0 <=> ELEMENT, 1 <=> NODE
     };
-    
+
     struct SolidSection {
         SolidSection( const std::string& str ) { 
             s_material = value( str, "MATERIAL=", "material=" );
@@ -897,18 +1004,20 @@ struct ReaderINP {
             material = NULL;
             orientation = NULL;
         }
-        void setData( Material* pma, Orientation* por ) {
+        void read( Material* pma, Orientation* por ) {
             material = pma;
             orientation = por;
         }
         void display() {
-            std::cout << " Solid section " << s_material << std::endl;
-            std::cout << " material    = " << s_material << std::endl;
-            std::cout << " orientation = " << s_orientation << std::endl;
-            if ( material )
+            //std::cout << "Solid section " << std::endl;
+            if ( material ) {
+                std::cout << "Material " << s_material << std::endl;
                 material->display();
-            if ( orientation )
+            }
+            if ( orientation ) {
+                std::cout << "Orientation " << s_orientation << std::endl;
                 orientation->display();
+            }
         }
         std::string s_material;
         std::string s_orientation;
@@ -920,7 +1029,7 @@ struct ReaderINP {
         Material* pmat;
         Orientation* por;
         typename std::map< std::string, SolidSection* >::iterator it4;
-        for( it4 = map_SolidSection.begin(); it4 != map_SolidSection.end(); it4++ )
+        for( it4 = map_SolidSection.begin(); it4 != map_SolidSection.end(); ++it4 )
             if ( it4->second ) {
                 if ( it4->second->s_material.size() )
                     pmat = map_Material[ it4->second->s_material ];
@@ -930,7 +1039,7 @@ struct ReaderINP {
                     por = map_Orientation[ it4->second->s_orientation ];
                 else
                     por = NULL;
-                it4->second->setData( pmat, por );
+                it4->second->read( pmat, por );
             }
     }
     
@@ -938,37 +1047,40 @@ struct ReaderINP {
         conversion_factor=1;
     }
     
-    ReaderINP( TM &m, const char* filename) { 
+    ReaderINP( TM &m, const char* filename ) {
         parse( m, filename );
         conversion_factor=1;
     }
     
     ~ReaderINP() {
         typename std::map< std::string, ElementSet*>::iterator it;
-        for( it = map_ElementSet.begin(); it != map_ElementSet.end(); it++) delete it->second;
+        for( it = map_ElementSet.begin(); it != map_ElementSet.end(); ++it ) delete it->second;
         
         typename std::map< std::string, NodeSet*>::iterator it2;
-        for( it2 = map_NodeSet.begin(); it2 != map_NodeSet.end(); it2++) delete it2->second;
+        for( it2 = map_NodeSet.begin(); it2 != map_NodeSet.end(); ++it2 ) delete it2->second;
         
         typename std::map< std::string, Orientation*>::iterator it3;
-        for( it3 = map_Orientation.begin(); it3 != map_Orientation.end(); it3++) delete it3->second;
+        for( it3 = map_Orientation.begin(); it3 != map_Orientation.end(); ++it3 ) delete it3->second;
         
         typename std::map< std::string, SolidSection*>::iterator it4;
-        for( it4 = map_SolidSection.begin(); it4 != map_SolidSection.end(); it4++) delete it4->second;
+        for( it4 = map_SolidSection.begin(); it4 != map_SolidSection.end(); ++it4 ) delete it4->second;
         
         typename std::map< std::string, Material*>::iterator it5;
-        for( it5 = map_Material.begin(); it5 != map_Material.end(); it5++) delete it5->second;
+        for( it5 = map_Material.begin(); it5 != map_Material.end(); ++it5 ) delete it5->second;
         
-        typename std::map< std::string, ContactPair*>::iterator it6;
-        for( it6 = map_ConctactPair.begin(); it6 != map_ConctactPair.end(); it6++) delete it6->second;
+        typename std::map< std::string, Step*>::iterator it6;
+        for( it6 = map_Step.begin(); it6 != map_Step.end(); ++it6 ) delete it6->second;
+
+        typename std::map< std::string, ContactPair*>::iterator it7;
+        for( it7 = map_ConctactPair.begin(); it7 != map_ConctactPair.end(); ++it7 ) delete it7->second;
         
-        typename std::map< std::string, Surface*>::iterator it7;
-        for( it7 = map_Surface.begin(); it7 != map_Surface.end(); it7++) delete it7->second;
+        typename std::map< std::string, Surface*>::iterator it8;
+        for( it8 = map_Surface.begin(); it8 != map_Surface.end(); ++it8 ) delete it8->second;
     }
     
     static Status_ID setStatus( const std::string& str ) {
         if (str[1] == '*')                                                            { return STATUS_IGNORED; } /// c'est un commentaire
-        if ((str.find("NODE",1) == 1) or (str.find("Node",1) == 1) )                  { return STATUS_NODE; }
+        if ((str.find("NODE",1) == 1) or (str.find("Node",1) == 1))                   { return STATUS_NODE; }
         if ((str.find("ELEMENT",1) == 1) or (str.find("Element",1) == 1))             { return STATUS_ELEMENT; }
         if ((str.find("NSET",1) == 1) or (str.find("Nset",1) == 1))                   { return STATUS_NSET; }
         if ((str.find("ELSET",1) == 1)  or (str.find("Elset",1) == 1))                { return STATUS_ELSET; }
@@ -992,6 +1104,7 @@ struct ReaderINP {
         Orientation* por = NULL;
         SolidSection* pss = NULL;
         Material* pma = NULL;
+        Step* pst = NULL;
         ContactPair* pcp = NULL;
         Surface* ps = NULL;
 
@@ -1003,10 +1116,9 @@ struct ReaderINP {
             throw std::runtime_error( "opening of file INP has failed." );
         // état de l'automate
         while ( true ) {
-            if ( ( ctxte != STATUS_MATERIAL ) and ( ctxte != STATUS_CONTACT_PAIR ) ) { /// Material et Contact Pair sont vus comme des conteneurs donc ils parsent eux-même le fichier et leur parseur rend la prochaine ligne à lire 
+            if ( ( ctxte != STATUS_MATERIAL ) and ( ctxte != STATUS_STEP ) and ( ctxte != STATUS_CONTACT_PAIR ) ) { /// Material, Step and Contact Pair sont vus comme des conteneurs donc ils parsent eux-même le fichier et leur parseur rend la prochaine ligne à lire
                 str.clear();
                 getline( is, str );
-                normalize_end_line( str );
                 if ( !is.good() )
                     break;
                 normalize_end_line( str );
@@ -1026,10 +1138,14 @@ struct ReaderINP {
                     case STATUS_SOLID_SECTION : pss  = map_SolidSection[ value( str, "ELSET=", "elset=" ) ] = new SolidSection( str );
                                                 //pss->display();
                                                 break;
-                    case STATUS_STEP          : str2 = jump( is, "*END STEP" ); break; /// STEP est aussi un "conteneur".
                     case STATUS_MATERIAL      : pma  = map_Material[ value( str, "NAME=", "name=" ) ] = new Material();
                                                 str  = pma->parse( is );
                                                 //pma->display();
+                                                break;
+                    case STATUS_STEP          : pst  = map_Step[ value( str, "NAME=", "name=" ) ] = new Step();
+                                                str  = pst->parse( is );
+                                                //pst->display();
+                                                //str2 = jump( is, "*End Step" );
                                                 break;
                     case STATUS_CONTACT_PAIR  : pcp  = map_ConctactPair[ value( str, "INTERACTION=", "Interaction=" ) ] = new ContactPair();
                                                 str  = pcp->parse( is );
@@ -1071,11 +1187,11 @@ struct ReaderINP {
                         str += str2;
                     }
                     por->read( str );
-                    por->display();
+                    //por->display();
                     continue;
                 case STATUS_SURFACE :
                     ps->read( str );
-                    ps->display();
+                    //ps->display();
                     continue;
                 case STATUS_IGNORED : case STATUS_SOLID_SECTION : case STATUS_MATERIAL : case STATUS_STEP : case STATUS_CONTACT_PAIR : break;
             }
@@ -1084,9 +1200,9 @@ struct ReaderINP {
         update_solidSection();
     }
     
-    template<class _TNODE> 
+    template<class _TNODE>
     struct EgalityPos {
-        bool operator()( _TNODE& n1, _TNODE& n2) const {return n1.pos == n2.pos; }
+        bool operator()( _TNODE& n1, _TNODE& n2) const { return n1.pos == n2.pos; }
         
     };
      
@@ -1103,13 +1219,13 @@ struct ReaderINP {
                 map_num_element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_num_node );
             }
         } else 
-            std::cerr << "WARNING ReaderINP : unknown ElSet name = " << nameElSet << " ." << std::endl;
+            std::cerr << "WARNING ReaderINP : unknown ElSet name " << nameElSet << std::endl;
     }
     
     template<class TMESH>
     void create_mesh_by_surface( TMESH &mesh, const std::string &nameSurface ) {
-        typename std::map< std::string, Surface* >::iterator it;
         std::map< unsigned, unsigned > match_inode_inp_lmtpp;
+        typename std::map< std::string, Surface* >::iterator it;
         
         it = map_Surface.find( nameSurface );
         if ( it != map_Surface.end() ) {
@@ -1119,9 +1235,8 @@ struct ReaderINP {
                     map_num_element[ surf->indice[ i ] ].add_surface_element_at( mesh, match_inode_inp_lmtpp, map_num_node, surf->id_face[ i ] );
             } else
                 std::cerr << "WARNING ReaderINP : TODO : create mesh by surface defined by nodes" << std::endl;
-        } else {
-            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
-        }
+        } else
+            std::cerr << "WARNING ReaderINP : unknown Surface name " << nameSurface << std::endl;
     }
     
     void tag_mesh_by_surface( const std::string &nameSurface, const std::string& nameTag, T valueTag = (T) 1. ) {
@@ -1130,14 +1245,14 @@ struct ReaderINP {
         it = map_Surface.find( nameSurface );
         if ( it != map_Surface.end() ) {
             Surface* surf = it->second;
-            if ( surf->type == 0 ) { /// ELEMENTS-SURFACE
+            if ( surf->type == 0 ) { /// ELEMENTS SURFACE
                 typename Map_num_element::iterator it2;
                 
                 for( it2 = map_num_element.begin(); it2 != map_num_element.end(); ++it2 )
                     if ( it2->second.ptrEA )
                         it2->second.ptrEA->set_field( nameTag, 0., false );
                     else
-                        std::cerr << "WARNING ReaderINP : it2->second.ptrEA == NULL ..."  << std::endl;
+                        std::cerr << "WARNING ReaderINP : it2->second.ptrEA == NULL..."  << std::endl;
                
                 for( unsigned i = 0; i < surf->indice.size(); ++i )
                     if ( map_num_element[ surf->indice[ i ] ].ptrEA )
@@ -1146,9 +1261,8 @@ struct ReaderINP {
                         std::cerr << "WARNING ReaderINP : problem to tag the element " << surf->indice[ i ] << std::endl;
             } else
                 std::cerr << "WARNING ReaderINP : TODO : tag mesh by surface defined by nodes" << std::endl;
-        } else {
-            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
-        }
+        } else
+            std::cerr << "WARNING ReaderINP : unknown Surface name " << nameSurface << std::endl;
     }
     
     /*!
@@ -1157,7 +1271,7 @@ struct ReaderINP {
     Deux points sont considérés comme confondus si leur distance euclidienne est inféieure à "tol".
     Par défaut la tolérance "tol" est à 10^-4.
     */
-    template<class TMESH >
+    template<class TMESH>
     unsigned get_index_node_of_surface( Vec<unsigned> &index, TMESH &mesh, const std::string& nameSurface, typename TMESH::TNode::T tol = 1e-4 ) {
         typedef typename TMESH::Pvec PvecLocal;
         PvecLocal po;
@@ -1171,7 +1285,7 @@ struct ReaderINP {
             if ( surf->type == 0 ) { /// ELEMENT-SURFACE
                 Vec<unsigned> lindex, bigindex;
                 for( unsigned i = 0; i < surf->indice.size(); ++i ) {
-                    /// on cherche à obtenir les indices des noeuds de la surface de l'élément "i" concerné .
+                    /// on cherche à obtenir les indices des noeuds de la surface de l'élément "i" concerné
                     map_num_element[ surf->indice[ i ] ].get_index_node_of_surface( lindex, surf->id_face[ i ] );
 
                     for( unsigned j = 0; j < lindex.size(); ++j )
@@ -1202,7 +1316,7 @@ struct ReaderINP {
                 return index.size();
             }
         } else {
-            std::cerr << "WARNING ReaderINP : unknown Surface name = " << nameSurface << std::endl;
+            std::cerr << "WARNING ReaderINP : unknown Surface name " << nameSurface << std::endl;
             return 0;
         }
     }
@@ -1217,7 +1331,7 @@ struct ReaderINP {
         Material* material;
         //MatchElement_INP_LMTpp mel;
 
-        for( it = map_SolidSection.begin(); it != map_SolidSection.end(); it++ ) {
+        for( it = map_SolidSection.begin(); it != map_SolidSection.end(); ++it ) {
             //PRINT(it->first);
             if ( it->second ) {
                 if ( it->second->s_material == nameMaterial ) {
@@ -1232,29 +1346,90 @@ struct ReaderINP {
                             ptrEA = map_num_element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_num_node );
                             if ( ptrEA ) {
                                 if ( ori )
-                                    ori->setProperty( ptrEA );
+                                    ori->set_property( ptrEA );
                                 //else
-                                    //std::cerr << "WARNING ReaderINP : orientation == NULL ..." << std::endl;
+                                    //std::cerr << "WARNING ReaderINP : orientation == NULL..." << std::endl;
                                 if ( material ) {
                                     if ( material->material_property ) 
-                                        material->material_property->setProperty( ptrEA,conversion_factor );
+                                        material->material_property->set_property( ptrEA, conversion_factor );
                                     //else
-                                        //std::cerr << "WARNING ReaderINP : material->material_property == NULL ..." << std::endl;
+                                        //std::cerr << "WARNING ReaderINP : material->material_property == NULL..." << std::endl;
                                 } else
-                                    std::cerr << "WARNING ReaderINP : material == NULL ..." << std::endl;
+                                    std::cerr << "WARNING ReaderINP : material == NULL..." << std::endl;
                             } else
-                                std::cerr << "WARNING ReaderINP : ptrEA == NULL ..." << std::endl;
+                                std::cerr << "WARNING ReaderINP : ptrEA == NULL..." << std::endl;
                         }
                     }
                 }
             } else
-                std::cerr << ">> it->second == NULL ..." << std::endl;
+                std::cerr << ">> it->second == NULL..." << std::endl;
         }
 
         /// remove_doubles(mesh.node_list,egalityPos);/// problème avec remove_double
     }
     
-    void display_map_element_set( bool withElement = false) {
+    template<class TMESH>
+    void set_boundary_by_step( TMESH &mesh, const std::string &nameStep ) {
+        typename std::map< std::string, Step*>::iterator it;
+
+        it = map_Step.find( nameStep );
+        if ( it != map_Step.end() ) {
+            Step* step = it->second;
+            if ( step->boundary )
+                step->boundary->write( mesh );
+            else
+                std::cerr << "WARNING ReaderINP : step->boundary == NULL..." << std::endl;
+        } else
+            std::cerr << "WARNING ReaderINP : unknown Step name " << nameStep << std::endl;
+    }
+
+    void display_node() {
+
+        //typename std::map< unsigned,TNode*>::iterator it;
+        typename Map_num_node::iterator it;
+
+        std::cout << "****************************************************" << std::endl;
+        std::cout << "*                       Node                       *" << std::endl;
+        std::cout << "****************************************************" << std::endl;
+
+        std::cout << "Number of nodes = " <<  map_num_node.size() << std::endl;
+        for( it = map_num_node.begin(); it != map_num_node.end(); ++it )
+            std::cout << " node " <<  it->first << " at position " << it->second.pos << std::endl;
+    }
+
+    void display_element() {
+
+        typename Map_num_element::iterator it;
+
+        std::cout << "****************************************************" << std::endl;
+        std::cout << "*                   Element                        *" << std::endl;
+        std::cout << "****************************************************" << std::endl;
+
+        std::cout << "Number of elements = " <<  map_num_element.size() << std::endl;
+        for( it = map_num_element.begin(); it != map_num_element.end(); ++it )
+            std::cout << " element " <<  it->first << " of type " << it->second.name << std::endl; //PRINT( *( it->second.ptr ) );
+    }
+
+    void display_map_node_set( bool withNode = false ) {
+
+        typename std::map< std::string, NodeSet* >::iterator it;
+
+        std::cout << "****************************************************" << std::endl;
+        std::cout << "*                   Node Set                       *" << std::endl;
+        std::cout << "****************************************************" << std::endl;
+
+        for( it = map_NodeSet.begin(); it != map_NodeSet.end(); ++it ) {
+            std::cout << "Node set " <<  it->first << std::endl;
+            if ( withNode ) {
+                if (it->second)
+                    it->second->display();
+                else
+                    std::cout << ">> it->second == NULL..." << std::endl;
+            }
+        }
+    }
+
+    void display_map_element_set( bool withElement = false ) {
 
         typename std::map< std::string, ElementSet* >::iterator it;
 
@@ -1262,36 +1437,17 @@ struct ReaderINP {
         std::cout << "*                Element Set                       *" << std::endl;
         std::cout << "****************************************************" << std::endl;
         
-        for( it = map_ElementSet.begin(); it != map_ElementSet.end(); it++) {
-            std::cout << "name is " <<  it->first << std::endl;
+        for( it = map_ElementSet.begin(); it != map_ElementSet.end(); ++it ) {
+            std::cout << "Element set " <<  it->first << std::endl;
             if ( withElement ) {
                 if ( it->second )
                     it->second->display();
                 else
-                    std::cout << ">> it->second == NULL ..." << std::endl;
+                    std::cout << ">> it->second == NULL..." << std::endl;
             }
         }
     }
-    
-    void display_map_node_set(bool withNode = false) {
 
-        typename std::map< std::string, NodeSet* >::iterator it;
-
-        std::cout << "****************************************************" << std::endl;
-        std::cout << "*                   Node Set                       *" << std::endl;
-        std::cout << "****************************************************" << std::endl;
-        
-        for( it = map_NodeSet.begin(); it != map_NodeSet.end(); it++) {
-            std::cout << "name is " <<  it->first << std::endl;
-            if ( withNode ) {
-                if (it->second)
-                    it->second->display();
-                else
-                    std::cout << ">> it->second == NULL ..." << std::endl;
-            }
-        }
-    }
-    
     void display_map_orientation() {
 
         typename std::map< std::string, Orientation* >::iterator it;
@@ -1300,43 +1456,44 @@ struct ReaderINP {
         std::cout << "*                 Orientation                      *" << std::endl;
         std::cout << "****************************************************" << std::endl;
 
-        for( it = map_Orientation.begin(); it != map_Orientation.end(); it++) {
-            //PRINT(it->first);
-            std::cout << "Orientation named " << it->first << std::endl;
-            if (it->second) {
-                //std::cout << " DATA = " << it->second->data << std::endl;
-                std::cout << " v1 = " << it->second->v1 << std::endl;
-                std::cout << " v2 = " << it->second->v2 << std::endl;
-            } else
-                std::cout << ">> it->second == NULL ..." << std::endl;
+        for( it = map_Orientation.begin(); it != map_Orientation.end(); ++it ) {
+            std::cout << "Orientation " << it->first << std::endl;
+            if (it->second)
+                it->second->display();
+            else
+                std::cout << ">> it->second == NULL..." << std::endl;
         }
     }
-    
-    void display_node() {
 
-        //typename map< unsigned,TNode*>::iterator it;
-        typename Map_num_node::iterator it;
+    void display_map_solid_section() {
+
+        typename std::map< std::string, SolidSection* >::iterator it;
 
         std::cout << "****************************************************" << std::endl;
-        std::cout << "*                       Node                       *" << std::endl;
+        std::cout << "*                Solid Section                     *" << std::endl;
         std::cout << "****************************************************" << std::endl;
 
-        for( it = map_num_node.begin(); it != map_num_node.end(); it++ )
-            std::cout << "name is " <<  it->first << " at position " << it->second.pos << std::endl;
+        for( it = map_SolidSection.begin(); it != map_SolidSection.end(); ++it ) {
+            std::cout << "Solid section " <<  it->first << std::endl;
+            if ( it->second ) {
+                //it->second->display();
+                if ( it->second->material ) {
+                    std::cout << "Material " << it->second->s_material << std::endl;
+                    it->second->material->display();
+                }
+                else
+                    std::cout << ">> it->second->material == NULL..." << std::endl;
+                if ( it->second->orientation ) {
+                    std::cout << "Orientation " << it->second->s_orientation << std::endl;
+                    it->second->orientation->display();
+                }
+                else
+                    std::cout << ">> it->second->orientation == NULL..." << std::endl;
+            } else
+                std::cout << ">> it->second == NULL..." << std::endl;
+        }
     }
-    
-    void display_element() {
 
-        typename Map_num_element::iterator it;
-        
-        std::cout << "****************************************************" << std::endl;
-        std::cout << "*                   Element                        *" << std::endl;
-        std::cout << "****************************************************" << std::endl;
-        PRINT( map_num_element.size() );
-        for( it = map_num_element.begin(); it != map_num_element.end(); it++)
-            std::cout << "name is " <<  it->first << " of type " << it->second.name << std::endl; //PRINT( *( it->second.ptr ) );
-    }
-    
     void display_map_material() {
 
         typename std::map< std::string, Material* >::iterator it;
@@ -1345,41 +1502,33 @@ struct ReaderINP {
         std::cout << "*                   Material                       *" << std::endl;
         std::cout << "****************************************************" << std::endl;
 
-        for( it = map_Material.begin(); it != map_Material.end(); it++) {
-            std::cout << "name is " <<  it->first << std::endl;
-            if ( it->second ) {
+        for( it = map_Material.begin(); it != map_Material.end(); ++it ) {
+            std::cout << "Material " <<  it->first << std::endl;
+            if ( it->second )
                     it->second->display();
-            } else
-                std::cout << ">> it->second == NULL ..." << std::endl;
+            else
+                std::cout << ">> it->second == NULL..." << std::endl;
         }
     }
     
-    void display_map_solid_section() {
+    void display_map_step() {
 
-        typename std::map< std::string, SolidSection* >::iterator it;
+        typename std::map< std::string, Step* >::iterator it;
 
         std::cout << "****************************************************" << std::endl;
-        std::cout << "*                Solid Section                     *" << std::endl;
+        std::cout << "*                       Step                       *" << std::endl;
         std::cout << "****************************************************" << std::endl;
-        
-        for( it = map_SolidSection.begin(); it != map_SolidSection.end(); it++) {
-            std::cout << "name is " <<  it->first << std::endl;
-            if ( it->second ) {
-                if ( it->second->material )
-                    it->second->material->display();
-                else
-                    std::cout << ">> it->second->material == NULL ..." << std::endl;
-                if ( it->second->orientation ) {
-                    std::cout << " orientation::v1 = " << it->second->orientation->v1 << std::endl;
-                    std::cout << " orientation::v2 = " << it->second->orientation->v2 << std::endl;
-                } else
-                    std::cout << ">> it->second->orientation == NULL ..." << std::endl;
-            } else
-                std::cout << ">> it->second == NULL ..." << std::endl;
+
+        for( it = map_Step.begin(); it != map_Step.end(); ++it ) {
+            std::cout << "Step " <<  it->first << std::endl;
+            if ( it->second )
+                    it->second->display();
+            else
+                std::cout << ">> it->second == NULL..." << std::endl;
         }
     }
     
-    void display_map_Surface( bool withIndice = false ) {
+    void display_map_surface( bool withIndice = false ) {
 
         typename std::map< std::string, Surface* >::iterator it;
 
@@ -1387,13 +1536,13 @@ struct ReaderINP {
         std::cout << "*                   Surface                        *" << std::endl;
         std::cout << "****************************************************" << std::endl;
         
-        for( it = map_Surface.begin(); it != map_Surface.end(); it++) {
-            std::cout << "name is " <<  it->first << std::endl;
+        for( it = map_Surface.begin(); it != map_Surface.end(); ++it ) {
+            std::cout << "Surface " <<  it->first << std::endl;
             if ( withIndice ) {
                 if ( it->second )
                     it->second->display();
                 else
-                    std::cout << ">> it->second == NULL ..." << std::endl;
+                    std::cout << ">> it->second == NULL..." << std::endl;
             }
         }
     }
@@ -1404,6 +1553,7 @@ struct ReaderINP {
     std::map< std::string, Orientation*> map_Orientation;
     std::map< std::string, SolidSection*> map_SolidSection;
     std::map< std::string, Material*> map_Material;
+    std::map< std::string, Step*> map_Step;
     std::map< std::string, ContactPair*> map_ConctactPair;
     std::map< std::string, Surface*> map_Surface;
     // correspondance between number in file -> ref in mesh
@@ -1424,26 +1574,26 @@ const char* ReaderINP<TM>::internal_name[2] = {
 
 template<class TM> 
 const char* ReaderINP<TM>::list_principale_keyword[ ReaderINP<TM>::nb_principale_keyword ] = {
-    "MATERIAL",
     "NODE",
     "ELEMENT",
     "NSET",
     "ELSET",
     "ORIENTATION",
     "SOLID SECTION",
+    "MATERIAL",
     "BOUNDARY",
     "AMPLITUDE",
     "SURFACE",   /// 10
     "CONTACT PAIR",
     "STEP",
     "END STEP",
-    "Material",
     "Node",
     "Element",
     "Nset",
     "Elset",
     "Orientation",
-    "Solid Section",   /// 20
+    "Solid Section",
+    "Material",   /// 20
     "Boundary",
     "Amplitude",
     "Surface",
@@ -1456,13 +1606,13 @@ const char* ReaderINP<TM>::list_principale_keyword[ ReaderINP<TM>::nb_principale
 template<class TM> 
 const char* ReaderINP<TM>::ContactPair::list_keyword[ ReaderINP<TM>::ContactPair::nb_keyword ] = {
     "FRICTION",
-    "Friction",
     "SURFACE INTERACTION",
+    "Friction",
     "Surface Interaction"
     //""
 };
 
-};
+}
 
 
 #endif  /// READER_INP_H
