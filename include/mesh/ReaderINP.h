@@ -812,10 +812,10 @@ struct ReaderINP {
             this->data.push_back( data );
         }
 
-        template<class TMESH>
-        void write( TMESH &mesh ) const {
+        template<class TF,class ScalarType>
+        void set_constraint( TF &f, const ScalarType &penalty_value=0 ) const {
             for( unsigned i = 0; i < number.size(); ++i )
-                mesh.node_list[ number[i]-1 ].dep[ dim[i]-1 ] = data[i];
+                f.add_constraint( "node["+to_string(number[i]-1)+"].dep["+to_string(dim[i]-1)+"] - "+to_string(data[i]), penalty_value );
         }
 
         void display() const {
@@ -1368,15 +1368,15 @@ struct ReaderINP {
         /// remove_doubles(mesh.node_list,egalityPos);/// problème avec remove_double
     }
     
-    template<class TMESH>
-    void set_boundary_by_step( TMESH &mesh, const std::string &nameStep ) {
+    template<class TF,class ScalarType>
+    void set_constraint_by_step( TF &f, const std::string &nameStep, const ScalarType &penalty_value=0 ) {
         typename std::map< std::string, Step*>::iterator it;
 
         it = map_Step.find( nameStep );
         if ( it != map_Step.end() ) {
             Step* step = it->second;
             if ( step->boundary )
-                step->boundary->write( mesh );
+                step->boundary->set_constraint( f, penalty_value );
             else
                 std::cerr << "WARNING ReaderINP : step->boundary == NULL..." << std::endl;
         } else
