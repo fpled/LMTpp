@@ -130,9 +130,9 @@ std::string jump( std::ifstream& is, const char* descripteur[], std::string& lin
 
     doc interne
     
-    ReaderINP contient des structures quasi identiques aux structures de INP, comme par exemple Element, Orientation, SolidSection, etc...
+    ReaderINP contient des structures quasi identiques aux structures de INP, comme par exemple Element, Orientation, SolidSection, etc.
     Parmi ces structures, celles jouant le rôle de conteneur comme par exemple ElementSet contiennent des tableaux d'entiers, ces entiers correspondant à ceux utilisés par INP pour numéroter les objets. 
-    Pour ensuite accéder à l'élément ou le noeud d'indice cet entier, on utilise des map du genre map<int, Object > .
+    Pour ensuite accéder à l'élément ou le noeud d'indice cet entier, on utilise des map du genre map<int, Object >.
     Plus précisément, ReaderINP contient :
     \code C/C++
         map<int, TNode*> map_num_node;
