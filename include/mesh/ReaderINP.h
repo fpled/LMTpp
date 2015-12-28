@@ -108,24 +108,24 @@ std::string jump( std::ifstream& is, const char* descripteur[], std::string& lin
 
 /*!
 
-    Actuellement le lecteur INP ne connaît que les types : 
-        C3D8R   <=> Hexa
-        C3D8I   <=> Hexa
-        C3D8    <=> Hexa
-        C3D4    <=> Tetra
-        S3R     <=> Triangle
-        S3      <=> Triangle
-        S4R     <=> Quad
-        R3D4    <=> Quad
-        M3D4    <=> Quad
-        R3D3    <=> Triangle
+    Actuellement le lecteur INP ne connaît que les types :
+        ROTARYI <=> NodalElement
+        MASS    <=> NodalElement
         B31     <=> Bar
         SpringA <=> Bar
         SPRING1 <=> Bar
         CONN3D2 <=> Bar
+        S3      <=> Triangle
+        S3R     <=> Triangle
+        S4R     <=> Quad
+        R3D4    <=> Quad
+        M3D4    <=> Quad
+        R3D3    <=> Triangle
+        C3D4    <=> Tetra
+        C3D8    <=> Hexa
+        C3D8R   <=> Hexa
+        C3D8I   <=> Hexa
         C3D6    <=> Prism
-        ROTARYI <=> NodalElement
-        MASS    <=> NodalElement
    Pour en ajouter, il faut le faire dans la méthode MatchElement_INP_LMTpp::add_element_at(), et le constructeur de ElementSet.
 
     doc interne
@@ -233,14 +233,10 @@ struct ReaderINP {
                 }
             }
 
-            if ( name == "Tetra" ) {
-                permutation_if_jac_neg ( Tetra(), vnlocal.ptr() );
-                return mesh.add_element( Tetra(), DefaultBehavior(), vnlocal.ptr() );
-            }
-            if ( name == "Hexa") {
-                permutation_if_jac_neg ( Hexa(), vnlocal.ptr() );
-                return mesh.add_element( Hexa(), DefaultBehavior(), vnlocal.ptr() );
-            }
+            if ( name == "NodalElement")
+                return mesh.add_element( NodalElement(),DefaultBehavior(), vnlocal.ptr() );
+            if ( name == "Bar")
+                return mesh.add_element( Bar(),DefaultBehavior(), vnlocal.ptr() );
             if ( name == "Triangle") {
                 permutation_if_jac_neg ( Triangle(), vnlocal.ptr() );
                 return mesh.add_element( Triangle(),DefaultBehavior(), vnlocal.ptr() );
@@ -249,10 +245,14 @@ struct ReaderINP {
                 permutation_if_jac_neg ( Quad(), vnlocal.ptr() );
                 return mesh.add_element( Quad(),DefaultBehavior(), vnlocal.ptr() );
             }
-            if ( name == "Bar")
-                return mesh.add_element( Bar(),DefaultBehavior(), vnlocal.ptr() );
-            if ( name == "NodalElement")
-                return mesh.add_element( NodalElement(),DefaultBehavior(), vnlocal.ptr() );
+            if ( name == "Tetra" ) {
+                permutation_if_jac_neg ( Tetra(), vnlocal.ptr() );
+                return mesh.add_element( Tetra(), DefaultBehavior(), vnlocal.ptr() );
+            }
+            if ( name == "Hexa") {
+                permutation_if_jac_neg ( Hexa(), vnlocal.ptr() );
+                return mesh.add_element( Hexa(), DefaultBehavior(), vnlocal.ptr() );
+            }
             std::cerr << "WARNING ReaderINP : the element " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl;
             return NULL;
         }
