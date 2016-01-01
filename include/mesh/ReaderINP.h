@@ -117,34 +117,34 @@ std::string jump( std::ifstream& is, const char* descripteur[], std::string& lin
         CONN3D2 <=> Bar
         S3      <=> Triangle
         S3R     <=> Triangle
+        R3D3    <=> Triangle
         S4R     <=> Quad
         R3D4    <=> Quad
         M3D4    <=> Quad
-        R3D3    <=> Triangle
         C3D4    <=> Tetra
         C3D8    <=> Hexa
         C3D8R   <=> Hexa
         C3D8I   <=> Hexa
         C3D6    <=> Prism
-   Pour en ajouter, il faut le faire dans la méthode MatchElement_INP_LMTpp::add_element_at(), et le constructeur de ElementSet.
+   Pour en ajouter, il faut le faire dans la méthode MatchElement_Inp_LMTpp::add_element_at(), et le constructeur de ElementSet.
 
     doc interne
     
-    ReaderINP contient des structures quasi identiques aux structures de INP, comme par exemple Element, Orientation, SolidSection, etc.
-    Parmi ces structures, celles jouant le rôle de conteneur comme par exemple ElementSet contiennent des tableaux d'entiers, ces entiers correspondant à ceux utilisés par INP pour numéroter les objets. 
+    ReaderINP contient des structures quasi identiques aux structures de INP, comme par exemple Node, Element, Orientation, SolidSection, etc.
+    Parmi ces structures, celles jouant le rôle de conteneur comme par exemple NodeSet ou ElementSet contiennent des tableaux d'entiers, ces entiers correspondant à ceux utilisés par INP pour numéroter les objets.
     Pour ensuite accéder à l'élément ou le noeud d'indice cet entier, on utilise des map du genre map<int, Object >.
     Plus précisément, ReaderINP contient :
     \code C/C++
-        map<int, TNode*> map_num_node;
-        map<int, MatchElement_INP_LMTpp > map_num_element;
-        map<string, NodeSet*> map_NodeSet;
-        map<string, ElementSet*> map_ElementSet;
-        map<string, Orientation*> map_Orientation;
-        map<string, SolidSection*> map_SolidSection;
-        map<string, Material*> map_Material;
-        map<string, Step*> map_Step;
-        map<string, Contact_Pair*> map_Conctact_Pair;
-        map<string, Surface*> map_Surface;
+        map<int, TNode* > map_Node;
+        map<int, MatchElement_Inp_LMTpp > map_Element;
+        map<string, NodeSet* > map_NodeSet;
+        map<string, ElementSet* > map_ElementSet;
+        map<string, Orientation* > map_Orientation;
+        map<string, SolidSection* > map_SolidSection;
+        map<string, Material* > map_Material;
+        map<string, Step* > map_Step;
+        map<string, Contact_Pair* > map_Conctact_Pair;
+        map<string, Surface* > map_Surface;
 
 */
 template<class TM> 
@@ -197,11 +197,11 @@ struct ReaderINP {
         Vec<double> pos;
     };
     
-    typedef std::map<unsigned, NodeInp> Map_num_node;
+    typedef std::map<unsigned, NodeInp > Map_Node;
     
-     struct MatchElement_INP_LMTpp {
-        MatchElement_INP_LMTpp() : ptrEA( NULL ) { }
-        MatchElement_INP_LMTpp( const char* n, EA* p, Vec<unsigned> &lnode ) : name( n ), ptrEA( p ), list_node( lnode ) {}
+     struct MatchElement_Inp_LMTpp {
+        MatchElement_Inp_LMTpp() : ptrEA( NULL ) { }
+        MatchElement_Inp_LMTpp( const char* n, EA* p, Vec<unsigned> &lnode ) : name( n ), ptrEA( p ), list_node( lnode ) {}
 
         /*!
             Cette méthode ajoute à "mesh" l'élément concerné.
@@ -209,7 +209,7 @@ struct ReaderINP {
             On a choisi un map et pas un simple vector ou Vec car la méthode find() de map est en complexité O( ln( N ) ) et non O( N ) comme les conteneurs précédents.
         */
         template<class TMESH>
-        typename TMESH::MA::EA* add_element_at( TMESH &mesh, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_num_node &mapNode ) const {
+        typename TMESH::MA::EA* add_element_at( TMESH &mesh, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_Node &map_Node ) const {
             //typedef typename TMESH::MA::EA EALocal;
             typedef typename TMESH::TNode TNodeLocal;
             typedef typename TMESH::Pvec PvecLocal;
@@ -227,7 +227,7 @@ struct ReaderINP {
                 if ( it != match_inode_inp_lmtpp.end() ) {
                     vnlocal[ j ] = &mesh.node_list[ it->second ];
                 } else {
-                    mapNode[ list_node[ j ] ].copy_to( v );
+                    map_Node[ list_node[ j ] ].copy_to( v );
                     vnlocal[ j ] = mesh.add_node( v );
                     match_inode_inp_lmtpp[ list_node[ j ] ] = match_inode_inp_lmtpp.size() - 1;
                 }
@@ -253,7 +253,7 @@ struct ReaderINP {
                 permutation_if_jac_neg ( Hexa(), vnlocal.ptr() );
                 return mesh.add_element( Hexa(), DefaultBehavior(), vnlocal.ptr() );
             }
-            std::cerr << "WARNING ReaderINP : the element " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl;
+            std::cerr << "WARNING ReaderINP : the element " << name << " does not append by MatchElement_Inp_LMTpp. TODO" << std::endl;
             return NULL;
         }
         
@@ -313,11 +313,11 @@ struct ReaderINP {
                         return;
                 }
             }
-            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " is not unknown by MatchElement_INP_LMTpp. TODO" << std::endl;
+            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " is not unknown by MatchElement_Inp_LMTpp. TODO" << std::endl;
         }
         
         template<class TMESH>
-        void add_surface_element_at( TMESH &mesh, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_num_node &mapNode, unsigned idFace ) const {
+        void add_surface_element_at( TMESH &mesh, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_Node &map_Node, unsigned idFace ) const {
             typedef typename TMESH::TNode TNodeLocal;
             typedef typename TMESH::Pvec PvecLocal;
             Vec< TNodeLocal* > vnlocal;
@@ -336,13 +336,13 @@ struct ReaderINP {
                         if ( it != match_inode_inp_lmtpp.end() ) {
                             vnlocal[ j ] = &mesh.node_list[ it->second ];
                         } else {
-                            mapNode[ index[ j ] ].copy_to( v );
+                            map_Node[ index[ j ] ].copy_to( v );
                             vnlocal[ j ] = mesh.add_node( v );
                             match_inode_inp_lmtpp[ index[ j ] ] = match_inode_inp_lmtpp.size() - 1;
                         }
                     }
 //                     for( unsigned i = 0; i < index.size(); ++i ) {
-//                         mapNode[ index[ i ] ].copy_to( v );
+//                         map_Node[ index[ i ] ].copy_to( v );
 //                         vnlocal[ i ] = mesh.add_node( v );
 //                     }
                     permutation_if_jac_neg ( Quad(), vnlocal.ptr() );
@@ -350,22 +350,22 @@ struct ReaderINP {
                     return;
                 }
             }
-            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " does not append by MatchElement_INP_LMTpp. TODO" << std::endl;
+            std::cerr << "WARNING ReaderINP : the surface element of type " << name << " does not append by MatchElement_Inp_LMTpp. TODO" << std::endl;
         }
         
         std::string name; /// nom LMT++ de l'élément ( e.g. Triangle, Hexa )
         EA* ptrEA; /// pointeur sur l'élément du maillage entier
         //Vec<TNode*> list_node; /// la liste des noeuds de l'élément dans le maillage entier
-        Vec<unsigned> list_node; /// la value de l'entier correspond à l'entrée de Map_num_nodeInp de ReaderINP
+        Vec<unsigned> list_node; /// la valeur de l'entier correspond à l'entrée de Map_Node_Inp de ReaderINP
     };
 
-    typedef std::map<unsigned, MatchElement_INP_LMTpp > Map_num_element;
-    //typedef map<int, EA*> Map_num_element;
-    //typedef map<int, void*> Map_num_element;
+    typedef std::map<unsigned, MatchElement_Inp_LMTpp > Map_Element;
+    //typedef map<int, EA*> Map_Element;
+    //typedef map<int, void*> Map_Element;
     
     /*!
     Ce code souhaite représenter la méthode de stockage des identifiants entiers des noeuds ou des éléments dans Abaqus.
-    Dans le format Inp de Abaqus, un Elset ( ou un NSet ) peut contenir soit :
+    Dans le format Inp de Abaqus, un NSet ( ou un Elset ) peut contenir soit :
         * une liste d'indices toute simple soit, 
         * une liste de triplets d'entiers  start, end, step qui signifie que le Elset contient tous les indices de la forme start + i * step où i parcourt les entiers positifs ou nul tout en vérifiant start + i * step <= end ( attention le end est toujours compris pour un step égal à un ).    
     
@@ -450,7 +450,7 @@ struct ReaderINP {
             withCoordinate = false;
         }
         
-        void read( TM &m, std::string& str, Map_num_node &map_num_nodeInp ) {
+        void read( TM &m, std::string& str, Map_Node &map_Node_Inp ) {
             double p;
             int number;
             NodeInp node;
@@ -468,7 +468,7 @@ struct ReaderINP {
                     node.pos.push_back( p );
                 }
                 
-                map_num_nodeInp[ number ] = node;
+                map_Node_Inp[ number ] = node;
                 this->data.push_back( number );
             } else {
                 //PRINT("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -506,23 +506,24 @@ struct ReaderINP {
             /// ref : liste des éléments Abaqus http://muscadet.lmt.ens-cachan.fr:2080/v6.7/books/usb/default.htm
             /// page : Output Variable and Element Indexes.Abaqus/Standard ElementSet Index
             if ( type.size() ) {
-                if ( type == "C3D8R"   ) { type = "Hexa"; nb_nodes = 8; return; }
-                if ( type == "C3D8I"   ) { type = "Hexa"; nb_nodes = 8; return; }
-                if ( type == "C3D8"    ) { type = "Hexa"; nb_nodes = 8; return; }
-                if ( type == "C3D4"    ) { type = "Tetra"; nb_nodes = 4; return; }
-                if ( type == "S3R"     ) { type = "Triangle"; nb_nodes = 3; return; }
+                if ( type == "ROTARYI" ) { type = "NodalElement"; nb_nodes = 1; return; }
+                if ( type == "MASS"    ) { type = "NodalElement"; nb_nodes = 1; return; }
+                if ( type == "B31"     ) { type = "Bar"; nb_nodes = 2; return; } /// dans R^3
+                if ( type == "SpringA" ) { type = "Bar"; nb_nodes = 2; return; }
+                if ( type == "SPRING1" ) { type = "Bar"; nb_nodes = 2; return; } /// à vérifier sur un exemple
+                if ( type == "CONN3D2" ) { type = "Bar"; nb_nodes = 2; return; }
                 if ( type == "S3"      ) { type = "Triangle"; nb_nodes = 3; return; }
+                if ( type == "S3R"     ) { type = "Triangle"; nb_nodes = 3; return; }
+                if ( type == "R3D3"    ) { type = "Triangle"; nb_nodes = 3; return; } /// dans R^3
                 if ( type == "S4R"     ) { type = "Quad"; nb_nodes = 4; return; }
                 if ( type == "R3D4"    ) { type = "Quad"; nb_nodes = 4; return; } /// dans R^3
                 if ( type == "M3D4"    ) { type = "Quad"; nb_nodes = 4; return; } /// dans R^3
-                if ( type == "R3D3"    ) { type = "Triangle"; nb_nodes = 3; return; } /// dans R^3
-                if ( type == "B31"     ) { type = "Bar"; nb_nodes = 2; return; } /// dans R^3
-                if ( type == "SpringA" ) { type = "Bar"; nb_nodes = 2; return; }
-                if ( type == "SPRING1" ) { type = "Bar"; nb_nodes = 2; return; } /// à vérifier sur un exemple  
-                if ( type == "CONN3D2" ) { type = "Bar"; nb_nodes = 2; return; } 
+                if ( type == "C3D4"    ) { type = "Tetra"; nb_nodes = 4; return; }
+                if ( type == "C3D8"    ) { type = "Hexa"; nb_nodes = 8; return; }
+                if ( type == "C3D8R"   ) { type = "Hexa"; nb_nodes = 8; return; }
+                if ( type == "C3D8I"   ) { type = "Hexa"; nb_nodes = 8; return; }
                 if ( type == "C3D6"    ) { type = "Prism"; nb_nodes = 6; return; }
-                if ( type == "ROTARYI" ) { type = "NodalElement"; nb_nodes = 1; return; }
-                if ( type == "MASS"    ) { type = "NodalElement"; nb_nodes = 1; return; }
+
             } else {
                 nb_nodes = 0;
 //                 if ( not ( isGenerate ) )
@@ -530,7 +531,7 @@ struct ReaderINP {
             }
         }
         
-        void read( TM &m, std::string& str, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_num_node& mapNode, Map_num_element& map_num_element ) {
+        void read( TM &m, std::string& str, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, Map_Node& map_Node, Map_Element& map_Element ) {
             unsigned number,number2;
             Vec<unsigned> vninp;
 
@@ -545,11 +546,11 @@ struct ReaderINP {
                 vninp.resize( nb_nodes );
                 for ( unsigned i = 0; i < nb_nodes; ++i ) {
                     iss >> number2;
-                    //vn[ i ] = map_num_node[ number2 ];
+                    //vn[ i ] = map_Node[ number2 ];
                     vninp[ i ] = number2;
                 }
-                map_num_element[ number ] = MatchElement_INP_LMTpp( type.c_str(), NULL, vninp );
-                map_num_element[ number ].ptrEA = map_num_element[ number ].add_element_at( m, match_inode_inp_lmtpp, mapNode );
+                map_Element[ number ] = MatchElement_Inp_LMTpp( type.c_str(), NULL, vninp );
+                map_Element[ number ].ptrEA = map_Element[ number ].add_element_at( m, match_inode_inp_lmtpp, map_Node );
             } else {
                 while( not( iss.eof() ) ) {
                     iss >> number;
@@ -813,16 +814,16 @@ struct ReaderINP {
         }
 
         template<class TF,class ScalarType>
-        void set_constraint( TF &f, const ScalarType &penalty_value=0 ) const {
+        void set_constraint( TF &f, std::map< unsigned, unsigned > &match_inode_inp_lmtpp, const ScalarType &penalty_value=0 ) const {
             for( unsigned i = 0; i < number.size(); ++i )
-                f.add_constraint( "node["+to_string(number[i]-1)+"].dep["+to_string(dim[i]-1)+"] - "+to_string(data[i]), penalty_value );
+                f.add_constraint( "node["+to_string(match_inode_inp_lmtpp[ number[i] ])+"].dep["+to_string(dim[i]-1)+"] - "+to_string(data[i]), penalty_value );
         }
 
         void display() const {
             std::cout << "Boundary " << std::endl;
             std::cout << " amplitude = " << amplitude << std::endl;
             for( unsigned i = 0; i < number.size(); ++i ) {
-                std::cout << " node[" << number[i]-1 << "].dep[" << dim[i]-1 << "] == " << data[i] << std::endl;
+                std::cout << " displacement of node " << number[i] << " in dim " << dim[i] << " = " << data[i] << std::endl;
             }
         }
 
@@ -992,7 +993,7 @@ struct ReaderINP {
             }
         }
 
-        Vec<unsigned> indice; /// la value correspond à l'entrée dans la Map_num_node ou Map_num_nodeInp ou encore Map_num_element.
+        Vec<unsigned> indice; /// la valeur correspond à l'entrée dans la Map_Node ou Map_Element.
         Vec<unsigned> id_face; /// la valeur correspond à l'identifiant de face de Abaqus
         unsigned type; /// 0 <=> ELEMENT, 1 <=> NODE
     };
@@ -1053,28 +1054,28 @@ struct ReaderINP {
     }
     
     ~ReaderINP() {
-        typename std::map< std::string, ElementSet*>::iterator it;
+        typename std::map< std::string, ElementSet* >::iterator it;
         for( it = map_ElementSet.begin(); it != map_ElementSet.end(); ++it ) delete it->second;
         
-        typename std::map< std::string, NodeSet*>::iterator it2;
+        typename std::map< std::string, NodeSet* >::iterator it2;
         for( it2 = map_NodeSet.begin(); it2 != map_NodeSet.end(); ++it2 ) delete it2->second;
         
-        typename std::map< std::string, Orientation*>::iterator it3;
+        typename std::map< std::string, Orientation* >::iterator it3;
         for( it3 = map_Orientation.begin(); it3 != map_Orientation.end(); ++it3 ) delete it3->second;
         
-        typename std::map< std::string, SolidSection*>::iterator it4;
+        typename std::map< std::string, SolidSection* >::iterator it4;
         for( it4 = map_SolidSection.begin(); it4 != map_SolidSection.end(); ++it4 ) delete it4->second;
         
-        typename std::map< std::string, Material*>::iterator it5;
+        typename std::map< std::string, Material* >::iterator it5;
         for( it5 = map_Material.begin(); it5 != map_Material.end(); ++it5 ) delete it5->second;
         
-        typename std::map< std::string, Step*>::iterator it6;
+        typename std::map< std::string, Step* >::iterator it6;
         for( it6 = map_Step.begin(); it6 != map_Step.end(); ++it6 ) delete it6->second;
 
-        typename std::map< std::string, ContactPair*>::iterator it7;
+        typename std::map< std::string, ContactPair* >::iterator it7;
         for( it7 = map_ConctactPair.begin(); it7 != map_ConctactPair.end(); ++it7 ) delete it7->second;
         
-        typename std::map< std::string, Surface*>::iterator it8;
+        typename std::map< std::string, Surface* >::iterator it8;
         for( it8 = map_Surface.begin(); it8 != map_Surface.end(); ++it8 ) delete it8->second;
     }
     
@@ -1090,13 +1091,12 @@ struct ReaderINP {
         if ((str.find("STEP",1) == 1) or (str.find("Step",1) == 1))                   { return STATUS_STEP; }
         if ((str.find("CONTACT PAIR",1) == 1) or (str.find("Contact Pair",1) == 1))   { return STATUS_CONTACT_PAIR; }
         if ((str.find("SURFACE",1) == 1) or (str.find("Surface",1) == 1))             { return STATUS_SURFACE; }
-        std::cerr << "WARNING ReaderINP : ignored option = " << value( str, "*", "*", ",\n") << std::endl;
+        //std::cerr << "WARNING ReaderINP : ignored option = " << value( str, "*", "*", ",\n") << std::endl;
         return STATUS_IGNORED; /// option non traitée
     }
     
     void parse( TM &m, const char* filename ) {
         std::string str, str2, name;
-        std::map< unsigned, unsigned > match_inode_inp_lmtpp;
         unsigned n;
         Status_ID ctxte = STATUS_IGNORED;
         NodeSet* pns = NULL;
@@ -1131,7 +1131,7 @@ struct ReaderINP {
                 ctxte = setStatus( str );
                 switch( ctxte ) {
                     case STATUS_NODE          : pns  = map_NodeSet[ internal_name[ 0 ] ] = new NodeSet(); break;
-                    case STATUS_ELEMENT       : pes  = map_ElementSet[ value( str, "ELSET=","elset=" ) ] = new ElementSet( str ); break;
+                    case STATUS_ELEMENT       : pes  = map_ElementSet[ internal_name[ 1 ] ] = new ElementSet( str ); break;
                     case STATUS_NSET          : pns  = map_NodeSet[ value( str, "NSET=","nset=" ) ] = new NodeSet( str ); break;
                     case STATUS_ELSET         : pes  = map_ElementSet[ value( str, "ELSET=", "elset=" ) ] = new ElementSet( str ); break;
                     case STATUS_ORIENTATION   : por  = map_Orientation[ value( str, "NAME=", "name=" ) ] = new Orientation( str ); break;
@@ -1161,7 +1161,7 @@ struct ReaderINP {
             /// utilisation du contexte
             switch( ctxte ) {
                 case STATUS_NODE : case STATUS_NSET : 
-                    pns->read( m, str, map_num_node );
+                    pns->read( m, str, map_Node );
                     continue;
                 case STATUS_ELEMENT : case STATUS_ELSET :
                     /// malheureusement l'info de *Element ou *Elset est parfois mise sur deux lignes...
@@ -1174,7 +1174,7 @@ struct ReaderINP {
                         normalize_end_line( str );
                         str += str2;
                     }
-                    pes->read( m, str, match_inode_inp_lmtpp, map_num_node, map_num_element );
+                    pes->read( m, str, match_inode_inp_lmtpp, map_Node, map_Element );
                     continue;
                 case STATUS_ORIENTATION :
                     /// malheureusement l'info de *Orientation est parfois mise sur deux lignes...
@@ -1209,14 +1209,14 @@ struct ReaderINP {
     template<class TMESH>
     void create_mesh_by_elset( TMESH &mesh, const std::string &nameElSet ) {
         std::map< unsigned, unsigned > match_inode_inp_lmtpp;
-        typename std::map< std::string, ElementSet*>::iterator it;
+        typename std::map< std::string, ElementSet* >::iterator it;
 
         it = map_ElementSet.find( nameElSet );
         if ( it != map_ElementSet.end() ) {
             ElementSet* elset = it->second;
             typename ElementSet::iterator itel;
             for( itel = elset->begin(); itel != elset->end(); ++itel ) {
-                map_num_element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_num_node );
+                map_Element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_Node );
             }
         } else 
             std::cerr << "WARNING ReaderINP : unknown ElSet name " << nameElSet << std::endl;
@@ -1230,10 +1230,10 @@ struct ReaderINP {
         it = map_Surface.find( nameSurface );
         if ( it != map_Surface.end() ) {
             Surface* surf = it->second;
-            if ( surf->type == 0 ) { /// ELEMENTS
+            if ( surf->type == 0 ) { /// ELEMENTS SURFACE
                 for( unsigned i = 0; i < surf->indice.size(); ++i )
-                    map_num_element[ surf->indice[ i ] ].add_surface_element_at( mesh, match_inode_inp_lmtpp, map_num_node, surf->id_face[ i ] );
-            } else
+                    map_Element[ surf->indice[ i ] ].add_surface_element_at( mesh, match_inode_inp_lmtpp, map_Node, surf->id_face[ i ] );
+            } else /// NODES SURFACE
                 std::cerr << "WARNING ReaderINP : TODO : create mesh by surface defined by nodes" << std::endl;
         } else
             std::cerr << "WARNING ReaderINP : unknown Surface name " << nameSurface << std::endl;
@@ -1246,30 +1246,30 @@ struct ReaderINP {
         if ( it != map_Surface.end() ) {
             Surface* surf = it->second;
             if ( surf->type == 0 ) { /// ELEMENTS SURFACE
-                typename Map_num_element::iterator it2;
+                typename Map_Element::iterator it2;
                 
-                for( it2 = map_num_element.begin(); it2 != map_num_element.end(); ++it2 )
+                for( it2 = map_Element.begin(); it2 != map_Element.end(); ++it2 )
                     if ( it2->second.ptrEA )
                         it2->second.ptrEA->set_field( nameTag, 0., false );
                     else
                         std::cerr << "WARNING ReaderINP : it2->second.ptrEA == NULL..."  << std::endl;
                
                 for( unsigned i = 0; i < surf->indice.size(); ++i )
-                    if ( map_num_element[ surf->indice[ i ] ].ptrEA )
-                        map_num_element[ surf->indice[ i ] ].ptrEA->set_field( nameTag, valueTag, false );
+                    if ( map_Element[ surf->indice[ i ] ].ptrEA )
+                        map_Element[ surf->indice[ i ] ].ptrEA->set_field( nameTag, valueTag, false );
                     else
                         std::cerr << "WARNING ReaderINP : problem to tag the element " << surf->indice[ i ] << std::endl;
-            } else
+            } else /// NODES SURFACE
                 std::cerr << "WARNING ReaderINP : TODO : tag mesh by surface defined by nodes" << std::endl;
         } else
             std::cerr << "WARNING ReaderINP : unknown Surface name " << nameSurface << std::endl;
     }
     
     /*!
-    Cette méthode place dans index les indices des noeuds du maillage "mesh" qui appartiennent à la surface nommé "nameSurface".
+    Cette méthode place dans index les indices des noeuds du maillage "mesh" qui appartiennent à la surface nommée "nameSurface".
     Elle retourne le nombre de ces indices.
     Deux points sont considérés comme confondus si leur distance euclidienne est inféieure à "tol".
-    Par défaut la tolérance "tol" est à 10^-4.
+    Par défaut la tolérance "tol" est 10^-4.
     */
     template<class TMESH>
     unsigned get_index_node_of_surface( Vec<unsigned> &index, TMESH &mesh, const std::string& nameSurface, typename TMESH::TNode::T tol = 1e-4 ) {
@@ -1282,11 +1282,11 @@ struct ReaderINP {
         
         if ( it != map_Surface.end() ) {
             Surface* surf = it->second;
-            if ( surf->type == 0 ) { /// ELEMENT-SURFACE
+            if ( surf->type == 0 ) { /// ELEMENTS SURFACE
                 Vec<unsigned> lindex, bigindex;
                 for( unsigned i = 0; i < surf->indice.size(); ++i ) {
                     /// on cherche à obtenir les indices des noeuds de la surface de l'élément "i" concerné
-                    map_num_element[ surf->indice[ i ] ].get_index_node_of_surface( lindex, surf->id_face[ i ] );
+                    map_Element[ surf->indice[ i ] ].get_index_node_of_surface( lindex, surf->id_face[ i ] );
 
                     for( unsigned j = 0; j < lindex.size(); ++j )
                         if ( not( bigindex.contains( lindex[ j ] ) ) ) 
@@ -1294,7 +1294,7 @@ struct ReaderINP {
                 }
 
                 for( unsigned i = 0; i < bigindex.size(); ++i ) {
-                    map_num_node[ bigindex[ i ] ].copy_to( po ); /// pas optimisé
+                    map_Node[ bigindex[ i ] ].copy_to( po ); /// pas optimisé
                     for( unsigned j = 0; j < mesh.node_list.size(); ++j )
                         if ( LMT::distance( po, mesh.node_list[ j ].pos ) < tol ) {
                             index.push_back( j );
@@ -1303,10 +1303,10 @@ struct ReaderINP {
                 }
                 return index.size();
                 
-            } else { /// NODAL-SURFACE
+            } else { /// NODES SURFACE
                 for( unsigned i = 0; i < surf->indice.size(); ++i ) {
-                    //po = (PvecLocal) map_num_node[ surf->indice[ i ] ];
-                    map_num_node[ surf->indice[ i ] ].copy_to( po ); /// pas optimisé
+                    //po = (PvecLocal) map_Node[ surf->indice[ i ] ];
+                    map_Node[ surf->indice[ i ] ].copy_to( po ); /// pas optimisé
                     for( unsigned j = 0; j < mesh.node_list.size(); ++j )
                         if ( LMT::distance( po, mesh.node_list[ j ].pos ) < tol ) {
                             index.push_back( j );
@@ -1329,7 +1329,7 @@ struct ReaderINP {
         ElementSet* elset;
         Orientation *ori;
         Material* material;
-        //MatchElement_INP_LMTpp mel;
+        //MatchElement_Inp_LMTpp mel;
 
         for( it = map_SolidSection.begin(); it != map_SolidSection.end(); ++it ) {
             //PRINT(it->first);
@@ -1337,13 +1337,13 @@ struct ReaderINP {
                 if ( it->second->s_material == nameMaterial ) {
                     ori = it->second->orientation;
                     material = it->second->material;
-                    typename std::map< std::string, ElementSet*>::iterator itelset = map_ElementSet.find( it->first );
+                    typename std::map< std::string, ElementSet* >::iterator itelset = map_ElementSet.find( it->first );
                     
                     if ( itelset != map_ElementSet.end() ) {
                         elset = itelset->second;
                         typename ElementSet::iterator itel;
                         for( itel = elset->begin(); itel != elset->end(); ++itel ) {
-                            ptrEA = map_num_element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_num_node );
+                            ptrEA = map_Element[ *itel ].add_element_at( mesh, match_inode_inp_lmtpp, map_Node );
                             if ( ptrEA ) {
                                 if ( ori )
                                     ori->set_property( ptrEA );
@@ -1370,43 +1370,56 @@ struct ReaderINP {
     
     template<class TF,class ScalarType>
     void set_constraint_by_step( TF &f, const std::string &nameStep, const ScalarType &penalty_value=0 ) {
-        typename std::map< std::string, Step*>::iterator it;
+        typename std::map< std::string, Step* >::iterator it;
 
         it = map_Step.find( nameStep );
         if ( it != map_Step.end() ) {
             Step* step = it->second;
             if ( step->boundary )
-                step->boundary->set_constraint( f, penalty_value );
+                step->boundary->set_constraint( f, match_inode_inp_lmtpp, penalty_value );
             else
                 std::cerr << "WARNING ReaderINP : step->boundary == NULL..." << std::endl;
         } else
             std::cerr << "WARNING ReaderINP : unknown Step name " << nameStep << std::endl;
     }
 
-    void display_node() {
+    void display_match_inode_inp_lmtpp() {
 
-        //typename std::map< unsigned,TNode*>::iterator it;
-        typename Map_num_node::iterator it;
+        typename std::map< unsigned, unsigned >::iterator it;
+
+        std::cout << "****************************************************" << std::endl;
+        std::cout << "*       Correspondance between index of nodes      *" << std::endl;
+        std::cout << "****************************************************" << std::endl;
+
+        std::cout << "Number of nodes = " <<  match_inode_inp_lmtpp.size() << std::endl;
+        for( it = match_inode_inp_lmtpp.begin(); it != match_inode_inp_lmtpp.end(); ++it )
+            std::cout << " node " <<  it->first << " in Inp file -> node " << it->second << " in LMTpp mesh" << std::endl;
+    }
+
+    void display_map_node() {
+
+        //typename std::map< unsigned, TNode* >::iterator it;
+        typename Map_Node::iterator it;
 
         std::cout << "****************************************************" << std::endl;
         std::cout << "*                       Node                       *" << std::endl;
         std::cout << "****************************************************" << std::endl;
 
-        std::cout << "Number of nodes = " <<  map_num_node.size() << std::endl;
-        for( it = map_num_node.begin(); it != map_num_node.end(); ++it )
+        std::cout << "Number of nodes = " <<  map_Node.size() << std::endl;
+        for( it = map_Node.begin(); it != map_Node.end(); ++it )
             std::cout << " node " <<  it->first << " at position " << it->second.pos << std::endl;
     }
 
-    void display_element() {
+    void display_map_element() {
 
-        typename Map_num_element::iterator it;
+        typename Map_Element::iterator it;
 
         std::cout << "****************************************************" << std::endl;
         std::cout << "*                   Element                        *" << std::endl;
         std::cout << "****************************************************" << std::endl;
 
-        std::cout << "Number of elements = " <<  map_num_element.size() << std::endl;
-        for( it = map_num_element.begin(); it != map_num_element.end(); ++it )
+        std::cout << "Number of elements = " <<  map_Element.size() << std::endl;
+        for( it = map_Element.begin(); it != map_Element.end(); ++it )
             std::cout << " element " <<  it->first << " of type " << it->second.name << std::endl; //PRINT( *( it->second.ptr ) );
     }
 
@@ -1548,18 +1561,18 @@ struct ReaderINP {
     }
     
     /// attributs :
-    std::map< std::string, NodeSet*> map_NodeSet;
-    std::map< std::string, ElementSet*> map_ElementSet;
-    std::map< std::string, Orientation*> map_Orientation;
-    std::map< std::string, SolidSection*> map_SolidSection;
-    std::map< std::string, Material*> map_Material;
-    std::map< std::string, Step*> map_Step;
-    std::map< std::string, ContactPair*> map_ConctactPair;
-    std::map< std::string, Surface*> map_Surface;
-    // correspondance between number in file -> ref in mesh
-    //Map_num_node    map_num_node;
-    Map_num_node map_num_node;
-    Map_num_element map_num_element;
+    std::map< std::string, NodeSet* > map_NodeSet;
+    std::map< std::string, ElementSet* > map_ElementSet;
+    std::map< std::string, Orientation* > map_Orientation;
+    std::map< std::string, SolidSection* > map_SolidSection;
+    std::map< std::string, Material* > map_Material;
+    std::map< std::string, Step* > map_Step;
+    std::map< std::string, ContactPair* > map_ConctactPair;
+    std::map< std::string, Surface* > map_Surface;
+    // correspondance between number in Inp file -> ref in LMTpp mesh
+    std::map< unsigned, unsigned > match_inode_inp_lmtpp;
+    Map_Node map_Node;
+    Map_Element map_Element;
     double conversion_factor;
     static const char* internal_name[ 2 ];
     static const unsigned nb_principale_keyword = 26;

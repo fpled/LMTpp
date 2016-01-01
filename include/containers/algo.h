@@ -37,7 +37,7 @@ Structure interne à la LMT++
 
     La fonction sort trie les éléments d'un vecteur. Ses syntaxes générales sont :
     \code
-        sort(vecteur)  // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
+        sort(vecteur) // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut qui est pris.
         sort(vecteur,op)
 
     opérateur est une classe ou structure implémentant l'opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
@@ -165,7 +165,7 @@ namespace ALGOPRIVATE {
 
     La fonction sort_with_index trie les éléments d'un vecteur comme \a sort et de plus renvoie la permutation associée sous forme d'un vecteur d'entiers. Ses syntaxes générales sont :
     \code
-        sort_with_index(vecteur) // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut  qui est pris.
+        sort_with_index(vecteur) // dans ce cas c'est l'opérateur <= défini dans la classe ou le <= par défaut qui est pris.
         sort_with_index(vecteur,op)
 
     op est une instance de classe ou structure implémentant un opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
@@ -233,7 +233,7 @@ namespace ALGOPRIVATE {
 
     La fonction remove_doubles supprime les doublons d'un vecteur. Conséquence après l'opération, tous les éléments sont distincts. Ses syntaxes générales sont :
     \code
-        remove_doubles(vecteur) // dans ce cas c'est l'opérateur == défini dans la classe ou le == par défaut  qui est pris.
+        remove_doubles(vecteur) // dans ce cas c'est l'opérateur == défini dans la classe ou le == par défaut qui est pris.
         remove_doubles(vecteur,op)
 
     op est une instance de classe ou structure implémentant un opérateur parenthèse (i.e. operator() ) qui devra renvoyer un booléen.
@@ -333,7 +333,7 @@ struct MinMax {
         get_min_max(vecteur,&min,&max)
         get_min_max(vecteur,&vecteur_min,&vecteur_max)
         get_min_max(vecteur,op,&min,&max)
-        get_min_max(vecteur,op,&vecteur_min,&vecteur_max)      
+        get_min_max(vecteur,op,&vecteur_min,&vecteur_max)
 
     La première syntaxe renvoie le min et le max.
     La seconde renvoie deux vecteurs (de taille définie à l'éxécution), le premier contenant que la valeur min et le second que la valeur max.
