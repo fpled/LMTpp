@@ -22,13 +22,14 @@ namespace LMT {
 /*!
     Triangle à 3 noeuds
     \verbatim
-            2
-            |\
-            | \
-            |  \
-            |   \
-            0----1
+    .                    2
+    .                    |\
+    .                    | \
+    .                    |  \
+    .                    |   \
+    .                    0----1
     \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \author Hugo LECLERC
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -54,7 +55,6 @@ template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
    het.add_element(e,ch,Triangle(),e.node(0),e.node(1),e.node(2));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar(),e.node(0),e.node(1));
@@ -347,7 +347,7 @@ bool is_inside_linear( const Triangle &elem, const PosNodes &pos_nodes, const Pv
 
 inline unsigned vtk_num( StructForType<Triangle> ) { return 5; }
 
-};
+}
 
 #include "element_Triangle.h"
 

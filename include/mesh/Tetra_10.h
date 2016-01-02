@@ -20,14 +20,15 @@ namespace LMT {
 /*!
     Tétraèdre à 10 noeuds
     \verbatim
-        .                          3
-        .                         /|\
-        .                        / |9\
-        .                      7/  |  \8
-        .                      /  /2\  \
-        .                     / /6   5\ \
-        .                    0/--- 4----\1
-
+    .                          3
+    .                         /|\
+    .                        / |9\
+    .                      7/  |  \8
+    .                      /  /2\  \
+    .                     / /6   5\ \
+    .                    0/--- 4----\1
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -40,6 +41,7 @@ struct Tetra_10 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Tetra_10,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Tetra_10,1> { static const unsigned res = 4; };
 template<> struct NbChildrenElement<Tetra_10,2> { static const unsigned res = 6; };
 template<> struct NbChildrenElement<Tetra_10,3> { static const unsigned res = 10; };
@@ -50,13 +52,16 @@ template<unsigned n> struct TypeChildrenElement<Tetra_10,2,n> { typedef Bar_3 T;
 template<unsigned n> struct TypeChildrenElement<Tetra_10,3,n> { typedef NodalElement T; };
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Tetra_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Tetra_10(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9));
+}
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Tetra_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Triangle_6(),e.node(0),e.node(2),e.node(1),e.node(6),e.node(5),e.node(4));
     het.add_element(e,ch,Triangle_6(),e.node(0),e.node(1),e.node(3),e.node(4),e.node(8),e.node(7));
     het.add_element(e,ch,Triangle_6(),e.node(0),e.node(3),e.node(2),e.node(7),e.node(9),e.node(6));
     het.add_element(e,ch,Triangle_6(),e.node(1),e.node(2),e.node(3),e.node(5),e.node(9),e.node(8));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Tetra_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<2> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(4),e.node(1));
@@ -66,7 +71,6 @@ void append_skin_elements(Element<Tetra_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Num
     het.add_element(e,ch,Bar_3(),e.node(1),e.node(8),e.node(3));
     het.add_element(e,ch,Bar_3(),e.node(2),e.node(9),e.node(3));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Tetra_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<3> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
@@ -206,7 +210,7 @@ T var_inter_insideness( const Tetra_10 &e, const TV &var_inter ) {
 
 inline unsigned vtk_num( StructForType<Tetra_10> ) { return 24; }
 
-};
+}
 
 #include "element_Tetra_10.h"
 

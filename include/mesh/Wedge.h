@@ -21,24 +21,24 @@ namespace LMT {
 /*!
     Prisme à 6 noeuds
     \verbatim
-        .                        5
-        .                       /|\
-        .                      / | \
-        .                     /  |  \
-        .                    3___|___4
-        .                    |   |   |
-        .                    |   2   |
-        .                    |  / \  |
-        .                    | /   \ |
-        .                    |/     \|
-        .                    0______ 1
-        
+    .                        5
+    .                       /|\
+    .                      / | \
+    .                     /  |  \
+    .                    3___|___4
+    .                    |   |   |
+    .                    |   2   |
+    .                    |  / \  |
+    .                    | /   \ |
+    .                    |/     \|
+    .                    0______ 1
     Dans l'espace de référence cela correspond au volume de points M(x,y,z) tels que :
         * x, y , z >= 0
         * x <= 1
         * y <= 1
         * x+z <= 1
-
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -52,6 +52,7 @@ struct Wedge {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Wedge,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Wedge,1> { static const unsigned res = 5; };
 template<> struct NbChildrenElement<Wedge,2> { static const unsigned res = 9; };
 template<> struct NbChildrenElement<Wedge,3> { static const unsigned res = 6; };
@@ -65,6 +66,10 @@ template<> struct TypeChildrenElement<Wedge,1,4> { typedef Triangle T; };
 template<unsigned n> struct TypeChildrenElement<Wedge,2,n> { typedef Bar T; };
 template<unsigned n> struct TypeChildrenElement<Wedge,3,n> { typedef NodalElement T; };
 
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Wedge,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Wedge(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5));
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Wedge,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Quad(),e.node(0),e.node(1),e.node(4),e.node(3));
@@ -162,7 +167,7 @@ T var_inter_insideness( const Wedge &e, const TV &var_inter ) {
 
 inline unsigned vtk_num( StructForType<Wedge> ) { return 13; }
 
-};
+}
 
 #include "element_Wedge.h"
 

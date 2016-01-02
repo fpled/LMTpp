@@ -22,20 +22,20 @@ namespace LMT {
     Carré à 36 noeuds
     \verbatim
     .                    3----15----14----13----12-----2
-    .                    |     |     |     |     |     |
-    .                    |     |     |     |     |     |
-    .                   16----32----33----34----35-----11
-    .                    |     |     |     |     |     |
-    .                    |     |     |     |     |     |
-    .                   17----28----29----30----31-----10
-    .                    |     |     |     |     |     |
-    .                    |     |     |     |     |     |
-    .                   18----24----25----26----27-----9
-    .                    |     |     |     |     |     |
-    .                    |     |     |     |     |     |
-    .                   19----20----21----22----23-----8
-    .                    |     |     |     |     |     |
-    .                    |     |     |     |     |     |
+    .                    |                             |
+    .                    |                             |
+    .                   16    32    33    34    35     11
+    .                    |                             |
+    .                    |                             |
+    .                   17    28    29    30    31     10
+    .                    |                             |
+    .                    |                             |
+    .                   18    24    25    26    27     9
+    .                    |                             |
+    .                    |                             |
+    .                   19    20    21    22    23     8
+    .                    |                             |
+    .                    |                             |
     .                    0-----4-----5-----6-----7-----1
     \relates Mesh
     \relates Element
@@ -61,9 +61,8 @@ template<unsigned n> struct TypeChildrenElement<Quad_36,2,n> { typedef NodalElem
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_36,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
-    het.add_element(e,ch,Quad_36(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15),e.node(16),e.node(17),e.node(18),e.node(19));
+    het.add_element(e,ch,Quad_36(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15),e.node(16),e.node(17),e.node(18),e.node(19),e.node(20),e.node(21),e.node(22),e.node(23),e.node(24),e.node(25),e.node(26),e.node(27),e.node(28),e.node(29),e.node(30),e.node(31),e.node(32),e.node(33),e.node(34),e.node(35));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_36,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_6(),e.node(0),e.node(1),e.node(4),e.node(5),e.node(6),e.node(7));

@@ -20,16 +20,19 @@ namespace LMT {
 /*!
     Pavé à 8 noeuds
     \verbatim
-        .                
-        .          4____7
-        .          /   /|
-        .        5/__6/ |
-        .        |    | |
-        .        | 0  | /3
-        .        |____|/
-        .        1     2
-
-
+    .                        7----------6
+    .                       /|         /|
+    .                      / |        / |
+    .                     /  |       /  |
+    .                    4----------5   |
+    .                    |   |      |   |
+    .                    |   3------|---2
+    .                    |  /       |  /
+    .                    | /        | /
+    .                    |/         |/
+    .                    0----------1
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -44,6 +47,7 @@ struct Hexa {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Hexa,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Hexa,1> { static const unsigned res = 6; };
 template<> struct NbChildrenElement<Hexa,2> { static const unsigned res = 12; };
 template<> struct NbChildrenElement<Hexa,3> { static const unsigned res = 8; };
@@ -54,6 +58,10 @@ template<unsigned n> struct TypeChildrenElement<Hexa,2,n> { typedef Bar T; };
 template<unsigned n> struct TypeChildrenElement<Hexa,3,n> { typedef NodalElement T; };
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Hexa,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Hexa(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7));
+}
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Hexa,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Quad(),e.node(0),e.node(3),e.node(2),e.node(1));
     het.add_element(e,ch,Quad(),e.node(4),e.node(5),e.node(6),e.node(7));
@@ -62,7 +70,6 @@ void append_skin_elements(Element<Hexa,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<
     het.add_element(e,ch,Quad(),e.node(0),e.node(4),e.node(7),e.node(3));
     het.add_element(e,ch,Quad(),e.node(1),e.node(2),e.node(6),e.node(5));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Hexa,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<2> nvi_to_subs) {
     het.add_element(e,ch,Bar(),e.node(0),e.node(1));
@@ -397,7 +404,7 @@ T var_inter_insideness( const Hexa &e, const TV &var_inter ) {
 
 inline unsigned vtk_num( StructForType<Hexa> ) { return 12; }
 
-};
+}
 
 #include "element_Hexa.h"
 

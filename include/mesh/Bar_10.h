@@ -37,10 +37,16 @@ struct Bar_10 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Bar_10,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Bar_10,1> { static const unsigned res = 2; };
 
+template<unsigned n> struct TypeChildrenElement<Bar_10,0,n> { typedef Bar_10 T; };
 template<unsigned n> struct TypeChildrenElement<Bar_10,1,n> { typedef NodalElement T; };
 
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Bar_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Bar_10(),e.node(0),e.node(1),node(2),e.node(3),node(4),e.node(5),node(6),e.node(7),node(8),e.node(9));
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Bar_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
@@ -66,7 +72,7 @@ typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Bar_10,TN,TN
 }
 
 
-};
+}
 
 //#include "element_Bar_10.h"
 

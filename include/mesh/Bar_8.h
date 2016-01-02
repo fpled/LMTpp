@@ -35,10 +35,16 @@ struct Bar_8 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Bar_8,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Bar_8,1> { static const unsigned res = 2; };
 
+template<unsigned n> struct TypeChildrenElement<Bar_8,0,n> { typedef Bar_8 T; };
 template<unsigned n> struct TypeChildrenElement<Bar_8,1,n> { typedef NodalElement T; };
 
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Bar_8,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Bar_8(),e.node(0),e.node(1),node(2),e.node(3),node(4),e.node(5),node(6),e.node(7));
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Bar_8,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
@@ -63,7 +69,7 @@ typename TNG::Pvec sample_normal(const Element<Bar_8,TN,TNG,TD,NET> &e) {
 
 inline unsigned vtk_num( StructForType<Bar_8> ) { return 4; }
 
-};
+}
 
 //#include "element_Bar_8.h"
 

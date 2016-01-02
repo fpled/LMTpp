@@ -22,17 +22,17 @@ namespace LMT {
     Carré à 25 noeuds
     \verbatim
     .                    3----12----11----10-----2
-    .                    |     |     |     |     |
-    .                    |     |     |     |     |
-    .                   13----22----23----24-----9
-    .                    |     |     |     |     |
-    .                    |     |     |     |     |
-    .                   14----19----20----21-----8
-    .                    |     |     |     |     |
-    .                    |     |     |     |     |
-    .                   15----16----17----18-----7
-    .                    |     |     |     |     |
-    .                    |     |     |     |     |
+    .                    |                       |
+    .                    |                       |
+    .                   13    22    23    24     9
+    .                    |                       |
+    .                    |                       |
+    .                   14    19    20    21     8
+    .                    |                       |
+    .                    |                       |
+    .                   15    16    17    18     7
+    .                    |                       |
+    .                    |                       |
     .                    0-----4-----5-----6-----1
     \relates Mesh
     \relates Element
@@ -58,9 +58,8 @@ template<unsigned n> struct TypeChildrenElement<Quad_25,2,n> { typedef NodalElem
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_25,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
-    het.add_element(e,ch,Quad_25(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15));
+    het.add_element(e,ch,Quad_25(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15),e.node(16),e.node(17),e.node(18),e.node(19),e.node(20),e.node(21),e.node(22),e.node(23),e.node(24));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_25,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_5(),e.node(0),e.node(1),e.node(4),e.node(5),e.node(6));

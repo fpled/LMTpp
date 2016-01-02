@@ -22,11 +22,11 @@ namespace LMT {
     Carré à 9 noeuds
     \verbatim
     .                    3-----6-----2
-    .                    |     |     |
-    .                    |     |     |
-    .                    7-----8-----5
-    .                    |     |     |
-    .                    |     |     |
+    .                    |           |
+    .                    |           |
+    .                    7     8     5
+    .                    |           |
+    .                    |           |
     .                    0-----4-----1
     \relates Mesh
     \relates Element
@@ -52,9 +52,8 @@ template<unsigned n> struct TypeChildrenElement<Quad_9,2,n> { typedef NodalEleme
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_9,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
-    het.add_element(e,ch,Quad_9(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7));
+    het.add_element(e,ch,Quad_9(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_9,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(1),e.node(4));

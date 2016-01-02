@@ -36,17 +36,21 @@ struct Bar {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Bar,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Bar,1> { static const unsigned res = 2; };
 
+template<unsigned n> struct TypeChildrenElement<Bar,0,n> { typedef Bar T; };
 template<unsigned n> struct TypeChildrenElement<Bar,1,n> { typedef NodalElement T; };
 
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Bar,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Bar(),e.node(0),e.node(1));
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Bar,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
     het.add_element(e,ch,NodalElement(),e.node(1));
 }
-//template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
-//void append_skin_elements(Element<Bar,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {}
 
 // --------------------------------------------------------------------------------------------------------
 /*!
@@ -123,7 +127,7 @@ void subdivision_element(const Element<Bar,TN,TNG,TD,NET> &e,Vec<TNG> &new_nodes
 
 inline unsigned vtk_num( StructForType<Bar> ) { return 3; }
 
-};
+}
 
 #include "element_Bar.h"
 

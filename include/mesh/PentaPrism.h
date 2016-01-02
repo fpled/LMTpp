@@ -30,6 +30,8 @@ namespace LMT {
 |/         |/
 0----1---- 2
 
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
 */
 // --------------------------------------------------------------------------------------------------------
@@ -75,6 +77,7 @@ void append_skin_elements(Element<PentaPrism,TN,TNG,TD,NET> &e,TC &ch,HET &het,N
     het.add_element(e,ch,Bar(),e.node(3),e.node(8));
     het.add_element(e,ch,Bar(),e.node(4),e.node(9));
 }
+
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<PentaPrism,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<3> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
@@ -105,7 +108,7 @@ typename TypePromote<Abs,typename TNG::T>::T measure( const Element<PentaPrism,T
  return abs(D0);
 }
 
-};
+}
 
 //#include "element_PentaPrism.h"
 

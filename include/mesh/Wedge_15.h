@@ -21,18 +21,19 @@ namespace LMT {
 /*!
     Prisme à 15 noeuds
     \verbatim
-        .                            5
-        .                           /|\
-        .                         11 | 10
-        .                         / 14  \
-        .                        3___9___4
-        .                        |   |   |
-        .                        |   2   |
-        .                       12  / \  13
-        .                        | 8   7 |
-        .                        |/     \|
-        .                        0___6__ 1
-
+    .                        5
+    .                       /|\
+    .                     11 | 10
+    .                     / 14  \
+    .                    3___9___4
+    .                    |   |   |
+    .                    |   2   |
+    .                    12  / \  13
+    .                    | 8   7 |
+    .                    |/     \|
+    .                    0___6__ 1
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -45,6 +46,7 @@ struct Wedge_15 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Wedge_15,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Wedge_15,1> { static const unsigned res = 5; };
 template<> struct NbChildrenElement<Wedge_15,2> { static const unsigned res = 9; };
 template<> struct NbChildrenElement<Wedge_15,3> { static const unsigned res = 15; };
@@ -59,6 +61,10 @@ template<unsigned n> struct TypeChildrenElement<Wedge_15,2,n> { typedef Bar_3 T;
 template<unsigned n> struct TypeChildrenElement<Wedge_15,3,n> { typedef NodalElement T; };
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Wedge_15,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Wedge_15(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(15));
+}
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Wedge_15,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Quad_8(),e.node(0),e.node(1),e.node(4),e.node(3),e.node(6),e.node(13),e.node(9),e.node(12));
     het.add_element(e,ch,Quad_8(),e.node(0),e.node(2),e.node(5),e.node(3),e.node(8),e.node(14),e.node(11),e.node(12));
@@ -66,7 +72,6 @@ void append_skin_elements(Element<Wedge_15,TN,TNG,TD,NET> &e,TC &ch,HET &het,Num
     het.add_element(e,ch,Triangle_6(),e.node(0),e.node(1),e.node(2),e.node(6),e.node(7),e.node(8));
     het.add_element(e,ch,Triangle_6(),e.node(3),e.node(4),e.node(5),e.node(9),e.node(10),e.node(11));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Wedge_15,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<2> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(6),e.node(1));
@@ -137,7 +142,7 @@ bool divide_element_using_elem_children(Element<Wedge_15,TN,TNG,TD,NET> &e,TM &m
 
 inline unsigned vtk_num( StructForType<Wedge_15> ) { return 26; }
 
-};
+}
 
 #include "element_Wedge_15.h"
 

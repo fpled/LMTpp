@@ -21,8 +21,13 @@ namespace LMT {
 // --------------------------------------------------------------------------------------------------------
 /*!
     Carré à 6 noeuds
-    A faire
-
+    \verbatim
+    .                    3--5--2
+    .                    |     |
+    .                    |     |
+    .                    0--4--1
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -35,15 +40,21 @@ struct Quad_6 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Quad_6,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Quad_6,1> { static const unsigned res = 4; };
 template<> struct NbChildrenElement<Quad_6,2> { static const unsigned res = 6; };
 
+template<unsigned n> struct TypeChildrenElement<Quad_6,0,n> { typedef Quad_6 T; };
 template<> struct TypeChildrenElement<Quad_6,1,0> { typedef Bar_3 T; };
 template<> struct TypeChildrenElement<Quad_6,1,1> { typedef Bar_3 T; };
 template<> struct TypeChildrenElement<Quad_6,1,2> { typedef Bar T; };
 template<> struct TypeChildrenElement<Quad_6,1,3> { typedef Bar T; };
 template<unsigned n> struct TypeChildrenElement<Quad_6,2,n> { typedef NodalElement T; };
 
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Quad_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Quad_6(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5));
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(4),e.node(1));

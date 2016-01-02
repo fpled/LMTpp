@@ -52,7 +52,6 @@ template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
     het.add_element(e,ch,Quad(),e.node(0),e.node(1),e.node(2),e.node(3));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar(),e.node(0),e.node(1));

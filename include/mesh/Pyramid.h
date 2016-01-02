@@ -27,6 +27,8 @@ namespace LMT {
         * x + z <= 1
         * y + z <= 1
         
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr

@@ -18,19 +18,19 @@ namespace LMT {
 
 // --------------------------------------------------------------------------------------------------------
 /*!
-    Cube à 20 noeuds
+    Pavé à 20 noeuds
     \verbatim
-        .                7 ---14----6
-        .               /|         /|
-        .            15  |       13 |
-        .            /  19      /  18
-        .            4---|-12---5   |
-        .            |   |      |   |
-        .            |   3---10-|-- 2
-        .            16 /      17  /
-        .            |11        | 9
-        .            |/         |/
-        .            0-----8----1
+    .                        7----14----6
+    .                       /|         /|
+    .                     15 |       13 |
+    .                     /  19      /  18
+    .                    4----12----5   |
+    .                    |   |      |   |
+    .                    |   3----10|---2
+    .                    16  /      17  /
+    .                    | 11       | 9
+    .                    |/         |/
+    .                    0----8-----1
     \relates Mesh
     \relates Element
     \keyword Maillage/Elément
@@ -46,6 +46,7 @@ struct Hexa_20 {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Hexa_20,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Hexa_20,1> { static const unsigned res = 6; };
 template<> struct NbChildrenElement<Hexa_20,2> { static const unsigned res = 12; };
 template<> struct NbChildrenElement<Hexa_20,3> { static const unsigned res = 20; };
@@ -56,6 +57,10 @@ template<unsigned n> struct TypeChildrenElement<Hexa_20,2,n> { typedef Bar_3 T; 
 template<unsigned n> struct TypeChildrenElement<Hexa_20,3,n> { typedef NodalElement T; };
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
+void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
+    het.add_element(e,ch,Hexa_20(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15),e.node(16),e.node(17),e.node(18),e.node(19));
+}
+template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Quad_8(),e.node(0),e.node(3),e.node(2),e.node(1),e.node(11),e.node(10),e.node(9),e.node(8));
     het.add_element(e,ch,Quad_8(),e.node(4),e.node(5),e.node(6),e.node(7),e.node(12),e.node(13),e.node(14),e.node(15));
@@ -64,7 +69,6 @@ void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numb
     het.add_element(e,ch,Quad_8(),e.node(3),e.node(7),e.node(6),e.node(2),e.node(19),e.node(14),e.node(18),e.node(10));
     het.add_element(e,ch,Quad_8(),e.node(0),e.node(4),e.node(7),e.node(3),e.node(16),e.node(15),e.node(19),e.node(11));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<2> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(8),e.node(1));
@@ -79,7 +83,7 @@ void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Numb
     het.add_element(e,ch,Bar_3(),e.node(1),e.node(17),e.node(5));
     het.add_element(e,ch,Bar_3(),e.node(2),e.node(18),e.node(6));
     het.add_element(e,ch,Bar_3(),e.node(3),e.node(19),e.node(7));
-}                           
+}
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Hexa_20,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<3> nvi_to_subs) {
     het.add_element(e,ch,NodalElement(),e.node(0));
@@ -316,7 +320,7 @@ T var_inter_insideness( const Hexa_20 &e, const TV &var_inter ) {
 
 inline unsigned vtk_num( StructForType<Hexa_20> ) { return 25; }
 
-};
+}
 
 #include "element_Hexa_20.h"
 

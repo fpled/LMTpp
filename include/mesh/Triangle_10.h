@@ -22,15 +22,16 @@ namespace LMT {
 /*!
     Triangle à 10 noeuds
     \verbatim
-            2
-            | \
-       faux |  \
-            5   4
-            |    \
-            |     \
-            0__3___1
+    .                    9
+    .                    | \
+    .                    7  8
+    .                    |    \
+    .                    4  5  6
+    .                    |       \
+    .                    0--1--2--3
     \relates Mesh
-    \keyword Maillage/Elément 
+    \relates Element
+    \keyword Maillage/Elément
     \author Hugo LECLERC
     \friend rapahel.pasquier@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -53,29 +54,26 @@ template<unsigned n> struct TypeChildrenElement<Triangle_10,2,n> { typedef Nodal
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
-    assert( 0 );
-    // TODO
-    het.add_element(e,ch,Triangle_10(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5));
+    het.add_element(e,ch,Triangle_10(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
-    assert( 0 );
-    // TODO
-    het.add_element(e,ch,Bar_3(),e.node(0),e.node(1),e.node(3));
-    het.add_element(e,ch,Bar_3(),e.node(1),e.node(2),e.node(4));
-    het.add_element(e,ch,Bar_3(),e.node(2),e.node(0),e.node(5));
+    het.add_element(e,ch,Bar_4(),e.node(0),e.node(3),e.node(1),e.node(2));
+    het.add_element(e,ch,Bar_4(),e.node(3),e.node(9),e.node(6),e.node(8));
+    het.add_element(e,ch,Bar_4(),e.node(9),e.node(0),e.node(7),e.node(4));
 }
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle_10,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<2> nvi_to_subs) {
-    assert( 0 );
-    // TODO
     het.add_element(e,ch,NodalElement(),e.node(0));
     het.add_element(e,ch,NodalElement(),e.node(1));
     het.add_element(e,ch,NodalElement(),e.node(2));
     het.add_element(e,ch,NodalElement(),e.node(3));
     het.add_element(e,ch,NodalElement(),e.node(4));
     het.add_element(e,ch,NodalElement(),e.node(5));
+    het.add_element(e,ch,NodalElement(),e.node(6));
+    het.add_element(e,ch,NodalElement(),e.node(7));
+    het.add_element(e,ch,NodalElement(),e.node(8));
+    het.add_element(e,ch,NodalElement(),e.node(9));
 }
 
 // --------------------------------------------------------------------------------------------------------
@@ -176,7 +174,7 @@ bool is_inside_linear( const Triangle_10 &elem, const PosNodes &pos_nodes, const
         return false;
 }
 
-};
+}
 
 //#include "element_Triangle_10.h"
 

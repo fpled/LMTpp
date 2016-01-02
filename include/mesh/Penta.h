@@ -20,6 +20,8 @@ namespace LMT {
 /*!
     Pentaèdre à 5 noeuds
 
+    \relates Mesh
+    \relates Element
     \keyword Maillage/Elément
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -97,7 +99,7 @@ bool divide_element_using_elem_children(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,
     return divide_element(e,m,nnodes);
 }
 
-};
+}
 
 //#include "element_Penta.h"
 

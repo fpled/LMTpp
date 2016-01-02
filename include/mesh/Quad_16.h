@@ -22,14 +22,14 @@ namespace LMT {
     Carré à 16 noeuds
     \verbatim
     .                    3-----9-----8-----2
-    .                    |     |     |     |
-    .                    |     |     |     |
-    .                   10----14----15-----7
-    .                    |     |     |     |
-    .                    |     |     |     |
-    .                   11----12----13-----6
-    .                    |     |     |     |
-    .                    |     |     |     |
+    .                    |                 |
+    .                    |                 |
+    .                   10    14    15     7
+    .                    |                 |
+    .                    |                 |
+    .                   11    12    13     6
+    .                    |                 |
+    .                    |                 |
     .                    0-----4-----5-----1
     \relates Mesh
     \relates Element
@@ -55,9 +55,8 @@ template<unsigned n> struct TypeChildrenElement<Quad_16,2,n> { typedef NodalElem
 
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_16,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
-    het.add_element(e,ch,Quad_16(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11));
+    het.add_element(e,ch,Quad_16(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5),e.node(6),e.node(7),e.node(8),e.node(9),e.node(10),e.node(11),e.node(12),e.node(13),e.node(14),e.node(15));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Quad_16,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_4(),e.node(0),e.node(1),e.node(4),e.node(5));

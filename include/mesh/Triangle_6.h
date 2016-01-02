@@ -22,13 +22,13 @@ namespace LMT {
 /*!
     Triangle à 6 noeuds
     \verbatim
-            2
-            | \
-            |  \
-            5   4
-            |    \
-            |     \
-            0--3---1
+    .                    2
+    .                    |\
+    .                    | \
+    .                    5  4
+    .                    |   \
+    .                    |    \
+    .                    0--3--1
     \relates Mesh
     \relates Element
     \keyword Maillage/Elément 
@@ -56,7 +56,6 @@ template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<0> nvi_to_subs) {
     het.add_element(e,ch,Triangle_6(),e.node(0),e.node(1),e.node(2),e.node(3),e.node(4),e.node(5));
 }
-
 template<class TN,class TNG,class TD,unsigned NET,class TC,class HET>
 void append_skin_elements(Element<Triangle_6,TN,TNG,TD,NET> &e,TC &ch,HET &het,Number<1> nvi_to_subs) {
     het.add_element(e,ch,Bar_3(),e.node(0),e.node(1),e.node(3));
@@ -190,7 +189,7 @@ bool is_inside_linear( const Triangle_6 &elem, const PosNodes &pos_nodes, const 
 
 inline unsigned vtk_num( StructForType<Triangle_6> ) { return 22; }
 
-};
+}
 
 #include "element_Triangle_6.h"
 
