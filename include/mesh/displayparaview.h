@@ -380,7 +380,7 @@ template<class Carac,unsigned nvi_to_subs,unsigned skin>
 std::string save( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview" ) {
     DisplayParaview dp;
     std::string res = dp.set_mesh( m, prefix );
-    return res
+    return res;
 }
 
 /*!
