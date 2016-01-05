@@ -1,7 +1,7 @@
 /*!
 \example Exemple d'utilisation de la fonction get_interp
 
-    L'objet de cet exemple est de caluler la valeur de quelques fonctions de forme de certains éléments puis de créer des images 512x512 en niveaux de gris des valeurs de toutes les fonctions de forme d'un élément ( \a Quad_9 dans notre exemple).
+    L'objet de cet exemple est de calculer la valeur de quelques fonctions de forme de certains éléments puis de créer des images 512x512 en niveaux de gris des valeurs de toutes les fonctions de forme d'un élément ( \a Quad_9 dans notre exemple).
     Voici le code de la fonction principale :
 
     \code C/C++

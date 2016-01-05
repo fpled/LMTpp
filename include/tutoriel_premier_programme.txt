@@ -54,11 +54,11 @@
     
     Maintenant il faut compiler le code pour générer un fichier exécutable. Il existe deux méthodes au centre de calcul :
         * en ligne de commande,
-        * avec l'interface graphique de kdevelop , un logiciel de développement (IDE en anglais).
+        * avec l'interface graphique de kdevelop ou QtCreator, des logiciels de développement (IDE en anglais).
 
     En ligne de commande, on tape simplement la commande make.
     Avec interface graphique, 
-        * on lance kdevelop (taper kdevelop&). Remarque : il se peut qu'un projet se lance automatiquement. Dans ce cas on le ferme avec cette option du menu "Project".
+        * on lance kdevelop (taper kdevelop&) ou qtcreator (taper qtcreator&). Remarque : il se peut qu'un projet se lance automatiquement. Dans ce cas on le ferme avec cette option du menu "Project".
         * on crée un projet à partir de fichiers sources existants en faisant menu Project->Import existing project... et validez autant de fois que nécessaire sans faire de changement.
         * on tape F8
 

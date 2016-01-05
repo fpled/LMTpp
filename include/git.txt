@@ -25,7 +25,7 @@
         Il faut se mettre dans votre répertoire LMT puis taper la commande : 
         \verbatim
             git commit -a 
-        Et la, vous vous retrouvez comme dans une fenêtre vi. Il suffit d'insérer (touche 'i') un commentaire (ex:"J'ai fait un super fonction dans le fichier kidéchir.h"), puis arreter l'insertion (touche 'echap') puis sauvegarder et quitter ( ':wq' + touche 'entrer' ) 
+        Et la, vous vous retrouvez comme dans une fenêtre vi. Il suffit d'insérer (touche 'i') un commentaire (ex:"J'ai fait une super fonction dans le fichier kidéchir.h"), puis arreter l'insertion (touche 'echap') puis sauvegarder et quitter ( ':wq' + touche 'entrer' )
         # Please enter the commit message for your changes. 
         # (Comment lines starting mith '#' will not be included) 
         # On branch master 

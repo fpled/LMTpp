@@ -1,7 +1,7 @@
 /*!
 \example Exemple de MeshCarac
 
-    Il existe déjà quelques exemples ( \a MeshCaracStd , \a Mesh_carac_pb_correlation_basic , \a Meshcaracforgeomset , \a Meshcaractvrc, \a MeshCarac , \a MeshCaracAllNvi , \a CaracMeshShape ) mais ils ne sont pas très simples ou trop simple ;-).
+    Il existe déjà quelques exemples ( \a MeshCaracStd , \a Mesh_carac_pb_correlation_basic , \a Meshcaracforgeomset , \a Meshcaractvrc, \a MeshCarac , \a MeshCaracAllNvi , \a CaracMeshShape ) mais ils ne sont pas très simples ou trop simples ;-).
     L'objectif de ces \a MeshCarac est de montrer comment on définit un avec quelques attributs au noeud en deux et trois dimensions. On a choisi un attribut scalaire nommé <strong> scalar </strong> et un vecteur 4 composantes <strong> vector_example </strong> .
     Voici le code (télechargeable [[include/mesh/exemple_meshcarac.tar.gz|ici]] ):
     \code C/C++

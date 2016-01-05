@@ -1,7 +1,7 @@
 /*!
 \webpage introduction Introduction
 
-    La librairie LMT++ est un ensemble de classes et de fonctions C++ permettant d'accélérer le développement d'applications pour la simulation numérique intensive en mécanique. Elle utilise la conception orientée objet et surtout la conception générique ( ou méta-programmation) garante de flexibilité, de longéivité. Sa base est un ensemble de conteneurs \a Vec , \a Mat et \a Mesh optimisés en vitesse d'exécution et en ressource mémoire et simple d'utilisation, accompagnés de nombreuses fonctions pour les calculs (e.g. d'éléments finis). 
+    La librairie LMT++ est un ensemble de classes et de fonctions C++ permettant d'accélérer le développement d'applications pour la simulation numérique intensive en mécanique. Elle utilise la conception orientée objet et surtout la conception générique (ou méta-programmation) garante de flexibilité, de longéivité. Sa base est un ensemble de conteneurs \a Vec , \a Mat et \a Mesh optimisés en vitesse d'exécution et en ressource mémoire et simple d'utilisation, accompagnés de nombreuses fonctions pour les calculs (e.g. d'éléments finis).
     Elle contient aussi des scripts Python pour la génération de code. En effet on peut exprimer son problème de mécanique dans le langage Python sous une forme très proche de la notation mathématique puis générer les classes et les fonctions C++ correspondant au problème. Il reste alors à implémenter les méthodes de résolution.
     
     
@@ -9,7 +9,7 @@
 
         L'idée qui sous-tend la librairie LMTpp est : les développeurs ne devraient écrire que les concepts généraux et c'est aux librairies et outils de développements (compilateurs, etc...) de spécialiser. Si les outils ne permettent pas d'écrire en termes génériques, les développeurs doivent participer à les améliorer dans ce sens.
     
-        Les schémas de pensée en programmation ont énormément évolués ces dernières années. La programmation orienté objet ou la programmation générique sont maintenant des standards et ont prouvé leur efficacité.  Il a été choisi d'en utiliser les bénéfices de la façon la plus pragmatique qui soit.
+        Les schémas de pensée en programmation ont énormément évolué ces dernières années. La programmation orienté objet ou la programmation générique sont maintenant des standards et ont prouvé leur efficacité.  Il a été choisi d'en utiliser les bénéfices de la façon la plus pragmatique qui soit.
     
     = Evaluation paresseuse
 

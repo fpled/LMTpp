@@ -377,10 +377,18 @@ struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec(
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
-int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
+std::string save( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview" ) {
     DisplayParaview dp;
     std::string res = dp.set_mesh( m, prefix );
-    
+    return res
+}
+
+/*!
+*/
+template<class Carac,unsigned nvi_to_subs,unsigned skin>
+int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
+    std::string res = save( m, prefix );
+
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
         return system( t.c_str() );
@@ -388,8 +396,6 @@ int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &p
     std::string t = "paraview --data=" + res;
     return system( t.c_str() );
 }
-
-
 
 /**
 
@@ -418,8 +424,6 @@ int display( const SubStructuredProblem<Carac,X,Y> &sst_pb, const std::string &p
     return system( t.c_str() );
 }
 
-};
-
-
+}
 
 #endif
