@@ -78,7 +78,7 @@ Mat<T, Gen<Pyramid::nb_var_inter,Pyramid::nb_var_inter>, Dense<> > jacobian_for_
 
 /*!
     Objectif :
-        Cette fonction calcule des itérés de l'opérateur de Newton-Raphson x -> x - df(x)^(-1) f(x) pour un système polynomiales à stockage simple. Plus précisément un polynôme est représenté par ses coefficients stockés dans un vecteur dans l'ordre suivant 
+        Cette fonction calcule des itérés de l'opérateur de Newton-Raphson x -> x - df(x)^(-1) f(x) pour un système polynomial à stockage simple. Plus précisément un polynôme est représenté par ses coefficients stockés dans un vecteur dans l'ordre suivant
             * cas de 3 indéterminées :
                 1 U V W U^2 UV UW V^2 VW W^2 U^3 U^2V U^2W UV^2 UVW UW^2 V^3 V^2W VW^2 W^3 etc... 
             * cas de 2 indéterminées :
