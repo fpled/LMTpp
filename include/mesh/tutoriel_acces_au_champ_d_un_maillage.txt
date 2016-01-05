@@ -93,7 +93,7 @@
                     }; 
                         
                 Ensuite dans la méthode <strong> operator() </strong> on peut lire et écrire la valeur d'un champ de deux manières.
-                Soit le foncteur est spécifique à un champs particulier et dans ce cas on utilise ce champ comme un simple attribut de la classe Element. Par exemple :       
+                Soit le foncteur est spécifique à un champ particulier et dans ce cas on utilise ce champ comme un simple attribut de la classe Element. Par exemple :
                 \code C/C++      
                     struct Normalize_epsilon {
                         template<class E>

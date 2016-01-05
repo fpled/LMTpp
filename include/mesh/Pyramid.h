@@ -41,6 +41,7 @@ struct Pyramid {
 };
 
 // --------------------------------------------------------------------------------------------------------
+template<> struct NbChildrenElement<Pyramid,0> { static const unsigned res = 1; };
 template<> struct NbChildrenElement<Pyramid,1> { static const unsigned res = 5; };
 template<> struct NbChildrenElement<Pyramid,2> { static const unsigned res = 8; };
 template<> struct NbChildrenElement<Pyramid,3> { static const unsigned res = 5; };

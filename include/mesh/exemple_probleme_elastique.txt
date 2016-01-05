@@ -109,7 +109,7 @@
             //PRINTN( *A );
             //display_structure( *A, "matrice_de_raideur" ); 
             t1 = time_of_day_in_sec();
-            Mat< double,Sym<>,SparseLine<> > B = *A;
+            Mat<double,Sym<>,SparseLine<> > B = *A;
             t2 = time_of_day_in_sec();
             cout << "convert Mat< SparseCholMod > to Mat< SparseLine > = " << t2 - t1 << " seconds" << endl;
             

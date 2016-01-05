@@ -78,7 +78,7 @@
                 formulation->get_mat( ptr_mat );
                 /// je la factorise et on ne libère pas sa mémoire ( paramètre false de get_factorization() )  
                 mumps.get_factorization( *ptr_mat, false );
-                /// on copie le second membre du sstème dans le vecteur "sol".
+                /// on copie le second membre du système dans le vecteur "sol".
                 sol = formulation->get_sollicitation();
                 /// on résout le système linéaire
                 mumps.solve( sol );
