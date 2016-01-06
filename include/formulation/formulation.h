@@ -1285,17 +1285,35 @@ public:
                     coeffs[j] = (ScalarType)coeff.subs_numerical( vss );
                 }
                 // add to vec and mat
-                for(unsigned j=0;j<coeffs.size();++j) {
-                    ScalarType C = coeffs[j] * ScalarType(M) * constraints[i].penalty_value;
+                if ( constraints[i].penalty_value != ScalarType( 0 ) ) { // -> penalty
+                    for(unsigned j=0;j<coeffs.size();++j) {
+                        ScalarType C = coeffs[j] * ScalarType(M) * constraints[i].penalty_value;
+                        if ( assemble_vec )
+                            F[num_in_fmat[j]] += C * ress;
+                        if ( assemble_mat ) {
+                            if ( MatCarac<0>::symm or MatCarac<0>::herm )
+                                for(unsigned k=0;k<=j;++k)
+                                    K(num_in_fmat[j],num_in_fmat[k]) += C * coeffs[k];
+                            else
+                                for(unsigned k=0;k<coeffs.size();++k)
+                                    K(num_in_fmat[j],num_in_fmat[k]) += C * coeffs[k];
+                        }
+                    }
+                } else { // -> lagrange
+                    // assert( coeffs.size() == 1 );
+                    // vec
                     if ( assemble_vec )
-                        F[num_in_fmat[j]] += C * ress;
+                        sollicitation[offset_lagrange_multipliers + i] += ress;
+                    // mat
                     if ( assemble_mat ) {
-                        if ( MatCarac<0>::symm or MatCarac<0>::herm )
-                            for(unsigned k=0;k<=j;++k)
-                                K(num_in_fmat[j],num_in_fmat[k]) += C * coeffs[k];
-                        else
-                            for(unsigned k=0;k<coeffs.size();++k)
-                                K(num_in_fmat[j],num_in_fmat[k]) += C * coeffs[k];
+                        for(unsigned j=0;j<coeffs.size();++j) {
+                            if ( MatCarac<0>::symm or MatCarac<0>::herm ) {
+                                K(offset_lagrange_multipliers + i, num_in_fmat[j]) += coeffs[j];
+                            } else {
+                                K(num_in_fmat[j], offset_lagrange_multipliers + i) += coeffs[j];
+                                K(offset_lagrange_multipliers + i, num_in_fmat[j]) += coeffs[j];
+                            }
+                        }
                     }
                 }
             }
