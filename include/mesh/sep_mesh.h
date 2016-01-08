@@ -73,13 +73,13 @@ void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
 
 /*!
     Objectif :
-        sep_mesh() sert à redéfinir la peau d' un maillage 2D ou 3D, noté m, en fonction d'une fonctionnelle définie dans le plan ou l'espace suivant la dimension du maillage. Le résultat est stocké dans m sous la forme d'un seul maillage mais avec ajout de noeuds et d'éléments à la peau aux endroits proche de la coupe.
+        sep_mesh() sert à redéfinir la peau d' un maillage 2D ou 3D, noté m, en fonction d'une fonctionnelle définie dans le plan ou l'espace suivant la dimension du maillage. Le résultat est stocké dans m sous la forme d'un seul maillage mais avec ajout de noeuds et d'éléments à la peau aux endroits proches de la coupe.
     Remarque :
         ne pas oublier de faire m.update_skin() après l'appel de sep_mesh() pour recalculer la peau du maillage.
          
     Paramètre :
         * <strong> m </strong> est le maillage
-        * <strong> ls_crack </strong> est un foncteur qui doit définir un opérateur () qui prend en paramètre un élément Bar de la forme <strong> Element< Bar, NB, TN, TD, nl> </strong> et qui renvoie un scalaire r. La barre est coupée ssi Si ce scalaire r est entre 0 et 1. Le point de coupe, disons M, sera alors le barycentre des points (pos(0);r) (pos(1);1-r) où pos(0) et pos(1) sont les extrémités de la barre. Le plus simple est d'étudier l'exemple ci-dessous.
+        * <strong> ls_crack </strong> est un foncteur qui doit définir un opérateur () qui prend en paramètre un élément Bar de la forme <strong> Element< Bar, NB, TN, TD, nl> </strong> et qui renvoie un scalaire r. La barre est coupée ssi ce scalaire r est entre 0 et 1. Le point de coupe, disons M, sera alors le barycentre des points (pos(0);r) (pos(1);1-r) où pos(0) et pos(1) sont les extrémités de la barre. Le plus simple est d'étudier l'exemple ci-dessous.
          
          
     Exemple:
@@ -125,7 +125,8 @@ void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
             
             
             //    Classe qui permet de :
-            //        * diviser les arêtes d'un élément en fonction du plan d'équation a x + b y + c z + d = 0  i.e.   vec(n) . vec(OM) + d = 0 où //          vec(n) = ( a, b, c ) via le premier opérateur operator()
+            //        * diviser les arêtes d'un élément en fonction du plan d'équation a x + b y + c z + d = 0  i.e.   vec(n) . vec(OM) + d = 0 où
+            //          vec(n) = ( a, b, c ) via le premier opérateur operator()
             //
             template< class T = double, unsigned _dim = 2>
             struct HyperPlan {
@@ -187,7 +188,7 @@ void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
                 //Pvec diag = maxi - mini; 
                 Pvec nor( 0.15, -0.35 ); 
                 Pvec P( 0.35, 0.45 );
-                HyperPlan<T,dim> plan( nor, P );D 
+                HyperPlan<T,dim> plan( nor, P );
             
                 refinement( m, plan );
                 sep_mesh( m, plan );

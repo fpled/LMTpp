@@ -284,7 +284,7 @@ namespace LMTPRIVATE {
             
                 for( unsigned i = 0; i < nb_children; ++i ) {
                     EA *child = NULL;
-                    /// on coupe toutes les arêtes pas déjà coupées et qui ont une longueur supérieure ou égal à la plus longue arête coupée
+                    /// on coupe toutes les arêtes pas déjà coupées et qui ont une longueur supérieure ou égale à la plus longue arête coupée
                     if ( ( nn[ i ] == NULL ) and ( ll[ i ] >= max_l_cut ) ) {
                         child = m_parent->get_children_of_EA( ea, Number<1>() )[ i ];
                         
@@ -292,7 +292,7 @@ namespace LMTPRIVATE {
                     }
                     
                     if ( child ) { /// extension aux voisins
-                        /// Détermination du voisin qui a aussi child comme enfant
+                        /// détermination du voisin qui a aussi child comme enfant
                         bool loop = true;
                         for( SimpleConstIterator< EA*> it( itea ) ; ( bool )it and loop; ++it ) {
                             for( unsigned j = 0; j < (*it)->nb_children_virtual( 1 ); ++j ) {
@@ -338,7 +338,7 @@ namespace LMTPRIVATE {
             
                 for( unsigned i = 0; i < nb_children; ++i ) {
                     EA *child = NULL;
-                    /// on coupe toutes les arêtes pas déjà coupées et qui ont une longueur supérieure ou égal à la plus longue arête coupée
+                    /// on coupe toutes les arêtes pas déjà coupées et qui ont une longueur supérieure ou égale à la plus longue arête coupée
                     if ( ( nn[ i ] == NULL ) and ( ll[ i ] >= max_l_cut ) ) {
                         child = m_parent->get_children_of_EA( ea, Number<2>() )[ i ];
                         
@@ -346,7 +346,7 @@ namespace LMTPRIVATE {
                     }
                     
                     if ( child ) { /// extension aux voisins
-                        /// Détermination du voisin qui a aussi child comme enfant
+                        /// détermination du voisin qui a aussi child comme enfant
                         bool loop = true;
                         for( SimpleConstIterator< EA*> it( itea ) ; ( bool )it and loop; ++it ) {
                             for( unsigned j = 0; j < (*it)->nb_children_virtual( 1 ); ++j ) {
