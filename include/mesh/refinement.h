@@ -411,8 +411,6 @@ namespace LMTPRIVATE {
         read_msh_2( ... );
         while ( refinement_if_length_sup( m, max_length ) );
 
-
-
 */
 template<class TM,class Op>
 bool refinement( TM &m, Op &op, bool spread_cut = false ) {
@@ -458,7 +456,7 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
 }
 
 /*!
-    Peut être utilisé pour couper un maillage avec un level-set
+    opérateurs créés pour la fonction \a level_set_cut , peuvent être utilisés pour couper un maillage avec un level-set.
 */
 template<class PhiExtract>
 struct LevelSetRefinement {
@@ -663,7 +661,7 @@ struct LevelSetImageRefinement {
 
 /*!
     Objectif :
-        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un point. Pour plus de renseignement, voir l'explication à la fin.
+        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un point.
         
     Attributs :
         * <strong> c </strong> le centre de la zone que l'on veut raffiner. c n'est pas forcément un point dans le maillage.
@@ -679,15 +677,15 @@ struct LevelSetImageRefinement {
         typedef TM::Pvec Pvec;
         typedef TM::TNode::T T;
     
-        refinement( m, Local_refinement<T, Pvec >( 0.01, 0.2, Pvec( 0.2, 0.5 ) ) );
+        refinement( m, Local_refinement_point<T, Pvec >( 0.01, 0.2, Pvec( 0.2, 0.5 ) ) );
     
-    On raffinera au point de coordonnées ( 0.2, 0.5 ) avec une longueur minimale de 0.01 et une augmentation de 0.2.
+    On raffinera autour du point de coordonnées ( 0.2, 0.5 ) avec une longueur minimale de 0.01 et une augmentation de 0.2.
     
     \keyword Maillage/Opération
 */
 template < class T, class Pvec>
-struct Local_refinement {
-    Local_refinement( T length_min, T _k, Pvec _c ) : l_min( length_min ), k( _k ), c( _c ) {}
+struct Local_refinement_point {
+    Local_refinement_point( T length_min, T _k, Pvec _c ) : l_min( length_min ), k( _k ), c( _c ) {}
 
     template<class TE> 
     bool operator()( TE &e ) const {
@@ -741,7 +739,7 @@ struct Local_refinement_point_id {
 
 /*!
     Objectif :
-        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un cercle. Pour plus de renseignement, voir l'explication à la fin.
+        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage autour d'un cercle.
         
     Attributs :
         * <strong> c </strong> le centre du cercle autour duquel on veut raffiner. c n'est pas forcément un point dans le maillage.
@@ -758,7 +756,7 @@ struct Local_refinement_point_id {
         typedef TM::Pvec Pvec;
         typedef TM::TNode::T T;
     
-        refinement( m, Local_refinement<T, Pvec >( 0.01, 0.2, Pvec( 0.2, 0.5 ), 0.2 ) );
+        refinement( m, Local_refinement_circle<T, Pvec >( 0.01, 0.2, Pvec( 0.2, 0.5 ), 0.2 ) );
     
     On raffinera autour du cercle de centre ( 0.2, 0.5 ) et de rayon 0.2 avec une longueur minimale de 0.01 et une augmentation de 0.2.
 
@@ -781,6 +779,44 @@ struct Local_refinement_circle {
     T l_min, k;
     T R; /// rayon du cercle
     Pvec c; /// centre du cercle
+};
+
+/*!
+    Objectif :
+        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage.
+
+    Attributs :
+        * <strong> c </strong> le centre de la zone (cercle) autour duquel on veut raffiner. c n'est pas forcément un point dans le maillage.
+        * <strong> R </strong> le rayon de la zone (cercle) autour duquel on veut raffiner.
+        * <strong> l_min </strong> la longueur minimale des côtés des éléments du maillage.
+        * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au cercle.
+        * <strong> id </strong> le nom de l'attribut nodal qui compte le nombre de découpe. Remarque : il faut que le MeshCarac du maillage contienne une classe cuts_refinement_DM.
+
+    Description :
+        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le cercle de centre c et de rayon R.
+
+    \keyword Maillage/Opération
+*/
+template<class T, class Pvec>
+struct Local_refinement_circle_id {
+    Local_refinement_circle_id( T length_min, T _k, Pvec _c, T _R ) : l_min( length_min ), k( _k ), c( _c ), R( _R ), id( 1 ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
+        T v = fabs( R - length( center( e ) - c ) ) * k + l_min;
+        if ( l > v ) {
+            e.node( 0 )->cuts_refinement = id;
+            e.node( 1 )->cuts_refinement = id;
+            return true;
+        } else
+            return false;
+    }
+
+    T l_min, k;
+    T R; /// rayon du cercle
+    Pvec c; /// centre du cercle
+    unsigned id;
 };
 
 namespace LMTPRIVATE {
@@ -820,44 +856,6 @@ namespace LMTPRIVATE {
         Vec<bool> node_is_blocked;
     };
 }
-
-/*!
-    Objectif :
-        Ce foncteur est conçu pour la fonction \a refinement(). Il permet de raffiner localement un maillage.
-
-    Attributs :
-        * <strong> c </strong> le centre de la zone (cercle) autour duquel on veut raffiner. c n'est pas forcément un point dans le maillage.
-        * <strong> R </strong> le rayon de la zone (cercle) autour duquel on veut raffiner.
-        * <strong> l_min </strong> la longueur minimale des côtés des éléments du maillage.
-        * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au cercle.
-        * <strong> id </strong> le nom de l'attribut nodal qui compte le nombre de découpe. Remarque : il faut que le MeshCarac du maillage contienne une classe cuts_refinement_DM.
-
-    Description :
-        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le cercle de centre c et de rayon R.
-
-    \keyword Maillage/Opération
-*/
-template<class T, class Pvec>
-struct Local_refinement_circle_id {
-    Local_refinement_circle_id( T length_min, T _k, Pvec _c, T _R ) : l_min( length_min ), k( _k ), c( _c ), R( _R ), id( 1 ) {}
-
-    template<class TE>
-    bool operator()( TE &e ) const {
-        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
-        T v = fabs( R - length( center( e ) - c ) ) * k + l_min;
-        if ( l > v ) {
-            e.node( 0 )->cuts_refinement = id;
-            e.node( 1 )->cuts_refinement = id;
-            return true;
-        } else
-            return false;
-    }
-
-    T l_min, k;
-    T R; /// rayon du cercle
-    Pvec c; /// centre du cercle
-    unsigned id;
-};
 
 /*!
     Cette fonction découpe un maillage par un masque. Un élément est coupé quand un bord a mask < lim_inf et l'autre a mask >= lim_sup.
