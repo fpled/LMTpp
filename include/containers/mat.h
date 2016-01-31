@@ -234,13 +234,13 @@ template<class MATOP> struct IsMatOp { typedef void T; };
                     std::ifstream desc("chemin/fichier");
                     read_ascii_mat_file( mat, desc );
                 }
-        \anchor 21 Pour calculer la moyenne, la variance, le min des éléments d'une matrice
+        \anchor 21 Pour calculer la moyenne, la variance, le min et le max des éléments d'une matrice
             \code C/C++
                 mean(M);variance(M);min(M);max(M);
 
     = Divers
 
-        * Le produit de deux matrices A et B, A * B, peut être lent, voire très lent. Cela est dû à une mauvaise disposition des éléments de la matrice B qui sont rangées en lignes alors qu'une disposition en colonne est préférable. Comme à cette heure, on ne peut convertir une matrice stocké en lignes en une matrice stockée en colonne mais qu'il est possible de faire la conversion inverse ( colonne en ligne) et que la fonction transpose transforme une matrice lignes en une matrice colonnes, on contourne le problème en écrivant  A * B = A * trans( TM( trans( B ) ) ) où TM est le type de votre matrice ligne.
+        * Le produit de deux matrices A et B, A * B, peut être lent, voire très lent. Cela est dû à une mauvaise disposition des éléments de la matrice B qui sont rangées en lignes alors qu'une disposition en colonne est préférable. Comme à cette heure, on ne peut convertir une matrice stocké en lignes en une matrice stockée en colonne mais qu'il est possible de faire la conversion inverse (colonne en ligne) et que la fonction transpose transforme une matrice lignes en une matrice colonnes, on contourne le problème en écrivant  A * B = A * trans( TM( trans( B ) ) ) où TM est le type de votre matrice ligne.
         Un exemple :
         \code C/C++
            typedef Mat< double, SparseLine<> > TM;

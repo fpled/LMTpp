@@ -538,7 +538,6 @@ namespace ALGOPRIVATE {
     };
 };
 
-
 /*!
 \generic_comment max_element
 
@@ -564,11 +563,12 @@ namespace ALGOPRIVATE {
 
     Voici les syntaxes possibles de cette fonction :
     \code
+        min_element(vecteur)
         min_element(vecteur,op)
 
     \relates Vec
     \relates apply
-    \relates min_element
+    \relates max_element
     \keyword Fonctionalité/Extraire
     \keyword Fonctionalité/Mesh
     \friend hugo.leclerc@lmt.ens-cachan.fr
@@ -624,9 +624,8 @@ template<class TL,class Op,class TP> typename TypeReduction<Plus,TL>::T max_elem
 */
 template<class TL> typename TypeReduction<Plus,TL>::T max_element(const TL &l) { return max_element(l,Function<C_1>()); }
 
-
 /*!
-    return a copy on the first element e such as op(e) >= op(i) for all i in l. In other words, look up for first e which maximize op(e)
+    return a copy on the first element e such as op(e) <= op(i) for all i in l. In other words, look up for first e which minimize op(e)
     This procedure may not be optimal for lists with little size.
     \relates apply
     \relates Vec
@@ -646,7 +645,7 @@ template<class TL,class Op> typename TypeReduction<Plus,TL>::T min_element(const
     return res;
 }
 /*! 
-    return a copy on the first element e such as op(e,param) >= op(i,param) for all i in l. In other words, look up for first e which minimize op(e,param).
+    return a copy on the first element e such as op(e,param) <= op(i,param) for all i in l. In other words, look up for first e which minimize op(e,param).
     This procedure may not be optimal for lists with little size
     \relates apply
     \relates Vec
@@ -666,7 +665,7 @@ template<class TL,class Op,class TP> typename TypeReduction<Plus,TL>::T min_elem
     return res;
 }
 /*! 
-    return a copy on the first element e such as (e >= i) for all i in l. In other words, look up for first e which minimize op(e)
+    return a copy on the first element e such as (e <= i) for all i in l. In other words, look up for first e which minimize op(e)
 
     \relates apply
     \relates Vec
@@ -677,7 +676,7 @@ template<class TL> typename TypeReduction<Plus,TL>::T min_element(const TL &l) {
 
 /*!
 
-    Cette fonction prend en paramètre un vecteur de booléens to_check et retourne le vecteur contenant l' indice des éléments vrais.
+    Cette fonction prend en paramètre un vecteur de booléens to_check et retourne le vecteur contenant l'indice des éléments vrais.
 
     \relates apply
     \relates Vec

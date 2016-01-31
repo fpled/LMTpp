@@ -263,7 +263,7 @@ bool divide_element_using_elem_children(Element<Triangle,TN,TNG,TD,NET> &e,TM &m
 
 /** new_nodes are independant nodes created to make a fine grid for integration. Used in TvrcFormulation
     \relates Triangle
-    \todo actually, we divide element n times, with n = max(edge length) / max_dist. For flat elements, it's far from optimallity
+    \todo actually, we divide element n times, with n = max(edge length) / max_dist. For flat elements, it's far from optimality
 */
 template<class TN,class TNG,class TD,unsigned NET,class T>
 bool subdivision_element(const Element<Triangle,TN,TNG,TD,NET> &e,Vec<TNG> &new_nodes,T max_dist) {

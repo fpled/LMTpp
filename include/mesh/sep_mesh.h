@@ -11,29 +11,6 @@ struct SepMesh {
         created_nodes.resize( m.node_list.size(), 0 );
     }
 
-    template<class TE0,class TL1,class TL2>
-    void operator()( TE0 &e0, TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
-        if ( ls_crack( center( e0 ) ) >= 0 )
-            return;
-        SimpleConstIterator<typename TM::EA *> iter = m.get_elem_neighbours( e0 );
-        for( unsigned num_nei = 0; num_nei < iter.size(); ++num_nei ) {
-            typename TM::EA &e1 = *iter[ num_nei ];
-            if ( ls_front( center( e1 ) ) >= 0 or ls_crack( center( e1 ) ) < 0 )
-                continue;
-            for(unsigned num_n0=0;num_n0<TE0::nb_nodes;++num_n0) {
-                for(unsigned num_n1=0;num_n1<e1.nb_nodes_virtual();++num_n1) {
-                    if ( e0.node( num_n0 ) == e1.node_virtual( num_n1 ) ) {
-                        unsigned n = e0.node( num_n0 )->number;
-                        if ( not created_nodes[ n ] )
-                            created_nodes[ n ] = m.add_node( e0.node( num_n0 )->pos );
-                        e0.nodes[ num_n0 ] = created_nodes[ n ];
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     template<class TE0,class TL1 >
     void operator()( TE0 &e0, TM &m, const TL1 &ls_crack ) {
         if ( ls_crack( center( e0 ) ) >= 0 )
@@ -57,32 +34,49 @@ struct SepMesh {
         }
     }
 
+    template<class TE0,class TL1,class TL2>
+    void operator()( TE0 &e0, TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
+        if ( ls_crack( center( e0 ) ) >= 0 )
+            return;
+        SimpleConstIterator<typename TM::EA *> iter = m.get_elem_neighbours( e0 );
+        for( unsigned num_nei = 0; num_nei < iter.size(); ++num_nei ) {
+            typename TM::EA &e1 = *iter[ num_nei ];
+            if ( ls_front( center( e1 ) ) >= 0 or ls_crack( center( e1 ) ) < 0 )
+                continue;
+            for(unsigned num_n0=0;num_n0<TE0::nb_nodes;++num_n0) {
+                for(unsigned num_n1=0;num_n1<e1.nb_nodes_virtual();++num_n1) {
+                    if ( e0.node( num_n0 ) == e1.node_virtual( num_n1 ) ) {
+                        unsigned n = e0.node( num_n0 )->number;
+                        if ( not created_nodes[ n ] )
+                            created_nodes[ n ] = m.add_node( e0.node( num_n0 )->pos );
+                        e0.nodes[ num_n0 ] = created_nodes[ n ];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     Vec<typename TM::TNode *> created_nodes;
 };
 
-/**
-    front < 0 to cut
-*/
-template<class TM,class TL1,class TL2>
-void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
-    m.update_elem_neighbours();
-    SepMesh<TM> sm( m );
-    apply( m.elem_list, sm, m, ls_crack, ls_front );
-    m.signal_connectivity_change();
-}
-
 /*!
     Objectif :
-        sep_mesh() sert à redéfinir la peau d' un maillage 2D ou 3D, noté m, en fonction d'une fonctionnelle définie dans le plan ou l'espace suivant la dimension du maillage. Le résultat est stocké dans m sous la forme d'un seul maillage mais avec ajout de noeuds et d'éléments à la peau aux endroits proches de la coupe.
+        La fonction \a sep_mesh() sert à redéfinir la peau d' un maillage 2D ou 3D, noté m, en fonction d'une fonctionnelle définie dans le plan ou l'espace suivant la dimension du maillage. Le résultat est stocké dans m sous la forme d'un seul maillage mais avec ajout de noeuds et d'éléments à la peau aux endroits proches de la coupe.
     Remarque :
         ne pas oublier de faire m.update_skin() après l'appel de sep_mesh() pour recalculer la peau du maillage.
          
     Paramètre :
         * <strong> m </strong> est le maillage
-        * <strong> ls_crack </strong> est un foncteur qui doit définir un opérateur () qui prend en paramètre un élément Bar de la forme <strong> Element< Bar, NB, TN, TD, nl> </strong> et qui renvoie un scalaire r. La barre est coupée ssi ce scalaire r est entre 0 et 1. Le point de coupe, disons M, sera alors le barycentre des points (pos(0);r) (pos(1);1-r) où pos(0) et pos(1) sont les extrémités de la barre. Le plus simple est d'étudier l'exemple ci-dessous.
+        * <strong> ls_crack </strong> est un foncteur qui doit définir un opérateur () qui prend en paramètre un élément Bar de la forme <strong> Element< Bar, NB, TN, TD, nl> </strong>.
+
+    Paramètre optionnel :
+        * <strong> ls_front </strong> est un foncteur qui doit définir un opérateur () qui prend en paramètre un élément Bar de la forme <strong> Element< Bar, NB, TN, TD, nl> </strong>.
          
-         
-    Exemple:
+    Retour :
+        Cette fonction renvoie renvoie un scalaire r. La barre est coupée ssi ce scalaire r est compris entre 0 et 1. Le point de coupe, disons M, sera alors le barycentre des points (pos(0);r) (pos(1);1-r) où pos(0) et pos(1) sont les extrémités de la barre.
+
+    Exemple :
         On souhaite couper un maillage 2D par une droite.
         On définit un MeshCarac pour caractériser un maillage avec un attribut nommé <strong> flag </strong> qui nous servira à distinguer les différents parties du maillage.
         On définit une classe <strong> HyperPlan </strong> qui représente une droite du plan ( ou un plan de l'espace ). Cette classe servira aussi de foncteur pour couper un maillage grâce à l'opérateur parenthèse <strong> operator()( const Element<Bar,...> &e ) </strong> 
@@ -152,12 +146,12 @@ void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
                     T h_a = ( *this )( e.pos( 0 ) );
                     T h_b = ( *this )( e.pos( 1 ) );
                     if ( ( h_a == 0 ) and ( h_b == 0 ) )
-                        return 0; /// on ne coupe pas car la barre est dans l'hyperplan. 
+                        return 0; /// on ne coupe pas car la barre est dans l'hyperplan.
                         
                     if ( ( h_a * h_b ) <= 0 )
-                        return h_a / ( h_a - h_b );
+                        return h_a / ( h_a - h_b ); /// on coupe la barre.
                     else
-                        return 0;  /// on ne coupe pas car la barre
+                        return 0;  /// on ne coupe pas la barre.
                 }
                 
                 /// renvoie ax+by+cz+d dans le cas de la 3D
@@ -211,6 +205,17 @@ void sep_mesh( TM &m, const TL1 &ls_crack ) {
     m.update_elem_neighbours();
     SepMesh<TM> sm( m );
     apply( m.elem_list, sm, m, ls_crack );
+    m.signal_connectivity_change();
+}
+
+/**
+    front < 0 to cut
+*/
+template<class TM,class TL1,class TL2>
+void sep_mesh( TM &m, const TL1 &ls_crack, const TL2 &ls_front ) {
+    m.update_elem_neighbours();
+    SepMesh<TM> sm( m );
+    apply( m.elem_list, sm, m, ls_crack, ls_front );
     m.signal_connectivity_change();
 }
 

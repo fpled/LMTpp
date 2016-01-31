@@ -5,6 +5,7 @@
 //
 //
 // Author: Hugo LECLERC <leclerc@lmt.ens-cachan.fr>, (C) 2004
+//         Florent PLED <florent.pled@univ-paris-est.fr>, (C) 2015
 //
 // Copyright: See COPYING file that comes with this distribution
 //
@@ -17,6 +18,7 @@
 #include "Triangle.h"
 #include "Quad.h"
 #include "Tetra.h"
+#include "Hexa.h"
 #include "../util/rectilinear_iterator.h"
 
 #include <list>
@@ -26,7 +28,7 @@ namespace LMT {
 namespace LMTPRIVATE {
     /*!
         Objectif : 
-            Cette fonction sert à ajouter un noeud à une barre pour la découpe d'un maillage.
+            La fonction \a append_node_cut_at_bar sert à ajouter un noeud à une barre pour la découpe d'un maillage.
             
         Paramètres :
             * m est le maillage de barres que l'on souhaite couper.
@@ -170,7 +172,7 @@ namespace LMTPRIVATE {
                                                 .5 );
             }
         }
-        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle.
+        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle .
         template<class TE> 
         void append_constrained_cut( TE &e, const Number<3> &nnn ) {
             static const unsigned nb_bar = 3;
@@ -224,7 +226,7 @@ namespace LMTPRIVATE {
 
         template<class TE> 
         void has_two_cuts( TE &e, const Number<2> &nnn, Control_two_cuts &ctrl ) { }
-        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle.
+        /// pour la 3D mais le foncteur qui utilisera cette méthode parcourera des \a Triangle .
         template<class TE> 
         void has_two_cuts( TE &e, const Number<3> &nnn, Control_two_cuts &ctrl ) {
             static const unsigned nb_bar = 3;
@@ -370,47 +372,40 @@ namespace LMTPRIVATE {
     template<class TM,class TMParent,unsigned max_num_sub_mesh>
     struct Refinement<TM,TMParent,max_num_sub_mesh,max_num_sub_mesh> {
         Refinement(TMParent *mp) {}
-        template<class T> void update_cut(const TM &m,T max_length) const {}
+        template<class T> void update_cut(const TM &m, T length_max) const {}
     };
-};
+}
 
 /*!
-    Cette fonction divise les barres (segments) d'un maillage 1, 2 ou 3D suivant l'opérateur op.
+    Objectif :
+        La fonction \a refinement permet de raffiner un maillage. Elle divise les barres (segments) d'un maillage 1D, 2D ou 3D suivant l'opérateur op. Plus précisément, elle divise les éléments Tetra, Hexa, ... qui contiennent ces barres.
 
-    Ça veut dire, que ça divise les éléments Tetra, Hexa, etc... qui contiennent ces barres.
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> op </strong> est un opérateur qui peut soit renvoyer un booléen soit un double. Il prend aussi forcément un élément de type barre en paramètre.
+            Si c'est 0 (=false) -> on ne coupe pas.
+            Si c'est 1 (=true) -> on coupe au milieu.
+            Si c'est dans ] 0, 1 [ -> on coupe de façon proportionnelle (0 -> vers le noeud 0, 1 -> vers le noeud 1).
+            C'est-à-dire qu'il est au moins de la forme :
+            \code C/C++
+                struct MyOp {
+                    template<class TE>
+                    RET operator()( TE &e ) const { // e un 1 var_inter (Bar, ...)
+                        /// votre code
+                    }
+                };
+            où RET est soit un type flottant, soit un booléen.
+            S'il renvoie un booléen, il y a opération de division au milieu de la barre s'il renvoie vrai.
+            S'il renvoie un double r, il divise la barre lorsque r est compris entre 0 et 1. La position de la division dépend de r suivant les points barycentriques ( pos(0); 1 - r ) ( pos(1); r ). Lorsque r=1, il divise au milieu. Lorsque r=0, il ne fait rien.
 
-    L'opérateur op peut soit renvoyer un booléen soit un double. Il prend aussi forcément un élément de type barre en paramètre.
-    
-    Si c'est 0 (=false) -> on ne coupe pas.
-    
-    Si c'est 1 (=true) -> on coupe au milieu.
-    
-    Si c'est dans ] 0, 1 [ -> on coupe de façon proportionnelle (0 -> vers le noeud 0, 1 -> vers le noeud 1).
-        
-    C'est-à-dire qu'il est au moins de la forme :
-    \code C/C++
-        struct MyOp {
-            template<class TE>
-            RET operator()( TE &e ) const { // e un 1 var_inter (Bar, ...)
-                  /// votre code 
-            }
-        };
-    où RET est soit un type flottant, soit un booléen.
-    S'il renvoie un booléen, il y a opération de division au milieu de la barre s'il renvoie vrai.
-    S'il renvoie un double r, il divise la barre lorsque r est compris entre 0 et 1. La position de la division dépend de r suivant les points barycentriques ( pos(0); 1 - r ) ( pos(1); r ). Lorsque r=1, il divise au milieu. Lorsque r=0, il ne fait rien.
-    Enfin refinement() renvoie vrai si elle divise au moins une barre et faux sinon.
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
 
-    \keyword Maillage/Elément/Opération
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
 
-    subdivide each element bar e contained in mesh or sub_meshes such as op(e)==true (true means subdivision). Subdivide parents
-
-
-    Voici un exemple pour diviser un maillage jusqu'à obtenir une taille max donnée
-
-    \code C/C++
-        read_msh_2( ... );
-        while ( refinement_if_length_sup( m, max_length ) );
-
+    Subdivide each element bar e contained in mesh or sub_meshes such as op(e)==true (true means subdivision). Subdivide parents.
 */
 template<class TM,class Op>
 bool refinement( TM &m, Op &op, bool spread_cut = false ) {
@@ -456,17 +451,19 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
 }
 
 /*!
-    opérateurs créés pour la fonction \a level_set_cut , peuvent être utilisés pour couper un maillage avec un level-set.
+    L'opérateur \a LevelSetRefinement est conçu pour les fonctions \a level_set_refinement et \a level_set_cut .
 */
-template<class PhiExtract>
+template<class ExtractPhi>
 struct LevelSetRefinement {
-    LevelSetRefinement( const PhiExtract &p ) : ed( p ) {}
-    template<class TE> typename TE::T operator()( TE &e ) const {
-        typename TE::T d0 = ed( *e.node(0) );
-        typename TE::T d1 = ed( *e.node(1) );
-        if ( ( d0 * d1 ) >= 0 )
+    LevelSetRefinement( const ExtractPhi &_p ) : p( _p ) {}
+
+    template<class TE>
+    typename TE::T operator()( TE &e ) const {
+        typename TE::T p0 = p( *e.node(0) );
+        typename TE::T p1 = p( *e.node(1) );
+        if ( ( p0 * p1 ) >= 0 )
             return 0;
-        typename TE::T o = d0 / ( d0 - d1 );
+        typename TE::T o = p0 / ( p0 - p1 );
 //         if ( o < 0.1 ) {
 //             e.node( 0 )->pos = e.node( 0 )->pos + ( e.node( 1 )->pos - e.node( 0 )->pos ) * o;
 //             return 0;
@@ -477,161 +474,169 @@ struct LevelSetRefinement {
 //         }
         return o;
     }
-    const PhiExtract &ed;
-};
 
-template<class PhiExtract>
-struct LevelSetRemoveNeg {
-    LevelSetRemoveNeg( const PhiExtract &p ) : ed( p ) {}
-    template<class TE> typename TE::T operator()( const TE &e ) const {
-        typename TE::T d = 0;
-        for(unsigned i=0;i<TE::nb_nodes;++i)
-            d += ed( *e.node(i) );
-        d /= TE::nb_nodes;
-        return d <= 0;
-    }
-    const PhiExtract &ed;
+    const ExtractPhi &p;
 };
 
 /*!
     Objectif :
-        Cette fonction permet de couper un maillage en fonction de la valeur d'un attribut nodal et scalaire. Plus précisément considérons un attribut nodal scalaire ( i.e. double en général ), qu'on nommera phi. Après l'appel de la fonction, le maillage n'aura que des éléments pour lesquelles la valeur de phi aux noeuds est positive.
-        
+        La fonction \a level_set_refinement permet de raffiner un maillage en fonction de la valeur d'un attribut nodal et scalaire (level-set). Plus précisément, considérons un attribut nodal scalaire ( i.e. double en général ), qu'on nommera phi. La fonction divise toutes les barres (segments) du maillage pour lesquelles les valeurs de phi aux deux noeuds sont de signe opposé ( i.e. les barres intersectées par le level-set)
+
     Paramètres :
         * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
-        * <strong> PhiExtract </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
-           
+        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+
     Retour :
-        Cette fonction renvoie vrai s'il y a eu des changements et faux sinon.
-        
-    Voici un exemple de code. Il faudra adapter le MeshCarac ( cf le MeshCarac venant juste après le code C++ ).
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
+
+    Exemple de code pour raffiner un maillage avec un level-set :
+    Remarque : il faut adapter le MeshCarac ( cf le MeshCarac venant juste après le code C++ ).
     \code C/C++
-    
+
         #include "mesh/make_rect.h"
         #include "mesh/refinement.h"
         #include "mesh/displayparaview.h"
-        
-        // inclusion du code de notre MeshCarac  
+
+        // inclusion du code de notre MeshCarac
         #include "MonMeshCarac.h"
-    
-        int main(int argc,char **argv) {
-        
+
+        int main( int argc, char **argv ) {
             typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
-            
+
             TM m;
             make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
-        
+
             for( unsigned i = 0 ; i < m.node_list.size(); ++i )
-                m.node_list[i].phi = sin( std::sqrt( i ) * 5. ); 
-        
-            display_mesh( m );
-        
-            PRINT( level_set_cut( m, ExtractDM< phi_DM >() ) );
+                m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
 
             display_mesh( m );
-            
-            return 0; 
+
+            level_set_refinement( m, ExtractDM< phi_DM >() );
+
+            display_mesh( m );
+
+            return 0;
         }
-    
+
         Commençons par le MeshCarac contenu dans le fichier Python formulation_test_sep_mesh.py ( que vous créerez ) :
         \code Python
             # -*- coding: utf-8 -*-
             from LMT.formal_lf import *
-            
+
             write_pb(
                 name = 'test_cut_mesh',
                 formulations = ['test_cut_mesh'],
                 elements = ['Triangle', 'Tetra' ]
             )
-        
+
         Et sa formulation contenue dans le fichier MeshCarac_test_cut_mesh.h.py ( que vous créerez ) :
         \code Python
             # -*- coding: utf-8 -*-
-            
+
             phi  = Variable( default_value='1e10', unit='' )
-            
+
             #
             def formulation():
                 return 0
-                
+
+    \relates level_set_refinement
     \relates level_set_cut
     \relates refinement
     \keyword Maillage/Opération
     \friend lecler@lmt.ens-cachan.fr
 */
-template<class TM,class PhiExtract>
-bool level_set_cut( TM &m, const PhiExtract &p, bool spread_cut = false ) {
-    LevelSetRefinement<PhiExtract> lr( p );
-    refinement( m, lr, spread_cut );
-    LevelSetRemoveNeg<PhiExtract> ln( p );
-    return m.remove_elements_if( ln );
+template<class TM,class ExtractPhi>
+bool level_set_refinement( TM &m, const ExtractPhi &p, bool spread_cut = false ) {
+    LevelSetRefinement<ExtractPhi> lr( p );
+    return refinement( m, lr, spread_cut );
 }
 
 /*!
-    opérateur créé pour la fonction \a refinement_if_length_sup .
+    L'opérateur \a LevelSetRemoveNeg est conçu pour la fonction \a level_set_cut .
 */
-template<class T>
-struct RefinementOpBasedOnLength {
-    template<class TE> bool operator()(const TE &e) const { return length(e.node(1)->pos-e.node(0)->pos) > max_length; }
-    T max_length;
+template<class ExtractPhi>
+struct LevelSetRemoveNeg {
+    LevelSetRemoveNeg( const ExtractPhi &_p ) : p( _p ) {}
+
+    template<class TE>
+    typename TE::T operator()( const TE &e ) const {
+        typename TE::T d = 0;
+        for(unsigned i=0;i<TE::nb_nodes;++i)
+            d += p( *e.node(i) );
+        d /= TE::nb_nodes;
+        return d <= 0;
+    }
+
+    const ExtractPhi &p;
 };
 
 /*!
     Objectif :
-        Cette fonction divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à max_length.
-    Retour :
-        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite que toutes les barres soient inférieures à max_length, on relancera la fonction autant de fois que nécessaire.
+        La fonction \a level_set_cut permet de couper un maillage en fonction de la valeur d'un attribut nodal et scalaire (level-set). Plus précisément, considérons un attribut nodal scalaire ( i.e. double en général ), qu'on nommera phi. Après l'appel de la fonction, le maillage n'aura que des éléments pour lesquels la valeur de phi aux noeuds est positive.
 
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+
+    Retour :
+        Cette fonction renvoie vrai s'il y a eu des changements et faux sinon.
+
+    Exemple de code pour couper un maillage avec un level-set :
+    Remarque : il faut adapter le MeshCarac.
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            for( unsigned i = 0 ; i < m.node_list.size(); ++i )
+                m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
+
+            display_mesh( m );
+
+            level_set_cut( m, ExtractDM< phi_DM >() );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates level_set_cut
+    \relates level_set_refinement
+    \relates refinement
     \keyword Maillage/Opération
-    subdivide each element bar e such as length(e)>max_length (true means subdivision).
+    \friend lecler@lmt.ens-cachan.fr
 */
-template<class TM,class T>
-bool refinement_if_length_sup( TM &m, T max_length, bool spread_cut = false ) {
-    RefinementOpBasedOnLength<T> rl;
-    rl.max_length = max_length;
-    return refinement( m, rl, spread_cut );
+template<class TM,class ExtractPhi>
+bool level_set_cut( TM &m, const ExtractPhi &p, bool spread_cut = false ) {
+    LevelSetRefinement<ExtractPhi> lr( p );
+    refinement( m, lr, spread_cut );
+    LevelSetRemoveNeg<ExtractPhi> ln( p );
+    return m.remove_elements_if( ln );
 }
 
 /*!
-  Exemple :
-
-  \code
-    #include <mesh/mesh.h>
-    #include <mesh/meshcaracstd.h>
-    #include <mesh/refinement.h>
-    #include <mesh/make_rect.h>
-    #include <mesh/displayparaview.h>
-    #include <correlation/ImgInterp.h>
-    using namespace LMT;
-
-
-    int main() {
-        typedef Mesh<MeshCaracStd<2,2> > TM;
-        typedef ImgInterp<double,2> TI;
-
-        TM m;
-        make_rect( m, Triangle(), 0, 1024, 40 );
-
-        TI bin( "/home/leclerc/Data/Croix/masque_0.png" );
-        TI cut = img_dist_from_front( bin, 100, 128.0 );
-        TI stp; stp.resize( cut.sizes, -1 );
-
-        cut.display( true );
-
-        LevelSetImageRefinement<TI> lr( cut, stp );
-        refinement( m, lr );
-
-        display( m );
-    }
-
-    \keyword Maillage/Opération
+    L'opérateur \a LevelSetImageRefinement est conçu pour la fonction \a level_set_image_refinement .
 */
 template<class TIMG1,class TIMG2=TIMG1>
 struct LevelSetImageRefinement {
     LevelSetImageRefinement( const TIMG1 &ls_crack, const TIMG2 &ls_front, double eps = 1e-1 ) : ls_crack( ls_crack ), ls_front( ls_front ), eps( eps ) {}
-    template<class TE> double operator()( TE &e ) const {
+
+    template<class TE>
+    double operator()( TE &e ) const {
         double step = 1.0 / measure( e );
         for(double x = 0; x <= 1; x += step ) {
             typename TE::Pvec P0 = e.pos(0) + ( e.pos(1) - e.pos(0) ) * ( x - step );
@@ -654,6 +659,7 @@ struct LevelSetImageRefinement {
         }
         return 0;
     }
+
     const TIMG1 &ls_crack;
     const TIMG2 &ls_front;
     double eps;
@@ -661,73 +667,455 @@ struct LevelSetImageRefinement {
 
 /*!
     Objectif :
-        Ces foncteurs sont conçus pour la fonction \a refinement(). Ils permettent de raffiner localement un maillage autour d'un point.
-        
-    Attributs :
-        * <strong> c </strong> le centre de la zone que l'on veut raffiner. c n'est pas forcément un point dans le maillage.
-        * <strong> l_min </strong> la longueur minimale des côtés des éléments du maillage.
-        * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au point c.
-        
-    Attributs optionnels :
-        * <strong> id </strong> le nom de l'attribut nodal qui compte le nombre de découpe. Remarque : il faut que le MeshCarac du maillage contienne une classe cuts_refinement_DM.
+        La fonction \a level_set_image_refinement permet de raffiner un maillage à partir d'une image.
 
-    Description :
-        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le centre c.
-         
-    Exemple de code :
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> ls_crack </strong>
+        * <strong> ls_front </strong>
+
+    Paramètres optionels :
+        * <strong> eps </strong>
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
+
+    Exemple de code pour raffiner un maillage à partir d'une image :
     \code C/C++
-        typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
-        typedef TM::Pvec Pvec;
-        typedef TM::TNode::T T;
-    
-        refinement( m, Local_refinement_point<T, Pvec >( 0.01, 0.2, Pvec( 0.2, 0.5 ) ) );
-    
-    On raffinera autour du point de coordonnées ( 0.2, 0.5 ) avec une longueur minimale de 0.01 et une augmentation de 0.2.
-    
+
+        #include <mesh/mesh.h>
+        #include <mesh/meshcaracstd.h>
+        #include <mesh/refinement.h>
+        #include <mesh/make_rect.h>
+        #include <mesh/displayparaview.h>
+        #include <correlation/ImgInterp.h>
+        using namespace LMT;
+
+        int main( int argc, char **argv ) {
+            typedef Mesh<MeshCaracStd<2,2> > TM;
+            typedef ImgInterp<double,2> TI;
+
+            TM m;
+            make_rect( m, Triangle(), 0, 1024, 40 );
+
+            display_mesh( m );
+
+            TI bin( "/home/leclerc/Data/Croix/masque_0.png" );
+            TI cut = img_dist_from_front( bin, 100, 128.0 );
+            TI stp; stp.resize( cut.sizes, -1 );
+
+            cut.display( true );
+
+            level_set_image_refinement( m, cut, stp );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates level_set_refinement
+    \relates refinement
     \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
 */
-template < class T, class Pvec>
-struct Local_refinement_point {
-    Local_refinement_point( T length_min, T _k, Pvec _c ) : l_min( length_min ), k( _k ), c( _c ) {}
+template<class TM,class TIMG1,class TIMG2>
+bool level_set_image_refinement( TM &m, const TIMG1 &ls_crack, const TIMG2 &ls_front, double eps = 1e-1, bool spread_cut = false ) {
+    LevelSetImageRefinement<TIMG1,TIMG2> lr( ls_crack, ls_front, eps );
+    return refinement( m, lr, spread_cut );
+}
 
-    template<class TE> 
-    bool operator()( TE &e ) const {
-        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
-        T v = length( center( e ) - c ) * k + l_min;
-        if ( l > v ) 
-            return true;
-        else
-            return false;
-    }
-
-    T l_min, k;
-    Pvec c; /// centre
-};
-
-template<class T, class Pvec>
-struct Local_refinement_point_id {
-    Local_refinement_point_id( T length_min, T _k, Pvec _c ) : l_min( length_min ), k( _k ), c( _c ), id( 1 ) {}
+/*!
+    L'opérateur \a RefinementBasedOnLength est conçu pour la fonction \a refinement_if_length_sup .
+*/
+template<class T>
+struct RefinementBasedOnLength {
+    RefinementBasedOnLength( T length_max ) : l_max( length_max ) {}
 
     template<class TE>
     bool operator()( TE &e ) const {
-        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
-        T v = length( center( e ) - c ) * k + l_min;
-        if ( l > v ) {
-            e.node( 0 )->cuts_refinement = id;
-            e.node( 1 )->cuts_refinement = id;
-            return true;
-        } else
-            return false;
+        return length( e.node(1)->pos - e.node(0)->pos ) > l_max;
     }
 
-    T l_min, k;
-    Pvec c; /// centre
-    unsigned id; /// nombre de découpes
+    T l_max;
 };
 
 /*!
     Objectif :
-        Ces foncteurs sont conçus pour la fonction \a refinement(). Ils permettent de raffiner localement un maillage.
+        La fonction \a refinement_if_length_sup permet de raffiner un maillage suivant un critère géométrique (taille des barres). Elle divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à l_max.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> l_max </strong> est un double qui correspond à la longueur maximale des barres qui ne seront pas divisées.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite que toutes les barres soient inférieures à l_max, on relancera la fonction autant de fois que nécessaire.
+
+    Exemple de code pour raffiner un maillage jusqu'à obtenir une taille max donnée de 0.05 :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            display_mesh( m );
+
+            while ( refinement_if_length_sup( m, 0.05 ) );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_length_sup
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_elem_field_sup
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+
+    Subdivide each element bar e such as length(e)>l_max (true means subdivision).
+*/
+template<class TM,class T>
+bool refinement_if_length_sup( TM &m, T length_max, bool spread_cut = false ) {
+    RefinementBasedOnLength<T> rl( length_max );
+    return refinement( m, rl, spread_cut );
+}
+
+/*!
+    L'opérateur \a RefinementBasedOnNodalField est conçu pour la fonction \a refinement_if_nodal_field_sup .
+*/
+template<class ExtractPhi,class TM,class T>
+struct RefinementBasedOnNodalField {
+    RefinementBasedOnNodalField( const ExtractPhi &_p, TM &m, T _k ) : p( _p ), ptr_m( &m ), k( _k  ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        T pmin, pmax;
+        get_min_max( ptr_m->node_list, p, pmin, pmax );
+        T p0 = p( *e.node(0) );
+        T p1 = p( *e.node(1) );
+        return ( p0 > k * pmax ) or ( p1 > k * pmax );
+    }
+
+    const ExtractPhi &p;
+    TM* ptr_m;
+    T k;
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_if_nodal_field_sup permet de raffiner un maillage suivant la valeur d'un attribut nodal d'un maillage. Plus précisément, considérons un attribut nodal scalaire ( i.e. double en général ), qu'on nommera phi. La fonction divise toutes les barres (segments) du maillage en deux pour lesquelles la valeur de phi à un des noeuds est supérieure à k fois la valeur maximale de phi sur tout le maillage.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+        * <strong> k </strong> est un double qui correspond au rapport maximal (entre la valeur de l'attribut sur un des noeuds d'une barre et sa valeur maximale sur tout le maillage) des barres qui ne seront pas divisées.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite atteindre une précision donnée, on relancera la fonction après la mise à jour de l'attribut nodal autant de fois que nécessaire.
+
+    Exemple de code pour raffiner un maillage autour des noeuds pour lesquels la valeur d'un attribut nodal est supérieure à 0.75 fois la valeur maximale sur tout le maillage :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            for( unsigned i = 0 ; i < m.node_list.size(); ++i )
+                m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
+
+            display_mesh( m );
+
+            refinement_if_nodal_field_sup( m, ExtractDM< phi_DM >(), 0.75 );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_elem_field_sup
+    \relates refinement_if_length_sup
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class ExtractPhi,class T>
+bool refinement_if_nodal_field_sup( TM &m, const ExtractPhi &p, T k, bool spread_cut = false ) {
+    RefinementBasedOnNodalField<ExtractPhi,TM,T> r( p, m, k );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
+    L'opérateur \a RefinementBasedOnElemField est conçu pour la fonction \a refinement_if_elem_field_sup .
+*/
+template<class ExtractPhi,class TM,class T>
+struct RefinementBasedOnElemField {
+    RefinementBasedOnElemField( const ExtractPhi &_p, TM &m, T _k ) : p( _p ), ptr_m( &m ), k( _k  ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        T pmin, pmax;
+//        get_min_max( ptr_m->elem_list, p, pmin, pmax );
+        PRINT( e );
+        PRINT( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0] );
+        PRINT( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() );
+        PRINT( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0]->number );
+        PRINT( p( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0] ) );
+//        for(unsigned n=0;n<ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() ;++n)
+//            if ( p( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[n] ) > k * pmax )
+//                return 1;
+        return 0;
+    }
+
+    const ExtractPhi &p;
+    TM* ptr_m;
+    T k;
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_if_elem_field_sup permet de raffiner un maillage suivant la valeur d'un attribut élémentaire d'un maillage. Plus précisément, considérons un attribut élémentaire scalaire ( i.e. double en général ), qu'on nommera phi. La fonction divise toutes les barres (segments) du maillage en deux pour lesquelles la valeur de phi sur un des éléments est supérieure à k fois la valeur maximale de phi sur tout le maillage.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+        * <strong> k </strong> est un double qui correspond au rapport maximal (entre la valeur de l'attribut sur un des éléments d'une barre et sa valeur maximale sur tout le maillage) des barres qui ne seront pas divisées.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite atteindre une précision donnée, on relancera la fonction après la mise à jour de l'attribut élémentaire autant de fois que nécessaire.
+
+    Exemple de code pour raffiner un maillage autour des éléments pour lesquels la valeur d'un attribut élémentaire est supérieure à 0.75 fois la valeur maximale sur tout le maillage :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            for( unsigned n = 0 ; n < m.elem_list.size(); ++n )
+                m.elem_list[n]->set_field( "phi", sin( std::sqrt( n ) * 5. );
+
+            display_mesh( m );
+
+            refinement_if_elem_field_sup( m, ExtractDM< phi_DM >(), 0.75 );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_elem_field_sup
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_length_sup
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class ExtractPhi,class T>
+bool refinement_if_elem_field_sup( TM &m, const ExtractPhi &p, T k, bool spread_cut = false ) {
+//    m.update_skin();
+    m.update_elem_parents( Number<TM::nvi-1>() );
+    if ( TM::dim == 3 )
+        m.update_elem_parents( Number<TM::nvi-2>() );
+    RefinementBasedOnElemField<ExtractPhi,TM,T> r( p, m, k );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
+    L'opérateur \a Smoothing est conçu pour la fonction \a smoothing .
+*/
+template<class ExtractPhiNodal,class TM>
+struct Smoothing {
+    Smoothing( const ExtractPhiNodal &_pn, TM &m ) : pn( _pn ), ptr_m( &m ) {}
+
+    template<class TE,class ExtractPhiElem>
+    void operator()( TE &e, const ExtractPhiElem &pe ) const {
+        for(unsigned i=0;i<TE::nb_nodes;++i)
+            pn( *e.node(i) ) += pe( e ) / ptr_m->get_node_parents( e.node(i)->number ).size();
+    }
+
+    const ExtractPhiNodal &pn;
+    TM* ptr_m;
+};
+
+/*!
+    Objectif :
+        La fonction \a smoothing permet de lisser un attribut élémentaire aux noeuds d'un maillage et de compléter un attribut nodal.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui ne sera pas modifié.
+        * <strong> ExtractPhiNodal </strong> est une classe qui permet d'accéder à la valeur d'un attribut nodal du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_nodal_DM > où <strong> phi_nodal </strong> est le nom de l'attribut nodal. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_nodal_DM.
+        * <strong> ExtractPhiElem </strong> est une classe qui permet d'accéder à la valeur d'un attribut élémentaire du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_elem_DM > où <strong> phi_elem </strong> est le nom de l'attribut élémentaire. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_elem_DM.
+
+    Exemple de code pour lisser un attribut élémtaire aux noeuds d'un maillage et compléter un attribut nodal :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            for( unsigned n = 0 ; n < m.elem_list.size(); ++n )
+                m.elem_list[n]->set_field( "phi_elem", sin( std::sqrt( n ) * 5. ) );
+
+            smoothing( m, ExtractDM< phi_nodal_DM >(), ExtractDM< phi_elem_DM >() );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates smoothing
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class ExtractPhiNodal,class ExtractPhiElem>
+void smoothing( TM &m, const ExtractPhiNodal &pn, const ExtractPhiElem &pe ) {
+    for( unsigned i = 0 ; i < m.node_list.size(); ++i )
+        pn( m.node_list[i] ) = 0.;
+    m.update_elem_neighbours();
+    Smoothing<ExtractPhiNodal,TM> re( pn, m );
+    apply( m.elem_list, re, pe );
+}
+
+/*!
+    Le foncteur \a RefinementPoint est conçu pour la fonction \a refinement_point .
+*/
+template<class T,class Pvec>
+struct RefinementPoint {
+    RefinementPoint( T length_min, T _k, Pvec _c ) : l_min( length_min ), k( _k ), c( _c ) {}
+
+    template<class TE> 
+    bool operator()( TE &e ) const {
+        return length( e.node( 1 )->pos - e.node( 0 )->pos ) > length( center( e ) - c ) * k + l_min;
+    }
+
+    T l_min, k;
+    Pvec c; /// centre
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_point permet de raffiner localement un maillage autour d'un point.
+
+    Attributs :
+        * <strong> c </strong> le centre de la zone que l'on veut raffiner. c n'est pas forcément un point dans le maillage.
+        * <strong> l_min </strong> la longueur minimale des côtés des éléments du maillage.
+        * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au point c.
+
+    Description :
+        On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le centre c.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
+
+    Exemple de code pour raffiner un maillage autour du point c de coordonnées ( 0.2, 0.5 ) avec une longueur minimale de 0.01 et une augmentation de 0.2 :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            display_mesh( m );
+
+            refinement_point( m, 0.01, 0.2, Pvec( 0.2, 0.5 ) );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_point
+    \relates refinement_circle
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class T,class Pvec>
+bool refinement_point( TM &m, T length_min, T k, Pvec c, bool spread_cut = false ) {
+    RefinementPoint<T,Pvec> r( length_min, k, c );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
+    Le foncteur \a RefinementCircle est conçu pour la fonction \a refinement_circle .
+*/
+template<class T,class Pvec>
+struct RefinementCircle {
+    RefinementCircle( T length_min, T _k, Pvec _c, T _R ) : l_min( length_min ), k( _k ), c( _c ), R( _R ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        return length( e.node( 1 )->pos - e.node( 0 )->pos ) > fabs( R - length( center( e ) - c ) ) * k + l_min;
+    }
+
+    T l_min, k;
+    T R; /// rayon du cercle
+    Pvec c; /// centre du cercle
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_circle permet de raffiner localement un maillage autour d'un cercle.
 
     Attributs :
         * <strong> c </strong> le centre de la zone (cercle) autour duquel on veut raffiner. c n'est pas forcément un point dans le maillage.
@@ -735,55 +1123,55 @@ struct Local_refinement_point_id {
         * <strong> l_min </strong> la longueur minimale des côtés des éléments du maillage.
         * <strong> k </strong> le coefficient d'augmentation de la longueur maximale des côtés des éléments en fonction de la distance au cercle.
 
-    Attributs optionnels :
-        * <strong> id </strong> le nom de l'attribut nodal qui compte le nombre de découpe. Remarque : il faut que le MeshCarac du maillage contienne une classe cuts_refinement_DM.
-
     Description :
         On décide de couper le côté d'un élément ( i.e. une \a Bar ) si sa longueur est supérieure à d * k + l_min où d est la distance entre le milieu du côté et le cercle de centre c et de rayon R.
 
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
+
+    Exemple de code pour raffiner un maillage autour du cercle de centre c de coordonnées ( 0.3, 0.5 ) et de rayon 0.1 avec une longueur minimale de 0.01 et une augmentation de 0.2 :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            display_mesh( m );
+
+            refinement_circle( m, 0.01, 0.2, Pvec( 0.3, 0.5 ), 0.1 );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_circle
+    \relates refinement_point
+    \relates refinement
     \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
 */
-template < class T, class Pvec>
-struct Local_refinement_circle {
-    Local_refinement_circle( T length_min, T _k, Pvec _c, T _R ) : l_min( length_min ), k( _k ), c( _c ), R( _R ) {}
+template<class TM,class T,class Pvec>
+bool refinement_circle( TM &m, T length_min, T k, Pvec c, T R, bool spread_cut = false ) {
+    RefinementCircle<T,Pvec> rc( length_min, k, c, R );
+    return refinement( m, rc, spread_cut );
+}
 
-    template<class TE>
-    bool operator()( TE &e ) const {
-        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
-        T v = fabs( R - length( center( e ) - c ) ) * k + l_min;
-        if ( l > v )
-            return true;
-        else
-            return false;
-    }
-
-    T l_min, k;
-    T R; /// rayon du cercle
-    Pvec c; /// centre du cercle
-};
-
-template<class T, class Pvec>
-struct Local_refinement_circle_id {
-    Local_refinement_circle_id( T length_min, T _k, Pvec _c, T _R ) : l_min( length_min ), k( _k ), c( _c ), R( _R ), id( 1 ) {}
-
-    template<class TE>
-    bool operator()( TE &e ) const {
-        T l = length( e.node( 1 )->pos - e.node( 0 )->pos );
-        T v = fabs( R - length( center( e ) - c ) ) * k + l_min;
-        if ( l > v ) {
-            e.node( 0 )->cuts_refinement = id;
-            e.node( 1 )->cuts_refinement = id;
-            return true;
-        } else
-            return false;
-    }
-
-    T l_min, k;
-    T R; /// rayon du cercle
-    Pvec c; /// centre du cercle
-    unsigned id; /// nombre de découpes
-};
-
+/*!
+    L'opérateur \a MaskCutter est conçu pour la fonction \a mask_cut .
+*/
 namespace LMTPRIVATE {
     template<class TM,class MA,class I>
     struct MaskCutter {
@@ -872,7 +1260,665 @@ bool mask_cut( TM &m, const MA &mask, I lim_inf, I lim_sup, I dist_disp, bool re
     return res;
 }
 
+/*!
+    L'opérateur \a DivideElement est conçu pour la fonction \a divide_element .
+*/
+template<class TM, class TV>
+struct DivideElement {
+    DivideElement( TM &m, const TV &elem_list ) : ptr_m( &m ), ptr_elem_list( &elem_list ) {}
 
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+       if ( find( *ptr_elem_list, _1 == e.number ) ) {
+            typedef typename Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+            Vec< TNode*, 3 > vn;
+            ptr_m->update_elem_children();
+            BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+            Vec<TNode*,3> node_center_Bar;
+            for (unsigned i=0;i<3;++i) {
+                node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+            }
+            /// Triangle 0
+            vn[ 0 ] = e.node( 0 );
+            vn[ 1 ] = node_center_Bar[ 0 ];
+            vn[ 2 ] = node_center_Bar[ 2 ];
+            permutation_if_jac_neg ( Triangle(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+            /// Triangle 1
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = e.node( 1 );
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            permutation_if_jac_neg ( Triangle(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+            /// Triangle 2
+            vn[ 0 ] = node_center_Bar[ 2 ];
+            vn[ 1 ] = node_center_Bar[ 1 ];
+            vn[ 2 ] = e.node( 2 );
+            permutation_if_jac_neg ( Triangle(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+            /// Triangle 3
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = node_center_Bar[ 1 ];
+            vn[ 2 ] = node_center_Bar[ 2 ];
+            permutation_if_jac_neg ( Triangle(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+            return true;
+       }
+       else
+           return false;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        if ( find( *ptr_elem_list, _1 == e.number ) ) {
+            typedef typename Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+            Vec< TNode*, 4 > vn;
+            ptr_m->update_elem_children();
+            BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+            TNode* node_center_Quad = ban.get_node( center(e) );
+            Vec<TNode*,4> node_center_Bar;
+            for (unsigned i=0;i<4;++i) {
+                node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+            }
+            /// Quad 0
+            vn[ 0 ] = e.node( 0 );
+            vn[ 1 ] = node_center_Bar[ 0 ];
+            vn[ 2 ] = node_center_Quad;
+            vn[ 3 ] = node_center_Bar[ 3 ];
+            permutation_if_jac_neg ( Quad(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+            /// Quad 1
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = e.node( 1 );
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            vn[ 3 ] = node_center_Quad;
+            permutation_if_jac_neg ( Quad(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+            /// Quad 2
+            vn[ 0 ] = node_center_Quad;
+            vn[ 1 ] = node_center_Bar[ 1 ];
+            vn[ 2 ] = e.node( 2 );
+            vn[ 3 ] = node_center_Bar[ 2 ];
+            permutation_if_jac_neg ( Quad(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+            /// Quad 3
+            vn[ 0 ] = node_center_Bar[ 3 ];
+            vn[ 1 ] = node_center_Quad;
+            vn[ 2 ] = node_center_Bar[ 2 ];
+            vn[ 3 ] = e.node( 3 );
+            permutation_if_jac_neg ( Quad(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+            return true;
+       }
+       else
+           return false;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        if ( find( *ptr_elem_list, _1 == e.number ) ) {
+            typedef typename Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+            Vec< TNode*, 4 > vn;
+            ptr_m->update_elem_children();
+            ptr_m->update_elem_children( Number<2>() );
+            BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+            Vec<TNode*,6> node_center_Bar;
+            for (unsigned i=0;i<6;++i) {
+                node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<2>())[i]) ) );
+            }
+            /// Tetra 0
+            vn[ 0 ] = node_center_Bar[ 2 ];
+            vn[ 1 ] = node_center_Bar[ 4 ];
+            vn[ 2 ] = node_center_Bar[ 5 ];
+            vn[ 3 ] = e.node( 3 );
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 1
+            vn[ 0 ] = e.node( 0 );
+            vn[ 1 ] = node_center_Bar[ 0 ];
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            vn[ 3 ] = node_center_Bar[ 2 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 2
+            vn[ 0 ] = node_center_Bar[ 1 ];
+            vn[ 1 ] = node_center_Bar[ 3 ];
+            vn[ 2 ] = e.node( 2 );
+            vn[ 3 ] = node_center_Bar[ 5 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 3
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = e.node( 1 );
+            vn[ 2 ] = node_center_Bar[ 3 ];
+            vn[ 3 ] = node_center_Bar[ 4 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 4
+            vn[ 0 ] = node_center_Bar[ 2 ];
+            vn[ 1 ] = node_center_Bar[ 0 ];
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            vn[ 3 ] = node_center_Bar[ 4 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 5
+            vn[ 0 ] = node_center_Bar[ 1 ];
+            vn[ 1 ] = node_center_Bar[ 3 ];
+            vn[ 2 ] = node_center_Bar[ 5 ];
+            vn[ 3 ] = node_center_Bar[ 4 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 6
+            vn[ 0 ] = node_center_Bar[ 2 ];
+            vn[ 1 ] = node_center_Bar[ 1 ];
+            vn[ 2 ] = node_center_Bar[ 5 ];
+            vn[ 3 ] = node_center_Bar[ 4 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            /// Tetra 7
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = node_center_Bar[ 3 ];
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            vn[ 3 ] = node_center_Bar[ 4 ];
+            permutation_if_jac_neg ( Tetra(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+            return true;
+       }
+       else
+           return false;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        if ( find( *ptr_elem_list, _1 == e.number ) ) {
+            typedef typename Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+            Vec< TNode*, 8 > vn;
+            ptr_m->update_elem_children();
+            ptr_m->update_elem_children( Number<2>() );
+            BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+            TNode* node_center_Hexa = ban.get_node( center(e) );
+            Vec<TNode*,6> node_center_Quad;
+            for (unsigned i=0;i<6;++i) {
+                node_center_Quad[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+            }
+            Vec<TNode*,12> node_center_Bar;
+            for (unsigned i=0;i<12;++i) {
+                node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<2>())[i]) ) );
+            }
+            /// Hexa 0
+            vn[ 0 ] = e.node( 0 );
+            vn[ 1 ] = node_center_Bar[ 0 ];
+            vn[ 2 ] = node_center_Quad[ 0 ];
+            vn[ 3 ] = node_center_Bar[ 3 ];
+            vn[ 4 ] = node_center_Bar[ 8 ];
+            vn[ 5 ] = node_center_Quad[ 2 ];
+            vn[ 6 ] = node_center_Hexa;
+            vn[ 7 ] = node_center_Quad[ 4 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 1
+            vn[ 0 ] = node_center_Bar[ 0 ];
+            vn[ 1 ] = e.node( 1 );
+            vn[ 2 ] = node_center_Bar[ 1 ];
+            vn[ 3 ] = node_center_Quad[ 0 ];
+            vn[ 4 ] = node_center_Quad[ 2 ];
+            vn[ 5 ] = node_center_Bar[ 9 ];
+            vn[ 6 ] = node_center_Quad[ 5 ];
+            vn[ 7 ] = node_center_Hexa;
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 2
+            vn[ 0 ] = node_center_Bar[ 3 ];
+            vn[ 1 ] = node_center_Quad[ 0 ];
+            vn[ 2 ] = node_center_Bar[ 2 ];
+            vn[ 3 ] = e.node( 3 );
+            vn[ 4 ] = node_center_Quad[ 4 ];
+            vn[ 5 ] = node_center_Hexa;
+            vn[ 6 ] = node_center_Quad[ 3 ];
+            vn[ 7 ] = node_center_Bar[ 11 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 3
+            vn[ 0 ] = node_center_Quad[ 0 ];
+            vn[ 1 ] = node_center_Bar[ 1 ];
+            vn[ 2 ] = e.node( 2 );
+            vn[ 3 ] = node_center_Bar[ 2 ];
+            vn[ 4 ] = node_center_Hexa;
+            vn[ 5 ] = node_center_Quad[ 5 ];
+            vn[ 6 ] = node_center_Bar[ 10 ];
+            vn[ 7 ] = node_center_Quad[ 3 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 4
+            vn[ 0 ] = node_center_Bar[ 8 ];
+            vn[ 1 ] = node_center_Quad[ 2 ];
+            vn[ 2 ] = node_center_Hexa;
+            vn[ 3 ] = node_center_Quad[ 4 ];
+            vn[ 4 ] = e.node( 4 );
+            vn[ 5 ] = node_center_Bar[ 4 ];
+            vn[ 6 ] = node_center_Quad[ 1 ];
+            vn[ 7 ] = node_center_Bar[ 7 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 5
+            vn[ 0 ] = node_center_Quad[ 2 ];
+            vn[ 1 ] = node_center_Bar[ 9 ];
+            vn[ 2 ] = node_center_Quad[ 5 ];
+            vn[ 3 ] = node_center_Hexa;
+            vn[ 4 ] = node_center_Bar[ 4 ];
+            vn[ 5 ] = e.node( 5 );
+            vn[ 6 ] = node_center_Bar[ 5 ];
+            vn[ 7 ] = node_center_Quad[ 1 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 6
+            vn[ 0 ] = node_center_Quad[ 4 ];
+            vn[ 1 ] = node_center_Hexa;
+            vn[ 2 ] = node_center_Quad[ 3 ];
+            vn[ 3 ] = node_center_Bar[ 11 ];
+            vn[ 4 ] = node_center_Bar[ 7 ];
+            vn[ 5 ] = node_center_Quad[ 1 ];
+            vn[ 6 ] = node_center_Bar[ 6 ];
+            vn[ 7 ] = e.node( 7 );
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            /// Hexa 7
+            vn[ 0 ] = node_center_Hexa;
+            vn[ 1 ] = node_center_Quad[ 5 ];
+            vn[ 2 ] = node_center_Bar[ 10 ];
+            vn[ 3 ] = node_center_Quad[ 3 ];
+            vn[ 4 ] = node_center_Quad[ 1 ];
+            vn[ 5 ] = node_center_Bar[ 5 ];
+            vn[ 6 ] = e.node( 6 );
+            vn[ 7 ] = node_center_Bar[ 6 ];
+            permutation_if_jac_neg ( Hexa(), vn.ptr() );
+            DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+            return true;
+       }
+       else
+           return false;
+    }
+
+    /// pour tous les autres éléments autres que \a Triangle, \a Quad, \a Tetra, \a Hexa, on renvoie faux
+    template<class TE>
+    bool operator() ( TE &e ) {
+        return false;
+    }
+
+    TM* ptr_m;
+    const TV* ptr_elem_list;
+};
+
+/*!
+    Objectif :
+        La fonction \a divide_element permet de diviser une liste d'éléments d'un maillage. Elle divise en 4 les \a Triangle et \a Quad , et en 8 les \a Tetra et \a Hexa .
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié.
+        * <strong> elem_list </strong> est une liste numéros d'éléments.
+
+    Retour :
+        Cette fonction renvoie vrai s'il y a eu des changements et faux sinon.
+
+    Exemple de code pour diviser les éléments 5, 50, 80, 100, 200 d'un maillage :
+    Remarque : il faut adapter le MeshCarac.
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            display_mesh( m );
+
+            divide_element( m, Vec<unsigned>( 5, 50, 80, 100, 200 ) );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates divide_element
+    \relates divide
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+*/
+template <class TM, class TV>
+bool divide_element( TM &m, const TV &elem_list ) {
+    DivideElement<TM,TV> de( m, elem_list );
+    return m.remove_elements_if( de );
+}
+
+/*!
+    L'opérateur \a Divide est conçu pour la fonction \a divide .
+*/
+template<class TM>
+struct Divide {
+    Divide( TM &m ) : ptr_m( &m ) {}
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        typedef typename Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+        Vec< TNode*, 3 > vn;
+        ptr_m->update_elem_children();
+        BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+        Vec<TNode*,3> node_center_Bar;
+        for (unsigned i=0;i<3;++i) {
+            node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+        }
+        /// Triangle 0
+        vn[ 0 ] = e.node( 0 );
+        vn[ 1 ] = node_center_Bar[ 0 ];
+        vn[ 2 ] = node_center_Bar[ 2 ];
+        permutation_if_jac_neg ( Triangle(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+        /// Triangle 1
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = e.node( 1 );
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        permutation_if_jac_neg ( Triangle(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+        /// Triangle 2
+        vn[ 0 ] = node_center_Bar[ 2 ];
+        vn[ 1 ] = node_center_Bar[ 1 ];
+        vn[ 2 ] = e.node( 2 );
+        permutation_if_jac_neg ( Triangle(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+        /// Triangle 3
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = node_center_Bar[ 1 ];
+        vn[ 2 ] = node_center_Bar[ 2 ];
+        permutation_if_jac_neg ( Triangle(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Triangle(), NameBehavior(), vn.ptr() ) );
+        return true;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        typedef typename Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+        Vec< TNode*, 4 > vn;
+        ptr_m->update_elem_children();
+        BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+        TNode* node_center_Quad = ban.get_node( center(e) );
+        Vec<TNode*,4> node_center_Bar;
+        for (unsigned i=0;i<4;++i) {
+            node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+        }
+        /// Quad 0
+        vn[ 0 ] = e.node( 0 );
+        vn[ 1 ] = node_center_Bar[ 0 ];
+        vn[ 2 ] = node_center_Quad;
+        vn[ 3 ] = node_center_Bar[ 3 ];
+        permutation_if_jac_neg ( Quad(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+        /// Quad 1
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = e.node( 1 );
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        vn[ 3 ] = node_center_Quad;
+        permutation_if_jac_neg ( Quad(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+        /// Quad 2
+        vn[ 0 ] = node_center_Quad;
+        vn[ 1 ] = node_center_Bar[ 1 ];
+        vn[ 2 ] = e.node( 2 );
+        vn[ 3 ] = node_center_Bar[ 2 ];
+        permutation_if_jac_neg ( Quad(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+        /// Quad 3
+        vn[ 0 ] = node_center_Bar[ 3 ];
+        vn[ 1 ] = node_center_Quad;
+        vn[ 2 ] = node_center_Bar[ 2 ];
+        vn[ 3 ] = e.node( 3 );
+        permutation_if_jac_neg ( Quad(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Quad(), NameBehavior(), vn.ptr() ) );
+        return true;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        typedef typename Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+        Vec< TNode*, 4 > vn;
+        ptr_m->update_elem_children();
+        ptr_m->update_elem_children( Number<2>() );
+        BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+        Vec<TNode*,6> node_center_Bar;
+        for (unsigned i=0;i<6;++i) {
+            node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<2>())[i]) ) );
+        }
+        /// Tetra 0
+        vn[ 0 ] = node_center_Bar[ 2 ];
+        vn[ 1 ] = node_center_Bar[ 4 ];
+        vn[ 2 ] = node_center_Bar[ 5 ];
+        vn[ 3 ] = e.node( 3 );
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 1
+        vn[ 0 ] = e.node( 0 );
+        vn[ 1 ] = node_center_Bar[ 0 ];
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        vn[ 3 ] = node_center_Bar[ 2 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 2
+        vn[ 0 ] = node_center_Bar[ 1 ];
+        vn[ 1 ] = node_center_Bar[ 3 ];
+        vn[ 2 ] = e.node( 2 );
+        vn[ 3 ] = node_center_Bar[ 5 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 3
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = e.node( 1 );
+        vn[ 2 ] = node_center_Bar[ 3 ];
+        vn[ 3 ] = node_center_Bar[ 4 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 4
+        vn[ 0 ] = node_center_Bar[ 2 ];
+        vn[ 1 ] = node_center_Bar[ 0 ];
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        vn[ 3 ] = node_center_Bar[ 4 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 5
+        vn[ 0 ] = node_center_Bar[ 1 ];
+        vn[ 1 ] = node_center_Bar[ 3 ];
+        vn[ 2 ] = node_center_Bar[ 5 ];
+        vn[ 3 ] = node_center_Bar[ 4 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 6
+        vn[ 0 ] = node_center_Bar[ 2 ];
+        vn[ 1 ] = node_center_Bar[ 1 ];
+        vn[ 2 ] = node_center_Bar[ 5 ];
+        vn[ 3 ] = node_center_Bar[ 4 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        /// Tetra 7
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = node_center_Bar[ 3 ];
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        vn[ 3 ] = node_center_Bar[ 4 ];
+        permutation_if_jac_neg ( Tetra(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Tetra(), NameBehavior(), vn.ptr() ) );
+        return true;
+    }
+
+    template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
+    bool operator() ( Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
+        typedef typename Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
+        Vec< TNode*, 8 > vn;
+        ptr_m->update_elem_children();
+        ptr_m->update_elem_children( Number<2>() );
+        BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
+        TNode* node_center_Hexa = ban.get_node( center(e) );
+        Vec<TNode*,6> node_center_Quad;
+        for (unsigned i=0;i<6;++i) {
+            node_center_Quad[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<1>())[i]) ) );
+        }
+        Vec<TNode*,12> node_center_Bar;
+        for (unsigned i=0;i<12;++i) {
+            node_center_Bar[i] = ban.get_node( center( *(ptr_m->get_children_of(e,Number<2>())[i]) ) );
+        }
+        /// Hexa 0
+        vn[ 0 ] = e.node( 0 );
+        vn[ 1 ] = node_center_Bar[ 0 ];
+        vn[ 2 ] = node_center_Quad[ 0 ];
+        vn[ 3 ] = node_center_Bar[ 3 ];
+        vn[ 4 ] = node_center_Bar[ 8 ];
+        vn[ 5 ] = node_center_Quad[ 2 ];
+        vn[ 6 ] = node_center_Hexa;
+        vn[ 7 ] = node_center_Quad[ 4 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 1
+        vn[ 0 ] = node_center_Bar[ 0 ];
+        vn[ 1 ] = e.node( 1 );
+        vn[ 2 ] = node_center_Bar[ 1 ];
+        vn[ 3 ] = node_center_Quad[ 0 ];
+        vn[ 4 ] = node_center_Quad[ 2 ];
+        vn[ 5 ] = node_center_Bar[ 9 ];
+        vn[ 6 ] = node_center_Quad[ 5 ];
+        vn[ 7 ] = node_center_Hexa;
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 2
+        vn[ 0 ] = node_center_Bar[ 3 ];
+        vn[ 1 ] = node_center_Quad[ 0 ];
+        vn[ 2 ] = node_center_Bar[ 2 ];
+        vn[ 3 ] = e.node( 3 );
+        vn[ 4 ] = node_center_Quad[ 4 ];
+        vn[ 5 ] = node_center_Hexa;
+        vn[ 6 ] = node_center_Quad[ 3 ];
+        vn[ 7 ] = node_center_Bar[ 11 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 3
+        vn[ 0 ] = node_center_Quad[ 0 ];
+        vn[ 1 ] = node_center_Bar[ 1 ];
+        vn[ 2 ] = e.node( 2 );
+        vn[ 3 ] = node_center_Bar[ 2 ];
+        vn[ 4 ] = node_center_Hexa;
+        vn[ 5 ] = node_center_Quad[ 5 ];
+        vn[ 6 ] = node_center_Bar[ 10 ];
+        vn[ 7 ] = node_center_Quad[ 3 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 4
+        vn[ 0 ] = node_center_Bar[ 8 ];
+        vn[ 1 ] = node_center_Quad[ 2 ];
+        vn[ 2 ] = node_center_Hexa;
+        vn[ 3 ] = node_center_Quad[ 4 ];
+        vn[ 4 ] = e.node( 4 );
+        vn[ 5 ] = node_center_Bar[ 4 ];
+        vn[ 6 ] = node_center_Quad[ 1 ];
+        vn[ 7 ] = node_center_Bar[ 7 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 5
+        vn[ 0 ] = node_center_Quad[ 2 ];
+        vn[ 1 ] = node_center_Bar[ 9 ];
+        vn[ 2 ] = node_center_Quad[ 5 ];
+        vn[ 3 ] = node_center_Hexa;
+        vn[ 4 ] = node_center_Bar[ 4 ];
+        vn[ 5 ] = e.node( 5 );
+        vn[ 6 ] = node_center_Bar[ 5 ];
+        vn[ 7 ] = node_center_Quad[ 1 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 6
+        vn[ 0 ] = node_center_Quad[ 4 ];
+        vn[ 1 ] = node_center_Hexa;
+        vn[ 2 ] = node_center_Quad[ 3 ];
+        vn[ 3 ] = node_center_Bar[ 11 ];
+        vn[ 4 ] = node_center_Bar[ 7 ];
+        vn[ 5 ] = node_center_Quad[ 1 ];
+        vn[ 6 ] = node_center_Bar[ 6 ];
+        vn[ 7 ] = e.node( 7 );
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        /// Hexa 7
+        vn[ 0 ] = node_center_Hexa;
+        vn[ 1 ] = node_center_Quad[ 5 ];
+        vn[ 2 ] = node_center_Bar[ 10 ];
+        vn[ 3 ] = node_center_Quad[ 3 ];
+        vn[ 4 ] = node_center_Quad[ 1 ];
+        vn[ 5 ] = node_center_Bar[ 5 ];
+        vn[ 6 ] = e.node( 6 );
+        vn[ 7 ] = node_center_Bar[ 6 ];
+        permutation_if_jac_neg ( Hexa(), vn.ptr() );
+        DM::copy( e, *ptr_m->add_element( Hexa(), NameBehavior(), vn.ptr() ) );
+        return true;
+    }
+
+    /// pour tous les autres éléments autres que \a Triangle, \a Quad, \a Tetra, \a Hexa, on renvoie faux
+    template<class TE>
+    bool operator() ( TE &e ) {
+        return false;
+    }
+
+    TM* ptr_m;
+};
+
+/*!
+    Objectif :
+        La fonction \a divide permet de diviser tous les éléments d'un maillage.  Elle divise en 4 les \a Triangle et \a Quad , et en 8 les \a Tetra et \a Hexa .
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié.
+
+    Retour :
+        Cette fonction renvoie vrai s'il y a eu des changements et faux sinon.
+
+    Exemple de code pour diviser tous les éléments d'un maillage :
+    Remarque : il faut adapter le MeshCarac.
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+
+            display_mesh( m );
+
+            divide( m );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates divide
+    \relates divide_element
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+*/
+template <class TM>
+bool divide( TM &m ) {
+    Divide<TM> d( m );
+    return m.remove_elements_if( d );
+}
 
 }
 

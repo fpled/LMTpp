@@ -39,7 +39,7 @@ public:
     /*!
     Cette fonction crée un ou plusieurs maillages enfants à partir du maillage "appelant" et du Number<n> passé en paramètre. Plus précisement,
         * si Number<1> est passé en paramètre un seul maillage enfant est créé, composé des sous-éléments des éléments du maillage appelant.
-        * si Number<2> est passé en paramètre, deux maillages enfants sont créés, le premier composér des sous-éléments des éléments du maillage appelant et le second des sous-sous-éléments. Par exemple, si le maillage appelant se compose de tétraèdre (classe \a Tetra ) alors le premier maillage enfant est composé de triangles et le second de barres.
+        * si Number<2> est passé en paramètre, deux maillages enfants sont créés, le premier composér des sous-éléments des éléments du maillage appelant et le second des sous-sous-éléments. Par exemple, si le maillage appelant se compose de tétraèdres (classe \a Tetra ) alors le premier maillage enfant est composé de triangles et le second de barres.
 
     \friend samir.amrouche@lmt.ens-cachan.fr
     \friend hugo.leclerc@lmt.ens-cachan.fr

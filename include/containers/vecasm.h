@@ -54,7 +54,7 @@ template<class T> inline T norm_2_p2(const T *a,unsigned size) {
     return dot_aligned_with_offset(a,a,size);
 }
 
-/// produit sclaire hermitien pour les vecteurs de complexes
+/// produit scalaire hermitien pour les vecteurs de complexes
 template<class T,class size_type>
 inline T dot_conj(const T *a,const T *b,size_type nb_val) {
   T r1 = 0;

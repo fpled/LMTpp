@@ -211,7 +211,7 @@ void cut_mesh( TM &m, const Vec<Pvec> &cuts ) {
             //if ( ++t == 10 )
             //    return;
 
-            // neighbors
+            // neighbours
             const typename TM::EA * const *ls = m.get_children_of_EA( e, Number<1>() );
             for( int ns = 0; ns < e->nb_children_virtual( 1 ); ++ns ) {
                 // through the surface ?

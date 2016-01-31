@@ -70,7 +70,7 @@ public:
     static const unsigned nvi = TElemList::nvi;
     /*!
     Type utilisé seulement pour add_element().
-    Il ne fait pas que transformer TE en TE*. lorsque l'utilisateur de add_element() souhaite ajouter un élément dont ne nom n'est pas dans le MeshCarac du maillage, add_element() ne renvoie pas un void* mais un ElementAncestor<TNode>* ( mais la valeur du pointeur reste NULL ).
+    Il ne fait pas que transformer TE en TE*. Lorsque l'utilisateur de add_element() souhaite ajouter un élément dont ne nom n'est pas dans le MeshCarac du maillage, add_element() ne renvoie pas un void* mais un ElementAncestor<TNode>* ( mais la valeur du pointeur reste NULL ).
     */
     template<class NE,class BE=DefaultBehavior> struct TElemPtr { 
         typedef typename TElem<NE,BE>::TE TE_;
@@ -378,7 +378,7 @@ void MeshAncestor<Carac,nvi_to_subs,skin>::update_elem_neighbours() {
     for(unsigned i=0;i<TElemList::nb_elem_type;++i)
         res[i].resize( s[i] );
       
-    //  
+    //
     update_node_parents();
     for(unsigned i=0;i<node_list.size();++i) {
         SimpleConstIterator<EA *> iter_par = get_node_parents(i);

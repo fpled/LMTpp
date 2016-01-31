@@ -47,7 +47,6 @@
                 m.node_list[ i ].dep = 0
                 PRINT( m.node_list[ i ].pos )       /// affiche la position du noeud d'indice i
                 
-        
         = Champs défini sur un élément
         
             Pour ce type de champ, l'accès est plus compliqué car le vecteur <strong> m.elem_list </strong> qui contient les éléments du maillage <strong> m </strong> est un vecteur hétérogène pouvant contenir différents types d'éléments ( genre Triangle, Triangle_6, Quad en 2D par exemple ) et un banal m.elem_list[ i ]->f ne fonctionnera pas.
@@ -84,7 +83,7 @@
                 \code C/C++
                     struct MonFoncteur {
                         template<class E>
-                        void operator()(  E& e ) {
+                        void operator()( E& e ) {
                             /// je m'adapte à chaque type E
                             /// sinon le code ne compile pas et vous lirez de cryptiques messages d'erreurs
                             /// subtilement gores... Les habitués apprécient. 
@@ -97,7 +96,7 @@
                 \code C/C++      
                     struct Normalize_epsilon {
                         template<class E>
-                        void operator()(  E& e ) const {
+                        void operator()( E& e ) const {
                             typename E::T neps = norm_inf( e.epsilon[ 0 ] );
                             if ( abs( neps ) > 1e-5 )
                                 e.epsilon[ 0 ] /= neps;
@@ -124,13 +123,11 @@
                 Rm : j'ai ajouté <strong> const </strong> à la fin de la signature de la méthode car elle ne modifie pas le struct.
                 dans la synataxe template < class E > ... operator( E & e) ... , le symbole E peut être remplacé par toute autre chaîne de caractère valide comme en math par exemple avec les indices muets des signes sommes.
                 Dans l'appel de \a apply (), je crée une instance de Normalize_epsilon par appel du constructeur ( rôle des parenthèses à la fin ).
-                J'aurai pu écrire aussi :
+                J'aurais pu écrire aussi :
                 \code C/C++
                     Normalize_epsilon nono; /// les parenthèses ici sont inutiles.
                     apply( m.elem_list, nono );
-        
-        
-        
+
                 Soit le foncteur opère sur un champ non spécifique et dans ce cas, on peut utiliser le type \a ExtractDM .
                 
                 En effet dans chaque fichier mesh_carac.h qui contient les caractéristiques de votre maillage, vous avez pour chaque champ, disons <strong> f </strong> , une classe nommée <strong> f_DM </strong> qui le représente, comme par exemple :
@@ -140,15 +137,15 @@
                 
                 Avec cette classe <strong> f_DM </strong> qui servira de paramètre à \a ExtractDM , on peut accéder en lecture ou en écriture à un champ <strong> f </strong> d'un élément <strong> e </strong> comme ceci :
                 \code C/C++
-                    ExtractDM< f_DM > extra;
-                    PRINT( extra( e ) ); /// affichera la valeur du champ f de l'élément e
+                    ExtractDM< f_DM > ed;
+                    PRINT( ed( e ) ); /// affichera la valeur du champ f de l'élément e
                     
                 Un autre exemple cette fois-ci en écriture
                 
                 \code C/C++      
                     struct Foncteur_demo {
                         template< class E, class NameDM >
-                        void operator()(  E& e, NameDM n ) const {
+                        void operator()( E& e, NameDM dm ) const {
                             ExtractDM< NameDM > extra;
                             extra( e ) = 2;
                         }
@@ -203,11 +200,11 @@
                     return 0;
                 }
                 
-            le type A définit un type nommé Mon_scalaire_a_moi qui est en fait un synonyme de float et deux types Ai et Ai2 dont le deuxième est paramétrique.
+            Le type A définit un type nommé Mon_scalaire_a_moi qui est en fait un synonyme de float et deux types Ai et Ai2 dont le deuxième est paramétrique.
             
             Et bien le type des champs est contenu dans la définition de votre Mesh_carac.
             Accéder à ces définitions dans un Mesh_carac est plutôt délicat mais il existe des types qu'on peut utiliser comme des fonctions qui nous renverra ce que l'on souhaite, i.e. le type d'un champ.
-            Le plus simple est certainement d' utiliser \a ExtractDM , encore lui, que ce soit un champ au noeud, à un élément ou global de la façon suivante :
+            Le plus simple est certainement d'utiliser \a ExtractDM , encore lui, que ce soit un champ au noeud, à un élément ou global de la façon suivante :
             \code C/C++
                 ExtractDM< NameDM >::ReturnType< E >::T mon_champ;
             dans le cas d'une déclaration ou bien :
@@ -240,9 +237,9 @@
                     template<class E, class NameDM>
                     void operator()( E& e, NameDM nameDM ) const {
                 
-                        typedef typename ExtractDM< NameDM >::template ReturnType< E >::T TDATA;
+                        typedef typename ExtractDM< NameDM >::template ReturnType< E >::T DATA;
                         
-                        TDATA data;
+                        DATA data;
                         
                         ExtractDM< NameDM > extra;
                         data = extra( e );
@@ -260,7 +257,7 @@
                     return 0;    
                 }            
             
-            Sur cet exemple de foncteur, dans l'opérateur parenthèse, on définit le type DATA, synonyme du type "nommé" NameDM ( e.g. epsilon_DM ) et on crée une instance data. 
+            Sur cet exemple de foncteur, dans l'opérateur parenthèse, on définit le type DATA, synonyme du type "nommé" NameDM ( e.g. epsilon_DM ) et on crée une instance data.
             
             TODO les skin_element, der_nodal ... ?
             

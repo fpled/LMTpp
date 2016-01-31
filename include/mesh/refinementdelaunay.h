@@ -44,12 +44,12 @@ namespace LMTPRIVATE {
 /**
 */
 template<unsigned nvi,class TM,class T>
-bool refinementdelaunay_if_length_sup(TM &m,T max_length) {
+bool refinementdelaunay_if_length_sup( TM &m, T max_length ) {
     LMTPRIVATE::RefinementDelaunay<TM> r;
     r.max_length = max_length;
-    apply( m.elem_list, r);
-    remove_doubles(r.new_points);
-    add_delaunay_points<nvi>(m,r.new_points);
+    apply( m.elem_list, r );
+    remove_doubles( r. new_points );
+    add_delaunay_points<nvi>( m, r. new_points );
     return r.new_points.size();
 }
 
