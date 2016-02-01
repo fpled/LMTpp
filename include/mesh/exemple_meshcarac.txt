@@ -296,7 +296,7 @@
             typedef TM::Pvec Pvec;
         
             TM m;
-            make_rect( m, NE(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 2, 2 ) );
+            make_rect( m, NE(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 2, 2 ) );
             PRINT(m.node_list.size());
             PRINT(m.elem_list.size());
             if (m.elem_list.size() == 0) {

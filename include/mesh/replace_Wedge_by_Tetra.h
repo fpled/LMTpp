@@ -302,7 +302,7 @@ struct Replace_Wedge_by_Tetra {
             typedef TM::Pvec Pvec;
 
             TM m;
-            make_rect( m, Wedge(), Pvec( 0, 0, 0 ), Pvec( 1, 1, 1 ), Pvec( 2, 2, 2 ) );
+            make_rect( m, Wedge(), Pvec( 0., 0., 0. ), Pvec( 1., 1., 1. ), Pvec( 2, 2, 2 ) );
    
             display_mesh( m );
     

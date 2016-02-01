@@ -62,7 +62,7 @@ struct Replace_Quad_by_Triangle {
             typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
 
             TM m;
-            make_rect( m, Quad(), Pvec( 0, 0 ), Pvec( 1, 1 ), Pvec( 2, 2 ) );
+            make_rect( m, Quad(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 2, 2 ) );
 
             display_mesh( m );
 

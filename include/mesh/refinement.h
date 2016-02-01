@@ -506,7 +506,7 @@ struct LevelSetRefinement {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             for( unsigned i = 0 ; i < m.node_list.size(); ++i )
                 m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
@@ -600,7 +600,7 @@ struct LevelSetRemoveNeg {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             for( unsigned i = 0 ; i < m.node_list.size(); ++i )
                 m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
@@ -766,7 +766,7 @@ struct RefinementBasedOnLength {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             display_mesh( m );
 
@@ -842,7 +842,7 @@ struct RefinementBasedOnNodalField {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             for( unsigned i = 0 ; i < m.node_list.size(); ++i )
                 m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
@@ -925,7 +925,7 @@ struct RefinementBasedOnElemField {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             for( unsigned n = 0 ; n < m.elem_list.size(); ++n )
                 m.elem_list[n]->set_field( "phi", sin( std::sqrt( n ) * 5. );
@@ -999,7 +999,7 @@ struct Smoothing {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             for( unsigned n = 0 ; n < m.elem_list.size(); ++n )
                 m.elem_list[n]->set_field( "phi_elem", sin( std::sqrt( n ) * 5. ) );
@@ -1072,7 +1072,7 @@ struct RefinementPoint {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             display_mesh( m );
 
@@ -1145,7 +1145,7 @@ struct RefinementCircle {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             display_mesh( m );
 
@@ -1577,7 +1577,7 @@ struct DivideElement {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             display_mesh( m );
 
@@ -1898,7 +1898,7 @@ struct Divide {
             typedef TM::TNode::T T;
 
             TM m;
-            make_rect( m, Triangle(), Pvec( 0, 0 ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( 1., 1. ), Pvec( 20, 20 ) );
 
             display_mesh( m );
 

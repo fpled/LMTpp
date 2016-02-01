@@ -62,7 +62,7 @@ struct BestialNodeAdder {
             typedef TM::Pvec Pvec;
         
             TM m;
-            make_rect( m, Hexa(), Pvec( 0, 0, 0 ), Pvec( 2., 1., 1. ), Pvec( 100,50,50 ) );
+            make_rect( m, Hexa(), Pvec( 0., 0., 0. ), Pvec( 2., 1., 1. ), Pvec( 100, 50, 50 ) );
 
             return 0;
         }

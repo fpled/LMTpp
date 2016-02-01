@@ -92,7 +92,7 @@ struct Replace_Hexa_by_Tetra {
             typedef Mesh< Mesh_carac_MonMeshCarac<double,3> > TM;
 
             TM m;
-            make_rect( m, Hexa(), Pvec( 0, 0, 0 ), Pvec( 1, 1, 1 ), Pvec( 2, 2, 2 ) );
+            make_rect( m, Hexa(), Pvec( 0., 0., 0. ), Pvec( 1., 1., 1. ), Pvec( 2, 2, 2 ) );
 
             display_mesh( m );
 
