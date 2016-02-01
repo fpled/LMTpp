@@ -1,6 +1,10 @@
 #ifndef REPLACE_WEDGE_BY_TETRA_H
 #define REPLACE_WEDGE_BY_TETRA_H
-  
+
+#include "mesh.h"
+#include "Tetra.h"
+#include "Wedge.h"
+
 namespace LMT {
  
 struct OrderNumber {
@@ -61,6 +65,9 @@ struct OrderPosition {
 
 };
 
+/*!
+    L'opérateur \a Replace_Wedge_by_Tetra est conçu pour la fonction \a replace_Wedge_by_Tetra .
+*/
 template<class TM, class Order >
 struct Replace_Wedge_by_Tetra {
     Replace_Wedge_by_Tetra( TM &m, const Order &order ) : ptr_m( &m ), impossible( false ) , o( order ) {} 
@@ -270,40 +277,48 @@ struct Replace_Wedge_by_Tetra {
 };
 
 /*!
-    Cette fonction enlève tous les \a Wedge du maillage "m" et les remplace par des \a Tetra . Le maillage "m" est donc __modifié__ .
+    Objectif :
+        La fonction \a replace_Wedge_by_Tetra enlève tous les \a Wedge du maillage m et les remplace par des \a Tetra . Le maillage m est donc __modifié__ .
 
     Paramètre :
-        * m : est un maillage de la plateforme.
-        * order : est un opérateur qui doit pouvoir ordonner les noeuds de l'espace, cad si on a deux noeuds n1 et n2, order( n1 ) doit renvoyer une classe pour laquelle l'opérateur < a un sens. L'opérateur le plus simple est celui qui renvoie l'indice du noeud dans le maillage. Il s'appelle \a OrderNumber . 
+        * m : est un maillage de la plateforme qui sera modifié.
+        * order : est un opérateur qui doit pouvoir ordonner les noeuds de l'espace, i.e. si on a deux noeuds n1 et n2, order( n1 ) doit renvoyer une classe pour laquelle l'opérateur < a un sens. L'opérateur le plus simple est celui qui renvoie l'indice du noeud dans le maillage. Il s'appelle \a OrderNumber .
         
     Lorsqu'on manipule plusieurs maillages qui ont des noeuds superposés au niveau de la peau, on peut souhaiter que la découpe des \a Wedge se fasse de façon conforme ( i.e. ne pas avoir des \a Tetra dont les arêtes se croisent ). On peut alors utiliser la position des noeuds pour les identifier avec la classe \a OrderPosition .  
 
     Problème : si l'opération échoue, un message d'erreur est affiché et le maillage contient des \a Wedge et des \a Tetra avec très certainement des faces de Tetra et de Wedge en non-conformité. Il faut donc ne pas utiliser le maillage!
 
-    Exemples :
+    Exemple de code pour remplacer les \a Wedge par des \a Tetra dans un maillage :
     \code C/C++
-        TM m;
-        
-        make_rect( m, Wedge(), Pvec( 0, 0 , 0 ), Pvec( 1, 1, 1 ), Pvec( 2, 2, 2 ) );
+
+        #include "mesh/make_rect.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,3> > TM;
+            typedef TM::Pvec Pvec;
+
+            TM m;
+            make_rect( m, Wedge(), Pvec( 0, 0, 0 ), Pvec( 1, 1, 1 ), Pvec( 2, 2, 2 ) );
    
-        display_mesh( m );
+            display_mesh( m );
     
-        replace_Wedge_by_Tetra( m, OrderNumber() );
+            replace_Wedge_by_Tetra( m, OrderNumber() );
+            // replace_Wedge_by_Tetra( m, OrderPosition<Pvec>() );
         
-        display_mesh( m );
-    
-    \code C/C++
-        typedef TM::Pvec Pvec;
-        
-        TM m;
-        
-        make_rect( m, Wedge(), Pvec( 0, 0 , 0 ), Pvec( 1, 1, 1 ), Pvec( 2, 2, 2 ) );
-   
-        display_mesh( m );
-    
-        replace_Wedge_by_Tetra( m, OrderPosition<Pvec>() );
-        
-        display_mesh( m );
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates replace_Wedge_by_Tetra
+    \relates replace_Hexa_by_Tetra
+    \relates replace_Quad_by_Triangle
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
 */
 template <class TM, class Order >
 void replace_Wedge_by_Tetra( TM &m, const Order &order ) {

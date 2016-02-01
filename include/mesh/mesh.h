@@ -565,10 +565,10 @@ private:
     // Structure de stockage : nom + list de pointeur sur les noeuds
     struct group_node_ {
       std::string name;
-      Vec< TNode* > list_node;
+      Vec<TNode*> list_node;
       
       group_node_() {};
-      group_node_( std::string nom, Vec< TNode* > &list ) { name = nom; list_node = list; };
+      group_node_( std::string nom, Vec<TNode*> &list ) { name = nom; list_node = list; };
       
       template< class TN >
       group_node_( std::string nom, TN* n ) { name = nom; list_node.push_back(n); };
@@ -605,7 +605,7 @@ public:
     Vec<group_node_> list_group_node;
     
     // methode d'ajout d'un groupe de noeuds
-    void add_group_node (std::string &name, Vec< TNode* > &list) {
+    void add_group_node (std::string &name, Vec<TNode*> &list) {
       look_for_group<group_node_> lkforgrpnd;
       if ( find(list_group_node, lkforgrpnd, name) ) {
         std::cerr << "Ce groupe ("<< name <<") existe deja ! ! !" << std::endl ;
@@ -647,7 +647,7 @@ public:
       return ((lkforgrp.groupe));
     }   
     
-    // methode pour l'appel des groupes : on fait m.group_node("le_nom") et ca sort un Vec< TNode* > 
+    // methode pour l'appel des groupes : on fait m.group_node("le_nom") et ca sort un Vec<TNode*>
     Vec<group_node_> group_node(std::string &name) { 
       look_for_group<group_node_> lkforgrpnd;
       if ( ! find(list_group_node, lkforgrpnd, name) ) { std::cerr << "Ce groupe ("<< name <<") n'existe pas" << std::endl ;};

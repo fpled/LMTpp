@@ -501,7 +501,7 @@ struct LevelSetRefinement {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -595,7 +595,7 @@ struct LevelSetRemoveNeg {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -761,7 +761,7 @@ struct RefinementBasedOnLength {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -837,7 +837,7 @@ struct RefinementBasedOnNodalField {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -920,7 +920,7 @@ struct RefinementBasedOnElemField {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -994,7 +994,7 @@ struct Smoothing {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -1067,7 +1067,7 @@ struct RefinementPoint {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -1140,7 +1140,7 @@ struct RefinementCircle {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -1271,7 +1271,7 @@ struct DivideElement {
     bool operator() ( Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
        if ( find( *ptr_elem_list, _1 == e.number ) ) {
             typedef typename Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-            Vec< TNode*, 3 > vn;
+            Vec<TNode*,3> vn;
             ptr_m->update_elem_children();
             BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
             Vec<TNode*,3> node_center_Bar;
@@ -1312,7 +1312,7 @@ struct DivideElement {
     bool operator() ( Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         if ( find( *ptr_elem_list, _1 == e.number ) ) {
             typedef typename Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-            Vec< TNode*, 4 > vn;
+            Vec<TNode*,4> vn;
             ptr_m->update_elem_children();
             BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
             TNode* node_center_Quad = ban.get_node( center(e) );
@@ -1358,7 +1358,7 @@ struct DivideElement {
     bool operator() ( Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         if ( find( *ptr_elem_list, _1 == e.number ) ) {
             typedef typename Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-            Vec< TNode*, 4 > vn;
+            Vec<TNode*,4> vn;
             ptr_m->update_elem_children();
             ptr_m->update_elem_children( Number<2>() );
             BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
@@ -1432,7 +1432,7 @@ struct DivideElement {
     bool operator() ( Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         if ( find( *ptr_elem_list, _1 == e.number ) ) {
             typedef typename Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-            Vec< TNode*, 8 > vn;
+            Vec<TNode*,8> vn;
             ptr_m->update_elem_children();
             ptr_m->update_elem_children( Number<2>() );
             BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
@@ -1572,7 +1572,7 @@ struct DivideElement {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 
@@ -1609,7 +1609,7 @@ struct Divide {
     template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
     bool operator() ( Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         typedef typename Element< Triangle, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-        Vec< TNode*, 3 > vn;
+        Vec<TNode*,3> vn;
         ptr_m->update_elem_children();
         BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
         Vec<TNode*,3> node_center_Bar;
@@ -1646,7 +1646,7 @@ struct Divide {
     template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
     bool operator() ( Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         typedef typename Element< Quad, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-        Vec< TNode*, 4 > vn;
+        Vec<TNode*,4> vn;
         ptr_m->update_elem_children();
         BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
         TNode* node_center_Quad = ban.get_node( center(e) );
@@ -1688,7 +1688,7 @@ struct Divide {
     template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
     bool operator() ( Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         typedef typename Element< Tetra, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-        Vec< TNode*, 4 > vn;
+        Vec<TNode*,4> vn;
         ptr_m->update_elem_children();
         ptr_m->update_elem_children( Number<2>() );
         BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
@@ -1758,7 +1758,7 @@ struct Divide {
     template< class NameBehavior, class TNode_, class TData, unsigned num_in_elem_list_ >
     bool operator() ( Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ > &e ) {
         typedef typename Element< Hexa, NameBehavior, TNode_, TData, num_in_elem_list_ >::TNode TNode;
-        Vec< TNode*, 8 > vn;
+        Vec<TNode*,8> vn;
         ptr_m->update_elem_children();
         ptr_m->update_elem_children( Number<2>() );
         BestialNodeAdder<TM> ban; ban.m = ptr_m; ban.prec = 1e-6;
@@ -1893,7 +1893,7 @@ struct Divide {
         #include "MonMeshCarac.h"
 
         int main( int argc, char **argv ) {
-            typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
             typedef TM::Pvec Pvec;
             typedef TM::TNode::T T;
 

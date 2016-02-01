@@ -821,7 +821,7 @@ struct Triangle_software {
         typedef typename TMESH::TNode::Pvec Pvec; 
         static const unsigned dim = TNode::dim;
         
-        Vec< TNode* > vinode; vinode.resize( tri_out.numberofpoints );
+        Vec<TNode*> vinode; vinode.resize( tri_out.numberofpoints );
             
         for( int i = 0; i < tri_out.numberofpoints; ++i ) {
             Pvec p;
@@ -830,7 +830,7 @@ struct Triangle_software {
             vinode[ i ] = m.add_node( p );
         }
         
-        Vec< TNode* > vn;
+        Vec<TNode*> vn;
         int nb_corner = tri_out.numberofcorners;
         
         switch( nb_corner ) {

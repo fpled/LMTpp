@@ -92,7 +92,7 @@
             using namespace std;
 
             void test_2D() {
-                typedef Mesh< Mesh_carac_MonMeshCarac< double,2> > TM;
+                typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
                 typedef TM::Pvec Pvec;
                 typedef TM::TNode::T T;
                 
