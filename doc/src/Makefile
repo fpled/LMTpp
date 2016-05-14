@@ -10,7 +10,7 @@ all: main
 
 
 main: $(OBJS)
-	g++ $(OBJS) -fpic -lm -lboost_filesystem-mt -lboost_system -o main
+	g++ $(OBJS) -fpic -lm -lboost_filesystem -lboost_system -o main
 	# cd ../..;./doc/src/main . doc
 
 .cpp.o:

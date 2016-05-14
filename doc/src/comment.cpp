@@ -109,10 +109,13 @@ int Comment::findKeyword( int* position,int* positionAfter, string& s,int end,in
     
     if (chercher_motif( s,"\\",&pos,end,start )) {
         pos = extraire_token( &pos2,&delim,"[]{}<>&*/:;()=\n \t",s,end,pos+1 );/// après l'appel pos2 pointe sur le caractère qui suit le token
-        token = s.substr(pos,pos2-pos);
-        //cout << " token = ||" << token << "||" << endl;
-        for(j=0;j<SIZE_TABLE_KEYWORD;j++) 
-            if (token == Comment::keyword[j]) break;
+        if ( pos < s.size() and pos2 <= s.size() ) {
+            token = s.substr(pos,pos2-pos);
+            //cout << " token = ||" << token << "||" << endl;
+            for(j=0;j<SIZE_TABLE_KEYWORD;j++)
+                if (token == Comment::keyword[j])
+                    break;
+        }
     }
     *position = pos;
     *positionAfter = pos2;
