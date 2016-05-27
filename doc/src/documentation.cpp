@@ -302,7 +302,7 @@ void Documentation::generate_webpage_list( vector<Target*>& v, const string& nam
     listTarget.push_back_RealTarget( pt,incrementID ); // utile pour pt->reference( ) : i.e. incrémente le nombre id
     stmp = pt->reference();
     //cout << " -------------->>>>>>>>>>>  CommentItemTutorial->reference() " << stmp << endl;
-    ofstream pageWeb( stmp.c_str() ,ios::out);
+    std::ofstream pageWeb( stmp.c_str() ,ios::out);
     //VisitorCommentItem_toHTML vivi( &pageWeb, ptr_list_target );
     stmp = french2HTML( nom );
 
@@ -346,7 +346,7 @@ void Documentation::generate_webpage_list( vector<Target*>& v, const string& nam
 
 typedef map<string,Target*>::const_iterator const_iter;
 
-void display_multi_list( map<string,Target*>& ma, int level, const_iter first, const_iter end, ofstream& pageWeb, Target* pt ) {
+void display_multi_list( map<string,Target*>& ma, int level, const_iter first, const_iter end, std::ofstream& pageWeb, Target* pt ) {
 
     string stmp,stmp2,stmp_local_path;
     const_iter iter, iter2;
@@ -396,7 +396,7 @@ void Documentation::generate_webpage_multi_list( map<string,Target*>& ma, const 
     listTarget.push_back_RealTarget( pt,incrementID ); // utile pour pt->reference( ) : i.e. incrémente le nombre id
     stmp = pt->reference();
 
-    ofstream pageWeb( stmp.c_str() ,ios::out);
+    std::ofstream pageWeb( stmp.c_str() ,ios::out);
     stmp = french2HTML( nom );
 
     generate_header( pt,tree["root"],pageWeb, stmp );
@@ -427,7 +427,7 @@ Target* Documentation::generate_webpage_list_by_type( const ListTargetByType& li
     listTarget.push_back_RealTarget( pt, incrementID ); // utile pour pt->reference( ) : i.e. incrémente le nombre id
     stmp = pt->reference();
     //cout << " -------------->>>>>>>>>>>  CommentItemTutorial->reference() " << stmp << endl;
-    ofstream pageWeb( stmp.c_str() ,ios::out);
+    std::ofstream pageWeb( stmp.c_str() ,ios::out);
     //VisitorCommentItem_toHTML vivi( &pageWeb, ptr_list_target );
     stmp = french2HTML( extract_last_name_of_path(nom) );
 
@@ -531,7 +531,7 @@ void Documentation::generate_webpage_vacuum( const string& name_of_path, const s
     listTarget.push_back_RealTarget( pt,incrementID ); // utile pour pt->reference( ) : i.e. incrémente le nombre id
     stmp = pt->reference();
 
-    ofstream pageWeb( stmp.c_str() ,ios::out);
+    std::ofstream pageWeb( stmp.c_str() ,ios::out);
 
     stmp = french2HTML( titre );
 
@@ -678,7 +678,7 @@ void Documentation::generate_file_for_webpage( const string& titre, const string
     string stmp;
 
     stmp = french2webID( titre ) + ".txt";
-    ofstream page( stmp.c_str() ,ios::out);
+    std::ofstream page( stmp.c_str() ,ios::out);
     page << "/*!" << std::endl;
     page << "\\webpage " << nom_web <<  " " << titre << std::endl;
     page << std::endl;
@@ -714,7 +714,7 @@ void Documentation::generate_index() {
     listTarget.push_back_RealTarget( pt,false ); // false signifie que l'id target n'est pas incrémenté donc le nom du fichier html ne sera pas indexé
     stmp = pt->reference();
     //cout << " -------------->>>>>>>>>>>  CommentItemTutorial->reference() " << stmp << endl;
-    ofstream pageWeb( stmp.c_str() ,ios::out);
+    std::ofstream pageWeb( stmp.c_str() ,ios::out);
 
     //pageWeb<<"<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>"<<std::endl;
     pageWeb<<"<!DOCTYPE html"<<std::endl;
@@ -927,7 +927,7 @@ void Documentation::generate_file_for_search_engine() {
 
 
     stmp = tree["root"] + "search.php";
-    ofstream sortie(stmp.c_str());
+    std::ofstream sortie(stmp.c_str());
     if (!sortie.is_open()) {
         cerr << " problème pour ouvrir " << stmp << endl;
         return;
@@ -942,7 +942,7 @@ void Documentation::generate_file_css() {
     string stmp;
 
     stmp = tree["root"] + "classic.css";
-    ofstream pageWeb( stmp.c_str() ,ios::out );
+    std::ofstream pageWeb( stmp.c_str() ,ios::out );
 
     pageWeb << std::endl << std::endl;
     pageWeb << "ul.navigation{"  << std::endl;

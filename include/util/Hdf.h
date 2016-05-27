@@ -77,7 +77,7 @@ public:
 
         hid_t dataspace = H5Screate_simple( _dim, _size.ptr(), _rese.ptr() );
         hid_t datatype  = H5Tcopy( H5_type<T>::res() );
-        hid_t dataset   = H5Dcreate( h5_file, name.c_str(), datatype, dataspace, H5P_DEFAULT );
+        hid_t dataset   = H5Dcreate1( h5_file, name.c_str(), datatype, dataspace, H5P_DEFAULT );
 
         H5Dwrite( dataset, H5_type<T>::res(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data );
 
@@ -94,13 +94,13 @@ public:
 
 
     void add_tag( const std::string &name, const std::string &tag, const char *tag_value ) {
-        hid_t dataset = H5Gopen( h5_file, name.c_str() );
+        hid_t dataset = H5Gopen1( h5_file, name.c_str() );
         hid_t aid     = H5Screate( H5S_SCALAR );
         hid_t atype   = H5Tcopy( H5T_C_S1 );
 
         // variables size
         H5Tset_size( atype, H5T_VARIABLE );
-        hid_t attr = H5Acreate( dataset, tag.c_str(), atype, aid, H5P_DEFAULT );
+        hid_t attr = H5Acreate1( dataset, tag.c_str(), atype, aid, H5P_DEFAULT );
         H5Awrite( attr, atype, &tag_value );
 
         H5Sclose( aid     );
@@ -114,9 +114,9 @@ public:
 
     template<class TS, class TTV>
     void add_tag( const std::string &name, const std::string &tag, TTV tag_value ) {
-        hid_t dataset = H5Gopen( h5_file, name.c_str() );
+        hid_t dataset = H5Gopen1( h5_file, name.c_str() );
         hid_t aid     = H5Screate( H5S_SCALAR );
-        hid_t attr    = H5Acreate( dataset, tag.c_str(), H5_type<TTV>::res(), aid, H5P_DEFAULT );
+        hid_t attr    = H5Acreate1( dataset, tag.c_str(), H5_type<TTV>::res(), aid, H5P_DEFAULT );
 
         H5Awrite( attr, H5_type<TTV>::res(), &tag_value );
 
@@ -128,9 +128,9 @@ public:
 
     template<class TS, class TTV>
     void write_tag( const std::string &name, TS &tag, TTV tag_value ) {
-        hid_t dat = H5Gopen  ( h5_file, name.c_str() );
+        hid_t dat = H5Gopen1  ( h5_file, name.c_str() );
         hid_t aid = H5Screate( H5S_SCALAR );
-        hid_t att = H5Acreate( dat, tag, H5_type<TTV>::res(), aid, H5P_DEFAULT );
+        hid_t att = H5Acreate1( dat, tag, H5_type<TTV>::res(), aid, H5P_DEFAULT );
         H5Awrite( att, H5_type<TTV>::res(), &tag_value );
         H5Sclose( aid );
         H5Aclose( att );
@@ -141,7 +141,7 @@ public:
 
     template<class TTV>
     void read_tag( const std::string &name, const std::string &tag, TTV &tag_value, bool group = true ) const {
-        hid_t dataset = group ? H5Gopen( h5_file, name.c_str() ) : H5Dopen( h5_file, name.c_str() );
+        hid_t dataset = group ? H5Gopen1( h5_file, name.c_str() ) : H5Dopen1( h5_file, name.c_str() );
         hid_t attr    = H5Aopen_name( dataset, tag.c_str() );
 
         H5Aread( attr, H5_type<TTV>::res(), &tag_value );
@@ -158,7 +158,7 @@ public:
 
     template<class TV>
     void read_size( const std::string &name, TV &size_ ) const {
-        hid_t dataset = H5Dopen( h5_file, name.c_str() );
+        hid_t dataset = H5Dopen1( h5_file, name.c_str() );
         hid_t dataspace = H5Dget_space( dataset );
         //
         Vec<hsize_t> tmp;
@@ -175,7 +175,7 @@ public:
     template<class T,class TV>
     void read_data( const std::string &name, T *data, const TV &size, const TV &rese ) const {
         // filespace
-        hid_t dataset = H5Dopen( h5_file, name.c_str() );
+        hid_t dataset = H5Dopen1( h5_file, name.c_str() );
         hid_t filespace = H5Dget_space( dataset );
 
         // memspace
@@ -236,7 +236,7 @@ private:
         check_grp( grp );
         //
         if ( not H5Lexists( h5_file, grp.c_str(), H5P_DEFAULT ) )
-            H5Gclose( H5Gcreate( h5_file, grp.c_str(), 0 ) );
+            H5Gclose( H5Gcreate1( h5_file, grp.c_str(), 0 ) );
     }
 
     hid_t h5_file;

@@ -44,7 +44,7 @@ Vec<std::string> Hdf::list_dir( const std::string &dir ) const {
 }
 
 void Hdf::read_tag( const std::string &name, const std::string &tag, std::string &tag_value, bool group ) const {
-    hid_t dataset = group ? H5Gopen( h5_file, name.c_str() ) : H5Dopen( h5_file, name.c_str() );
+    hid_t dataset = group ? H5Gopen1( h5_file, name.c_str() ) : H5Dopen1( h5_file, name.c_str() );
     hid_t attr    = H5Aopen_name( dataset, tag.c_str() );
     hid_t ftype   = H5Aget_type( attr );
     hid_t atype   = H5Tget_native_type( ftype, H5T_DIR_ASCEND );
@@ -75,7 +75,7 @@ void Hdf::read_tag( const std::string &name, const std::string &tag, std::string
 }
 
 void Hdf::read_group_size( const std::string &name, int &size ) const {
-    hid_t dataset = H5Gopen( h5_file, name.c_str() );
+    hid_t dataset = H5Gopen1( h5_file, name.c_str() );
 
     H5G_info_t group_info;
     H5Gget_info( dataset, &group_info );

@@ -2,7 +2,7 @@
 \example Exemple d'utilisation de la classe MUMPS_solver
 
     La classe \a MUMPS_solver est une interface de la librairie [[http://graal.ens-lyon.fr/MUMPS/|mumps]] qui permet de résoudre des systèmes linéaires creux ( symmétrique ou non ) avec raffinement et calcul du résidu, sur un ou plusieurs noeuds. Elle peut aussi calculer le complément de Shur d'une sous-matrice, et le noyau dans le cas d'une matrice non inversible.
-    
+
     Pour cet exemple, on résoudra un simple problème d'évolution en temps, l'équation de la chaleur sur une plaque rectangulaire, avec ce solveur MUMPS. On impose des condistions de Dirichlet sur tous les côtés et on introduit une source de chaleur variable dans l'espce et le temps pour augmenter les variations de la température.
     La partie spécifique au solver est documenté dans le code à l'intérieur de la boucle for "temporelle".
     Voici le code :
@@ -10,23 +10,23 @@
         #include "build/problem_thermique_temporel/problem.h"
         #include "mesh/make_rect.h"
         #include "util/MUMPS_solver.h"
-        
+
         using namespace LMT;
-        
+
         template< class T, class POS>
         T bulle( POS p, POS p_maxi ) {
-            return (T) p[ 0 ] * p[ 1 ] * ( p_maxi[ 0 ] - p[ 0 ] ) * ( p_maxi[ 1 ] - p[ 1 ] ); 
+            return (T) p[ 0 ] * p[ 1 ] * ( p_maxi[ 0 ] - p[ 0 ] ) * ( p_maxi[ 1 ] - p[ 1 ] );
         }
-        
+
         int main( int argc, const char* argv[] ) {
-        
+
             typedef double T;
             static const unsigned dim = 2;
-            
+
             typedef Problem_thermique_temporel< T, dim > PB;
             typedef PB::TM TM;
             typedef TM::Pvec Pvec;
-        
+
             T step_time = 1e-3;
             Pvec pos_maxi( 4, 1 );
             unsigned nb_pas_temps = 1000;
@@ -34,38 +34,38 @@
             clock_t t1, t2;
             MUMPS_solver mumps;
             Vec<T> sol;
-        
-            
+
+
             TM m;
             make_rect( m, Triangle(), 0, pos_maxi, k_elem * ( pos_maxi + 1 ) );
-            
+
             PB pb( m, true );
-        
+
             /// conditionx aux limites
             for(unsigned i = 0; i < m.node_list.size(); ++i ) {
-                if ( ( m.node_list[ i ].pos[ 0 ] < 1e-6 )  or 
-                    ( m.node_list[ i ].pos[ 0 ] > pos_maxi[ 0 ] - 1e-6 ) or 
-                    ( m.node_list[ i ].pos[ 1 ] < 1e-6 ) or 
+                if ( ( m.node_list[ i ].pos[ 0 ] < 1e-6 )  or
+                    ( m.node_list[ i ].pos[ 0 ] > pos_maxi[ 0 ] - 1e-6 ) or
+                    ( m.node_list[ i ].pos[ 1 ] < 1e-6 ) or
                     ( m.node_list[ i ].pos[ 1 ] > pos_maxi[ 1 ] - 1e-6 ) ) {
                     pb.formulation_difftherm_normalise->add_constraint( "node_list[" + to_string(i) + "].temperature", 1e5 );
                 } else {
                     m.node_list[ i ].temperature = bulle<T>( m.node_list[ i ].pos, pos_maxi );
                 }
             }
-            
+
             FormulationAncestor<> *formulation = pb.formulation_difftherm_normalise;
-            
+
             formulation->set_initial_time_step( step_time );
             formulation->assume_constant_matrix = true;
-            formulation->non_linear_iterative_criterium = 0.01; 
-            
+            formulation->non_linear_iterative_criterium = 0.01;
+
             DisplayParaview dp;
             dp.add_mesh( m, "tmp/res", Vec<std::string>("all"), 0 );
-            
+
             t1  = clock();
-            
+
             for( unsigned j = 0; j < nb_pas_temps; ++j ) {
-                ///<><><> partie de code équivalent à la méthode solve() (dans le cas linéaire) <><><> 
+                ///<><><> partie de code équivalent à la méthode solve() (dans le cas linéaire) <><><>
                 MUMPS_solver mumps;
                 Mat< T, Sym<>, SparseLine<> > *ptr_mat;
                 /// allocation des matrices
@@ -76,7 +76,7 @@
                 formulation->assemble();
                 /// Je récupère la matrice du problème qu'il s'agit de résoudre.
                 formulation->get_mat( ptr_mat );
-                /// je la factorise et on ne libère pas sa mémoire ( paramètre false de get_factorization() )  
+                /// je la factorise et on ne libère pas sa mémoire ( paramètre false de get_factorization() )
                 mumps.get_factorization( *ptr_mat, false );
                 /// on copie le second membre du système dans le vecteur "sol".
                 sol = formulation->get_sollicitation();
@@ -88,41 +88,41 @@
                 formulation->update_variables();
                 ///<><><> fin du code équivalent à la méthode solve() <><><>
                 //formulation->solve();
-                
+
                 dp.add_mesh( m, "tmp/res", Vec<std::string>("all"), j + 1 );
                 for(unsigned i = 0; i < m.node_list.size(); ++i ) {
                     T t = j * step_time;
                     m.node_list[ i ].Q = 5e2 * ( 0.15 + sin( 30 * t * m.node_list[ i ].pos[0] / pos_maxi[0] ) ) * ( 0.15 + sin( 10* t * m.node_list[ i ].pos[1] / pos_maxi[1] ) ) * bulle<T>( m.node_list[ i ].pos, pos_maxi );
                 }
             }
-            
+
             t2  = clock();
-            
+
             PRINT( t1 );
             PRINT( t2 );
             PRINT( double( t2 - t1 ) / CLOCKS_PER_SEC );
-        
+
             dp.exec();
-            
+
             return 0;
-        }    
-    
-    La résolution avec mumps est environ 25% plus rapide que celle avec solve() sur cet exemple simple et sur un Intel Core2 2.66 GHz. 
-    
+        }
+
+    La résolution avec mumps est environ 25% plus rapide que celle avec solve() sur cet exemple simple et sur un Intel Core2 2.66 GHz.
+
     Cet exemple dépend du fichier de formulation formulation_difftherm_normalise.py :
     \code Python
         # -*- coding: utf-8 -*-
         temperature = Variable( unknown=True, nb_der=1, default_value='0.0', unit='K' )
         Q = Variable( default_value='0.0', unit='K/s' )
-        
+
         left_time_integration  = 0
         right_time_integration = 1
-        
-        
+
+
         #
         def formulation():
         t,te = temperature.expr, temperature.test
-        
+
         return ( dot( grad(t), grad(te) ) + ( t.diff(time) - Q.expr ) * te ) * dV
 
     Et pour la compilation, on peut utilisé ce fichier SConstruct (dans le cas d'une installation de mumps par paquet ) :
@@ -132,17 +132,17 @@
 
         env = Environment(
             CPPPATH = [ '#LMT/include', '/usr/lib/openmpi/include' , '/usr/include/suitesparse' ],
-            LIBS = [ 'pthread', 'lapack', 'blas' , 'cholmod' , 'umfpack' ,  'dmumps' , 'mumps_common',  'cholmod' ],
+            LIBS = [ 'pthread', 'lapack', 'blas', 'cholmod', 'umfpack',  'dmumps', 'mumps_common', 'cholmod', 'mpi' ],
             CPPFLAGS = cppflags( ['xml2-config'] ) + " -O3 -g -DWITH_MUMPS " + " -DWITH_UMFPACK " + " -DWITH_CHOLMOD " ,
             LINKFLAGS = linkflags( ['xml2-config'] ) ,
         )
         make_dep_py(env)
-        
+
         env.BuildDir( 'build/LMT', 'LMT/include', duplicate=0 )
         libs = SConscript( 'LMT/include/SConscript', exports='env', build_dir='build/LMT' )
-        
+
         # --------------------------------------------------------------------------------------------------
-        
+
         pb_libs = make_pb(
             env,
             0,
@@ -153,22 +153,22 @@
             #use_asm = True,
             #options = { 'behavior_simplification' : 'plane strain' },
         )
-        
-        
-        env.Program( "main", ["main.cpp"] + pb_libs + libs + [ "/usr/lib/openmpi/lib/libmpi_cxx.so" ] , build_dir='build/LMT' ) 
-         
+
+
+        env.Program( "main", ["main.cpp"] + pb_libs + libs + [ "/usr/lib/openmpi/lib/libmpi_cxx.so" ] , build_dir='build/LMT' )
+
     Et d'un fichier Makefile
-    \code 
+    \code
         all: codegen
             scons
             ./main
         codegen:
             cd LMT/include/codegen; scons
-            
+
     \relates MUMPS_solver
-            
+
     \keyword Mathématiques/Algèbre linéaire/Décomposition de matrices
-    
+
     \friend pasquier@lmt.ens-cachan.fr
     \friend leclerc@lmt.ens-cachan.fr
 
