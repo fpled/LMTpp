@@ -60,7 +60,7 @@
             formulation->non_linear_iterative_criterium = 0.01;
 
             DisplayParaview dp;
-            dp.add_mesh( m, "tmp/res", Vec<std::string>("all"), 0 );
+            dp.add_mesh( m, "res", Vec<std::string>("all"), 0 );
 
             t1  = clock();
 
@@ -89,7 +89,7 @@
                 ///<><><> fin du code équivalent à la méthode solve() <><><>
                 //formulation->solve();
 
-                dp.add_mesh( m, "tmp/res", Vec<std::string>("all"), j + 1 );
+                dp.add_mesh( m, "res", Vec<std::string>("all"), j + 1 );
                 for(unsigned i = 0; i < m.node_list.size(); ++i ) {
                     T t = j * step_time;
                     m.node_list[ i ].Q = 5e2 * ( 0.15 + sin( 30 * t * m.node_list[ i ].pos[0] / pos_maxi[0] ) ) * ( 0.15 + sin( 10* t * m.node_list[ i ].pos[1] / pos_maxi[1] ) ) * bulle<T>( m.node_list[ i ].pos, pos_maxi );
