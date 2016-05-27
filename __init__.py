@@ -45,7 +45,7 @@ def make_dep_py(env):
                     bf = 'formulation_'+bf+'.py'
                     dep += filter( lambda x:bf in x, all_py )
                 dep += get_files("LMT/formal_lf", re.compile( '.*\.py$' ) )
-        env.Command(corh,[i]+dep,'export PYTHONPATH=".:LMT:$PYTHONPATH";export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:'+adl+'";python %s > %s'%(i,corh))
+        env.Command(corh,[i]+dep,'export PYTHONPATH=".:LMT:$PYTHONPATH";export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:'+adl+'";python2 %s > %s'%(i,corh))
     # element_Quad.h depend de element_Quad.py
     #for i in filter(lambda x:re_elem_py.match(x), all_py):
     #    corh = 'LMT/include/mesh' + i[ i.rfind('/') : -3 ] + '.h'

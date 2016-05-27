@@ -172,10 +172,8 @@ public:
     
     T *beg;
     T *last;
-};
+};"""
 
-
-"""
 
 #TP = ['class TT','unsigned atomic_size']
 #TV = 'Vec<SortedList<TT,atomic_size>,s,int>'

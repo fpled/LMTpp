@@ -170,9 +170,6 @@ public:
     T *last;
 };
 
-
-
-
 #lastif // VEC_SORTED_LIST_H
 }
 
