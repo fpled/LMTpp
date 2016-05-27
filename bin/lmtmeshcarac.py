@@ -219,7 +219,7 @@ class MeshCarac:
             fbis += self.write_carac_for_particular_par(par,name_mesh_carac,gnagna_DM,all_elements)
 
         for e in all_elements.keys():
-            print '#include "mesh/'+string.lower(e)+'.h"'
+            print '#include "mesh/' + e + '.h"'
                 
         
         print 'namespace LMT {'

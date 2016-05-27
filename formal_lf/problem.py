@@ -273,7 +273,7 @@ class Problem:
         output.write( '#define %s\n' % ifndef )
         output.write( '#include "mesh/displayparaview.h"\n' )
         for e in self.elements:
-            output.write( '#include "mesh/'+string.lower(e)+'.h"\n' )
+            output.write( '#include "mesh/' + e +'.h"\n' )
         output.write( 'namespace LMT {\n' )
         output.write( '\n' )
         output.write( "template<class TP,unsigned dim> struct Mesh_carac_%s {};\n"%self.name )

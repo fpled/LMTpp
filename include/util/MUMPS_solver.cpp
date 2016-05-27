@@ -14,10 +14,11 @@
 
 #include "MUMPS_solver.h"
 
+bool MUMPS_solver::MPI_is_initialized = false;
+
 // #define ICNTL(I) icntl[(I)-1] /*! macro s.t. indices match documentation */
 
 MUMPS_solver::MUMPS_solver() {
-    MPI_is_initialized = false;
     id.n   = 0; /// dimension ou ordre de la matrice
     id.nz  = 0; /// nombre d'éléments non nuls = taille de irn = taille de jcn = taille de a
     id.irn = NULL; /// ligne des éléments non nuls
@@ -26,8 +27,8 @@ MUMPS_solver::MUMPS_solver() {
     id.rhs = NULL; /// valeur des éléments non nuls du vecteur second membre
     myid = -1;
     already_factorized = false;
-//     for( int i = 1; i <= 40; ++i )
-//         id.ICNTL( i ) = 0;
+    //     for( int i = 1; i <= 40; ++i )
+    //         id.ICNTL( i ) = 0;
         
     ///id.ICNTL( 1 ) = -1; /*! No outputs */
     ///id.ICNTL( 2 ) = -1; /*! No outputs */
@@ -49,7 +50,7 @@ MUMPS_solver::~MUMPS_solver() {
     if ( MPI_is_initialized ) {
         id.job = job_end;
         dmumps_c( &id ); /** Terminate instance */
-        ierr = MPI_Finalize();
+        // ierr = MPI_Finalize();
         //std::cerr << "MPI_Finalize() = " << ierr << std::endl;
     }
 }
@@ -65,8 +66,7 @@ void MUMPS_solver::free() {
 }
 
 void MUMPS_solver::init_MPI( int argc, char* argv[] ) {
-
-    if ( not( MPI_is_initialized ) ) {
+    if ( not MPI_is_initialized ) {
         ierr = MPI_Init(&argc, &argv);
         //std::cerr << "MPI_Init() = " << ierr << std::endl; 
         ierr = MPI_Comm_rank( MPI_COMM_WORLD, &myid );

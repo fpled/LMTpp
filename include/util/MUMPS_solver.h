@@ -97,7 +97,7 @@ struct MUMPS_solver {
     /// attributs:
     DMUMPS_STRUC_C id;
     int myid, ierr; /// MPI
-    bool MPI_is_initialized;
+    static bool MPI_is_initialized;
 
   private:
     void init_MPI( int argc = 0, char* argv[] = NULL );

@@ -38,8 +38,6 @@ struct BestialNodeAdder {
     T prec;
 };
 
-}
-
 /*!
  * Bar
  * @param m 
@@ -735,6 +733,8 @@ void make_rect(TM &m,const Hexa_20 &t,typename TM::Pvec X0_,typename TM::Pvec X1
         };
         m.add_element( Hexa_20(), DefaultBehavior(), n );
     }
+}
+
 }
 
 #endif // LMT_mesh_make_rect_HEADER

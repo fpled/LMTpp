@@ -132,8 +132,8 @@
 
         env = Environment(
             CPPPATH = [ '#LMT/include', '/usr/lib/openmpi/include' , '/usr/include/suitesparse' ],
-            LIBS = [ 'pthread', 'lapack', 'blas', 'cholmod', 'umfpack',  'dmumps', 'mumps_common', 'cholmod', 'mpi' ],
-            CPPFLAGS = cppflags( ['xml2-config'] ) + " -O3 -g -DWITH_MUMPS " + " -DWITH_UMFPACK " + " -DWITH_CHOLMOD " ,
+            LIBS = [ 'pthread', 'lapack', 'blas',  'dmumps', 'mumps_common', 'mpi' ],
+            CPPFLAGS = cppflags( ['xml2-config'] ) + " -O3 -g -DWITH_MUMPS ",
             LINKFLAGS = linkflags( ['xml2-config'] ) ,
         )
         make_dep_py(env)
