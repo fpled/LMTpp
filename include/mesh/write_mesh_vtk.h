@@ -79,7 +79,7 @@ void set_vtk_cell_type_and_offsets( const TE &elem, Vec<unsigned> &connectivity,
 template<class TM>
 struct Elem_vtk_extract {
     template<class TE>
-    void operator()(const TE &elem) {
+    void operator()( const TE &elem ) {
         set_vtk_cell_type_and_offsets( elem, connectivity,offsets, cell_types, m );
     }
     Vec<unsigned> connectivity,offsets,cell_types;
@@ -104,7 +104,7 @@ struct Data_vtk_extract {
     }
     
     template<class T,int s>
-    void operator()(unsigned i,Vec<T,s> data) {
+    void operator()( unsigned i, Vec<T,s> data ) {
         //std::cout << "### Data_vtk_extract.operator( Vec ) et i = "<< i << std::endl;
         if ( binary ) {
             os[i].write( (char *)&data, sizeof(T)*data.size() );
@@ -180,8 +180,8 @@ struct GetDynamicSize {
             nb_comp[ i ] = 0;
         }
     }
-    template<class T> void operator()(unsigned n,const T &d) { }
-    template<class T> void operator()(unsigned n,const Vec<T,-1> &d) {
+    template<class T> void operator()( unsigned n, const T &d ) { }
+    template<class T> void operator()( unsigned n, const Vec<T,-1> &d ) {
         dynamic_size[n] = max( d.size(), dynamic_size[n] );
         nb_comp[n] = DM::NbComponents<T>::n;
     }
@@ -192,9 +192,9 @@ struct GetDynamicSize {
 };
 struct GetDynamicSizeOs {
     template<class T>
-    void operator()(unsigned n,const T &d) { }
+    void operator()( unsigned n, const T &d ) { }
     template<class T>
-    void operator()(unsigned n,const Vec<T,-1> &d) {
+    void operator()( unsigned n, const Vec<T,-1> &d ) {
         if ( n==n_wanted ) {
             if ( pos_in_vec_wanted<d.size() )
                 os << d[pos_in_vec_wanted] << " ";
@@ -265,7 +265,7 @@ struct Data_vtk_extract_elem {
     };
     typedef std::map<std::string,DataForOneElemType> Map;
     template<class TE>
-    void operator()(const StructForType<TE> &s) {
+    void operator()( const StructForType<TE> &s ) {
         const char *names[TE::nb_params+(TE::nb_params==0)];
         DM::get_names<TE>( names );
         unsigned nb_comp[TE::nb_params+(TE::nb_params==0)];
@@ -280,7 +280,7 @@ struct Data_vtk_extract_elem {
     }
     
     template<class TE>
-    void operator()(const TE &elem,const Vec<std::string> &display_fields=Vec<std::string>("all")) {
+    void operator()( const TE &elem, const Vec<std::string> &display_fields=Vec<std::string>("all") ) {
         for(typename Map::iterator iter=mapd.begin();iter!=mapd.end();++iter)
             iter->second.appended = false;
         DM::apply_with_names_up_to(elem,*this,Number<TE::nb_params>());
@@ -326,11 +326,11 @@ struct Data_vtk_extract_elem {
     }
     
     template<class T,class ST,class OT>
-    void operator()( unsigned i, const char *name, const Mat<T,ST,OT> &data) {
+    void operator()( unsigned i, const char *name, const Mat<T,ST,OT> &data ) {
         operator()( i, name, data.data );
     }
     template<class T>
-    void operator()(unsigned i, const char *name, T data ) {
+    void operator()( unsigned i, const char *name, T data ) {
         if ( binary )
             mapd[ name ].os += std::string( (char *)&data, (char *)&data + sizeof(T) );
         else
@@ -426,7 +426,7 @@ inline void add_encoded( std::string s, std::string &appended ) {
 }
 
 template<bool binary,class TM>
-void write_mesh_vtk(std::ostream &os,const TM &m,const Vec<std::string> &display_fields=Vec<std::string>("all")) {
+void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &display_fields=Vec<std::string>("all") ) {
     using namespace std;
 
     std::string appended;
@@ -637,13 +637,13 @@ void write_mesh_vtk(std::ostream &os,const TM &m,const Vec<std::string> &display
 }
 
 template<class TM>
-void write_mesh_vtk( std::string file,const TM &m,const Vec<std::string> &display_fields=Vec<std::string>("all")) {
-    std::ofstream os( file.c_str() );
+void write_mesh_vtk( std::string filename, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
+    std::ofstream os( filename.c_str() );
     write_mesh_vtk<true>( os, m, display_fields );
 }
 
 template<bool binary,class TM>
-void write_mesh_vtk_v2(std::ostream &os,const TM &m,const Vec<std::string> &display_fields=Vec<std::string>("all")) {
+void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
     using namespace std;
 
     os << "# vtk DataFile Version 3.0 "<< endl;

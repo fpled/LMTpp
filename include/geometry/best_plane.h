@@ -1,8 +1,8 @@
 #ifndef BEST_PLANE_H
 #define BEST_PLANE_H
 
-#include "containers/vec.h"
-#include "containers/eig_lapack.h"
+#include "../containers/vec.h"
+#include "../containers/eig_lapack.h"
 
 namespace LMT {
 
@@ -16,8 +16,6 @@ namespace LMT {
         
     Retour :
         Elle retourne le résidu : i.e. somme( i = 0 .. nb_points-1, ( ax(i)+by(i)+cz(i)+d )^2 ) 
-    
-    
     
     \friend hugo.leclerc@lmt.ens-cachan.fr
     \friend samir.amrouche@lmt.ens-cachan.fr

@@ -60,7 +60,7 @@ std::string value( const std::string& str, const char* param1, const char* param
     return stmp;
 }
 
-std::string jump( std::ifstream& is, const char* descripteur) {
+std::string jump( std::ifstream& is, const char* descripteur ) {
     std::string str, res;
     while( true ) {
         str.clear();
@@ -258,7 +258,7 @@ struct ReaderINP {
         }
         
         /*!
-            cette méthode retourne dans "index" la liste des indices INP des noeuds de la surface d' identifiant idFace de l'élément courant. 
+            cette méthode retourne dans "index" la liste des indices INP des noeuds de la surface d'identifiant idFace de l'élément courant.
         
         */
         void get_index_node_of_surface( Vec<unsigned> &index, unsigned idFace ) const {
@@ -503,7 +503,7 @@ struct ReaderINP {
                 this->isGenerate = false;
  
             type = value( str, "TYPE=", "type=" );
-            /// ref : liste des éléments Abaqus http://muscadet.lmt.ens-cachan.fr:2080/v6.7/books/usb/default.htm
+            /// ref : liste des éléments Abaqus http://muscadet.lmt.ens-cachan.fr:2080/v6.7/books/usb/default.html
             /// page : Output Variable and Element Indexes.Abaqus/Standard ElementSet Index
             if ( type.size() ) {
                 if ( type == "ROTARYI" ) { type = "NodalElement"; nb_nodes = 1; return; }

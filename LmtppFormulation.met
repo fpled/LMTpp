@@ -951,6 +951,7 @@ class LmtppFormulationAncestor
     def write_add_elem_matrices_eig( stream )
         stream <<< "#ifndef ADD_ELEM_MATRIX_EIG_$(nb_dim)_$(name)_FOR_ELEMENT_$(pe->name)_H"
         stream <<< "#define ADD_ELEM_MATRIX_EIG_$(nb_dim)_$(name)_FOR_ELEMENT_$(pe->name)_H"
+        stream <<< "namespace LMT {"
         for assemble_mat_A in 0 .. 2
             for assemble_mat_B in 0 .. 2
                 stream <<<<
@@ -2683,11 +2684,14 @@ def write_legacy_lmtpp_all_in_one_file( stream, pb_name, fe_set, typeList, list_
                     #include "form_carac_$name_form.$dim.$(fe->pe->name).h"
                     #include "add_matrices_$name_form.$dim.$(fe->pe->name).h"
             for fe in fe_set_by_dim_and_name
+                if fe->want_eig
+                    stream <<<<
+                        #include "add_matrices_eig_$name_form.$dim.$(fe->pe->name).h"
                 if fe->want_GFEM
-                        stream <<<<
-                            #include "add_matrices_enriched_$name_form.$dim.$(fe->pe->name).h"
-                            #include "add_matrices_corrected_$name_form.$dim.$(fe->pe->name).h"
-                            #include "add_matrices_coupl_$name_form.$dim.$(fe->pe->name).h" 
+                    stream <<<<
+                        #include "add_matrices_enriched_$name_form.$dim.$(fe->pe->name).h"
+                        #include "add_matrices_corrected_$name_form.$dim.$(fe->pe->name).h"
+                        #include "add_matrices_coupl_$name_form.$dim.$(fe->pe->name).h"
     file_name_done := Set[String]()
     for file_name in list_sup_all_in_one
         if not ( file_name in file_name_done )

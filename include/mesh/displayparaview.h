@@ -76,9 +76,9 @@ public:
     ~DisplayParaview() {
     }
     
-    template<class TM> std::string add_mesh( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double time_step = 0, bool write_mesh = true ) {
-        std::string pvu_name = prefix;
-        //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
+    template<class TM> std::string add_mesh( const TM &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double time_step = 0, bool write_mesh = true ) {
+        std::string pvu_name = filename;
+        //if ( pvu_name.rfind(".vtu") != pvu_name.size() - 4 )
         pvu_name += "_" + to_string( time_step ) + "_" + to_string( pvu_files[time_step].size() ) + ".vtu";
         // std::cout << pvu_name << std::endl;
 
@@ -92,13 +92,13 @@ public:
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
         if ( m.node_list.size() )
-            app_xminmax(prefix,xmi,xma);
+            app_xminmax(filename,xmi,xma);
         return pvu_name;
     }
 
-    template<class TM> std::string add_mesh_iter( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double iter = 0, bool write_mesh = true ) {
-        std::string pvu_name = prefix;
-        //if ( prefix.rfind(".vtu") != prefix.size() - 4 )
+    template<class TM> std::string add_mesh_iter( const TM &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double iter = 0, bool write_mesh = true ) {
+        std::string pvu_name = filename;
+        //if ( pvu_name.rfind(".vtu") != pvu_name.size() - 4 )
         pvu_name += "_" + to_string( iter ) + ".vtu";
         // std::cout << pvu_name << std::endl;
 
@@ -112,15 +112,15 @@ public:
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
         if ( m.node_list.size() )
-            app_xminmax(prefix,xmi,xma);
+            app_xminmax(filename,xmi,xma);
         return pvu_name;
     }
 
-    template<class TM> std::string set_mesh( const TM &m, const std::string &prefix = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), bool write_mesh = true ) {
+    template<class TM> std::string set_mesh( const TM &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), bool write_mesh = true ) {
         std::ostringstream ss;
-        ss << prefix ;//<< pvu_files[prefix].size() << ".vtu";
+        ss << filename ;//<< pvu_files[filename].size() << ".vtu";
         std::string pvu_name( ss.str() );
-        if ( prefix.rfind(".vtu") != prefix.size() - 4 )
+        if ( filename.rfind(".vtu") != filename.size() - 4 )
             pvu_name += ".vtu";
 
         pvu_files[ 0 ].push_back( pvu_name );
@@ -133,18 +133,18 @@ public:
         typename TM::Pvec xmi,xma;
         get_min_max( m.node_list, ExtractDM<pos_DM>(), xmi, xma );
         if ( m.node_list.size() )
-            app_xminmax(prefix,xmi,xma);
+            app_xminmax(filename,xmi,xma);
         return pvu_name;
     }
 
-    template<class TS> std::string add_shape( const Shape<2,TS> &shape, unsigned grid_size, const std::string &prefix = "paraview" ) {
+    template<class TS> std::string add_shape( const Shape<2,TS> &shape, unsigned grid_size, const std::string &filename = "paraview" ) {
         typedef typename Shape<2,TS>::Pvec Pvec;
         typedef typename Shape<2,TS>::TPen TPen;
         Pvec tdim_min,tdim_max;
         shape.get_dim_min_max(tdim_min,tdim_max);
         tdim_min -= 2.0/grid_size*(tdim_max-tdim_min);
         tdim_max += 2.0/grid_size*(tdim_max-tdim_min);
-        app_xminmax(prefix,tdim_min,tdim_max);
+        app_xminmax(filename,tdim_min,tdim_max);
 
         Vec<Pvec> points(grid_size*grid_size);
         Vec<TPen> pem(grid_size*grid_size);
@@ -155,10 +155,10 @@ public:
         shape.get_penetration( points.begin(), pem.begin(), points.size() );
         
         std::ostringstream ss;
-        ss << prefix << "_" << vti_files.size() << ".vti";
+        ss << filename << "_" << vti_files.size() << ".vti";
         std::string vti_name( ss.str() );
         vti_files.push_back(vti_name);
-        std::ofstream f(vti_name.c_str());
+        std::ofstream f( vti_name.c_str() );
         
         f << "<?xml version='1.0'?>" << std::endl;
         f << "<VTKFile type='ImageData' version='0.1' byte_order='LittleEndian'>" << std::endl;
@@ -191,11 +191,11 @@ public:
         type_field_to_display = type;
     }
 
-    void make_pvd_file( const std::string &prefix = "paraview" ) const {
-        std::string filename = prefix;
-        if ( filename.rfind(".pvd") != filename.size() - 4 )
-           filename += ".pvd";
-        std::ofstream f( filename.c_str() );
+    void make_pvd_file( const std::string &filename = "paraview" ) const {
+        std::string pvd_name = filename;
+        if ( pvd_name.rfind(".pvd") != pvd_name.size() - 4 )
+           pvd_name += ".pvd";
+        std::ofstream f( pvd_name.c_str() );
         //
         f << "<?xml version='1.0'?>" << std::endl;
         f << "<VTKFile type='Collection' version='0.1'>" << std::endl;
@@ -208,22 +208,22 @@ public:
         f << "</VTKFile>" << std::endl;
    }
 
-   int exec( const std::string &prefix = "paraview" ) {
-       std::string filename = prefix;
-       if ( filename.rfind(".pvd") != filename.size() - 4 )
-           filename += ".pvd";
-       make_pvd_file( filename );
+   int exec( const std::string &filename = "paraview" ) {
+       std::string pvd_name = filename;
+       if ( pvd_name.rfind(".pvd") != pvd_name.size() - 4 )
+           pvd_name += ".pvd";
+       make_pvd_file( pvd_name );
 
        if ( pvsm_file.size() ) {
            std::string t = "paraview --state=" + pvsm_file;
            return system( t.c_str() );
        }
 
-       std::string t = "paraview --data=" + filename;
+       std::string t = "paraview --data=" + pvd_name;
        return system( t.c_str() );
     
        /*
-       std::string tmp_file = prefix + ".pvs";
+       std::string tmp_file = filename + ".pvs";
        std::ofstream pvs( tmp_file.c_str() );
        pvs << "" << std::endl;
        pvs << "# ParaView State Version 1.8" << std::endl;
@@ -323,7 +323,7 @@ public:
     std::string pvsm_file;
     
 private:
-    template<class PV> void app_xminmax(const std::string &prefix,const PV &xmi,const PV &xma) {
+    template<class PV> void app_xminmax(const std::string &filename,const PV &xmi,const PV &xma) {
         if ( init_xminmax ) {
             for(unsigned i=0;i<min(xmi.size(),(unsigned)3);++i) {
                 xmin[i] = min(xmin[i],xmi[i]); xmax[i] = max(xmax[i],xma[i]);
@@ -362,11 +362,11 @@ private:
     \author Hugal
  
 */
-template<class TM> void display_mesh( const TM &m, const char *nodal_field_to_display = "", DisplayParaview::TypeField type_field_to_display = DisplayParaview::Nodal, const std::string &prefix = "paraview" ) {
+template<class TM> void display_mesh( const TM &m, const char *nodal_field_to_display = "", DisplayParaview::TypeField type_field_to_display = DisplayParaview::Nodal, const std::string &filename = "paraview" ) {
     DisplayParaview dp;
-    dp.add_mesh( m, prefix );
+    dp.add_mesh( m, filename );
     dp.set_field_to_display( nodal_field_to_display, type_field_to_display );
-    dp.exec( prefix );
+    dp.exec( filename );
 }
 
 /*!
@@ -377,23 +377,22 @@ struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec(
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
-std::string save( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview" ) {
+std::string save( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
     DisplayParaview dp;
-    std::string res = dp.set_mesh( m, prefix );
-    return res;
+    std::string vtu_name = dp.set_mesh( m, filename, display_fields );
+    return vtu_name;
 }
 
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
-int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
-    std::string res = save( m, prefix );
-
+int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &filename = "paraview", const std::string &pvsm_file = "" ) {
+    std::string vtu_name = save( m, filename );
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
         return system( t.c_str() );
     }
-    std::string t = "paraview --data=" + res;
+    std::string t = "paraview --data=" + vtu_name;
     return system( t.c_str() );
 }
 
@@ -408,19 +407,20 @@ int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &p
     \author Hugal
 */
 template<class Carac, class X, class Y>
-int display( const SubStructuredProblem<Carac,X,Y> &sst_pb, const std::string &prefix = "paraview", const std::string &pvsm_file = "" ) {
-    if ( prefix.rfind(".pvd") != prefix.size() - 4 )
-        prefix += ".pvd";
+int display( const SubStructuredProblem<Carac,X,Y> &sst_pb, const std::string &filename = "paraview", const std::string &pvsm_file = "" ) {
+    std::string pvd_name = filename;
+    if ( pvd_name.rfind(".pvd") != pvd_name.size() - 4 )
+        pvd_name += ".pvd";
     DisplayParaview dp;
     apply_wi( sst_pb.sub_structures, DisplayParaview::AddSstMesh(), dp, 0 );
     apply_wi( sst_pb.interfaces    , DisplayParaview::AddSstMesh(), dp, 0 );
-    dp.make_pvd_file( prefix );
+    dp.make_pvd_file( pvd_name );
     
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
         return system( t.c_str() );
     }
-    std::string t = "paraview --data=" + prefix;
+    std::string t = "paraview --data=" + pvd_name;
     return system( t.c_str() );
 }
 
