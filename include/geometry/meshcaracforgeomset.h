@@ -1,10 +1,10 @@
 #ifndef LMT___LMT_INCLUDE_GEOMETRY_MESHCARACFORGEOMSET_MESHCARAC_PY
 #define LMT___LMT_INCLUDE_GEOMETRY_MESHCARACFORGEOMSET_MESHCARAC_PY
 
-#include "mesh/nodalelement.h"
-#include "mesh/triangle.h"
-#include "mesh/bar.h"
-#include "mesh/tetra.h"
+#include "mesh/NodalElement.h"
+#include "mesh/Triangle.h"
+#include "mesh/Bar.h"
+#include "mesh/Tetra.h"
 namespace LMT {
 
 template<unsigned nb_dim,unsigned nvi,class T> class Meshcaracforgeomset;
