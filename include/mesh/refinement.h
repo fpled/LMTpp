@@ -423,7 +423,7 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
         /// on raffine s'il y a au moins deux arêtes coupées par élément
         switch( TM::dim ) {
             case 2 : apply( m.elem_list, r, Number<TM::dim>() ); break;
-            case 3 : apply( m.sub_mesh( Number<1>() ).elem_list, r, Number<TM::dim>() ); break; /// application sur les triangles
+            case 3 : m.update_skin(); apply( m.sub_mesh( Number<1>() ).elem_list, r, Number<TM::dim>() ); break; /// application sur les triangles
             default:
                 assert( 0 );
         }
