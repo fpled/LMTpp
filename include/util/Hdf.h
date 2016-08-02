@@ -207,6 +207,14 @@ public:
         read_data( name, data.ptr(), size, size );
     }
 
+    template<class TV>
+    void read( const std::string &name, TV &data ) const {
+        Vec<int> size;
+        read_size( name, size );
+        data.resize( size );
+        read_data( name, data.ptr(), size, size );
+    }
+
 //     template<class TS, class TTV>
 //     void read_tag( const std::string &name, TS &tag, TTV &tag_value ) {
 //         hid_t dat = H5Gopen( h5_file, name.c_str() );
