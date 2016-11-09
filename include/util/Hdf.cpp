@@ -81,7 +81,7 @@ void Hdf::read_group_size( const std::string &name, int &size ) const {
     H5Gget_info( dataset, &group_info );
     size = group_info.nlinks;
 
-    H5Gclose(dataset);
+    H5Gclose( dataset );
 }
 
 void Hdf::read_size( const std::string &name, int &size ) const {

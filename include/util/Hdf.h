@@ -60,7 +60,7 @@ public:
 
     // write tensorial data
     template<class T,class TV>
-    void write( const std::string &name, const T *data, TV size, TV rese ) {
+    void write_data( const std::string &name, const T *data, TV size, TV rese ) {
         check_grp( name );
         if ( H5Lexists( h5_file, name.c_str(), H5P_DEFAULT ) )
             H5Gunlink( h5_file, name.c_str() );
@@ -88,12 +88,12 @@ public:
 
     // write tensorial data
     template<class T,class TV>
-    void write( const std::string &name, T *data, TV size ) {
-        write( name, data, size, size );
+    void write_data( const std::string &name, T *data, TV size ) {
+        write_data( name, data, size, size );
     }
 
-
-    void add_tag( const std::string &name, const std::string &tag, const char *tag_value ) {
+    // write tag
+    void write_tag( const std::string &name, const std::string &tag, const char *tag_value ) {
         hid_t dataset = H5Gopen1( h5_file, name.c_str() );
         hid_t aid     = H5Screate( H5S_SCALAR );
         hid_t atype   = H5Tcopy( H5T_C_S1 );
@@ -101,6 +101,7 @@ public:
         // variables size
         H5Tset_size( atype, H5T_VARIABLE );
         hid_t attr = H5Acreate1( dataset, tag.c_str(), atype, aid, H5P_DEFAULT );
+
         H5Awrite( attr, atype, &tag_value );
 
         H5Sclose( aid     );
@@ -108,12 +109,14 @@ public:
         H5Gclose( dataset );
     }
 
-    void add_tag( const std::string &name, const std::string &tag, const std::string &tag_value ) {
-        add_tag( name, tag, tag_value.c_str() );
+    // write tag
+    void write_tag( const std::string &name, const std::string &tag, const std::string &tag_value ) {
+        write_tag( name, tag, tag_value.c_str() );
     }
 
-    template<class TS, class TTV>
-    void add_tag( const std::string &name, const std::string &tag, TTV tag_value ) {
+    // write tag
+    template<class TTV>
+    void write_tag( const std::string &name, const std::string &tag, TTV tag_value ) {
         hid_t dataset = H5Gopen1( h5_file, name.c_str() );
         hid_t aid     = H5Screate( H5S_SCALAR );
         hid_t attr    = H5Acreate1( dataset, tag.c_str(), H5_type<TTV>::res(), aid, H5P_DEFAULT );
@@ -125,37 +128,55 @@ public:
         H5Gclose( dataset );
     }
 
+//    // write tag
+//    template<class TS, class TTV>
+//    void write_tag( const std::string &name, TS &tag, TTV tag_value ) {
+//        hid_t dataset = H5Gopen1( h5_file, name.c_str() );
+//        hid_t aid     = H5Screate( H5S_SCALAR );
+//        hid_t attr    = H5Acreate1( dataset, tag, H5_type<TTV>::res(), aid, H5P_DEFAULT );
 
-    template<class TS, class TTV>
-    void write_tag( const std::string &name, TS &tag, TTV tag_value ) {
-        hid_t dat = H5Gopen1  ( h5_file, name.c_str() );
-        hid_t aid = H5Screate( H5S_SCALAR );
-        hid_t att = H5Acreate1( dat, tag, H5_type<TTV>::res(), aid, H5P_DEFAULT );
-        H5Awrite( att, H5_type<TTV>::res(), &tag_value );
-        H5Sclose( aid );
-        H5Aclose( att );
-        H5Gclose( dat );
-    }
+//        H5Awrite( attr, H5_type<TTV>::res(), &tag_value );
 
+//        H5Sclose( aid     );
+//        H5Aclose( attr    );
+//        H5Gclose( dataset );
+//    }
 
-
+    // read tag
     template<class TTV>
     void read_tag( const std::string &name, const std::string &tag, TTV &tag_value, bool group = true ) const {
         hid_t dataset = group ? H5Gopen1( h5_file, name.c_str() ) : H5Dopen1( h5_file, name.c_str() );
         hid_t attr    = H5Aopen_name( dataset, tag.c_str() );
 
         H5Aread( attr, H5_type<TTV>::res(), &tag_value );
-        H5Aclose( attr );
+
+        H5Aclose( attr    );
         if ( group )
             H5Gclose( dataset );
         else
             H5Dclose( dataset );
     }
 
+//    // read tag
+//    template<class TS, class TTV>
+//    void read_tag( const std::string &name, TS &tag, TTV &tag_value, bool group = true ) {
+//        hid_t dataset = group ? H5Gopen1( h5_file, name.c_str() ) : H5Dopen1( h5_file, name.c_str() );
+//        hid_t attr    = H5Aopen_name( dataset, tag );
+
+//        H5Aread( attr, H5_type<TTV>::res(), &tag_value );
+
+//        H5Aclose( attr    );
+//        if ( group )
+//            H5Gclose( dataset );
+//        else
+//            H5Dclose( dataset );
+//    }
+
     void read_tag( const std::string &name, const std::string &tag, std::string &tag_value, bool group = true ) const;
     void read_group_size( const std::string &name, int &size ) const;
     void read_size( const std::string &name, int &size ) const;
 
+    // read size
     template<class TV>
     void read_size( const std::string &name, TV &size_ ) const {
         hid_t dataset = H5Dopen1( h5_file, name.c_str() );
@@ -172,6 +193,7 @@ public:
         H5Sclose( dataspace );
     }
 
+    // read tensorial data
     template<class T,class TV>
     void read_data( const std::string &name, T *data, const TV &size, const TV &rese ) const {
         // filespace
@@ -199,33 +221,32 @@ public:
         H5Dclose( dataset );
     }
 
+    // read tensorial data
+    template<class T,class TV>
+    void read_data( const std::string &name, T *data, TV size ) {
+        read_data( name, data, size, size );
+    }
+
+    // read
     template<class TV>
     typename EnableIf<(TensorOrder<TV>::res==1)>::T read( const std::string &name, TV &data ) const {
         Vec<int,1> size;
         read_size( name, size );
-        data.resize( size[ 0 ] );
+        data.resize( size[0] );
         read_data( name, data.ptr(), size, size );
     }
 
+    // read
     template<class TV>
-    void read( const std::string &name, TV &data ) const {
+    typename EnableIf<(TensorOrder<TV>::res!=1)>::T read( const std::string &name, TV &data ) const {
         Vec<int> size;
         read_size( name, size );
         data.resize( size );
         read_data( name, data.ptr(), size, size );
     }
 
-//     template<class TS, class TTV>
-//     void read_tag( const std::string &name, TS &tag, TTV &tag_value ) {
-//         hid_t dat = H5Gopen( h5_file, name.c_str() );
-//         hid_t att = H5Aopen_name( dat, tag );
-// 
-//         H5Aread( att, H5_type<TTV>::res(), &tag_value );
-// 
-//         H5Aclose( att );
-//         H5Gclose( dat );
-//     }
-    bool dataset_exist(std::string &name){
+    // check if dataset exists
+    bool dataset_exist( std::string &name ){
         bool exist = false;
         if ( H5Lexists( h5_file , name.c_str(), H5P_DEFAULT ) ){
            exist = true;

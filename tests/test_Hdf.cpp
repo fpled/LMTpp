@@ -12,7 +12,7 @@ void create() {
     Vec<int> v;
     v << 10;
     Vec<int,1> s( v.size() );
-    hdf.write( "/g/v", v.ptr(), s );
+    hdf.write_data( "/g/v", v.ptr(), s );
 
     hdf.add_tag( "/g", "tag", "tata" );
 }
