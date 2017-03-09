@@ -54,7 +54,8 @@ public:
     void set_name(const char *str = "") const { std::stringstream s; s << "set(gcf,'Name'," << str << ")\n"; print( s.str().c_str() ); }
     void set_paperpositionmode(const char *str = "") const { std::stringstream s; s << "set(gcf,'PaperPositionMode'," << str << ")\n"; print( s.str().c_str() ); }
     void set_renderer(const char *str = "") const { std::stringstream s; s << "set(gcf,'Renderer'," << str << ")\n"; print( s.str().c_str() ); }
-    void set_fontsize(const char *str = "") const { std::stringstream s; s << "set(gca,'FontSize'," << str << ")\n"; print( s.str().c_str() ); }
+    template<class T>
+    void set_fontsize(const T &val) const { std::stringstream s; s << "set(gca,'FontSize'," << to_string( val ) << ")\n"; print( s.str().c_str() ); }
     void set_title(const char *str = "") const { std::stringstream s; s << "title(" << str << ")\n"; print( s.str().c_str() ); }
     void axis(const char *str = "") const { std::stringstream s; s << "axis " << str << "\n"; print( s.str().c_str() ); }
     void caxis(const char *str = "") const { std::stringstream s; s << "caxis " << str << "\n"; print( s.str().c_str() ); }
@@ -207,7 +208,8 @@ public:
 
     /// Make H the current figure, force it to become visible, and raise it above all other figures on the screen
     /// If Figure H does not exist, and H is an integer, a new figure is created with handle H
-    void figure(const char *str = "") const { std::stringstream s; s << "figure(" << str << ")\n"; print( s.str().c_str() ); }
+    template<class T>
+    void figure(const T &H) const { std::stringstream s; s << "figure(" << to_string( H ) << ")\n"; print( s.str().c_str() ); }
 
     /// Retain the current graph and add another graph to it
     void hold_on() { print("hold on\n"); }
@@ -268,7 +270,7 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
     mp.plot( vec, params );
     mp.grid_on();
     mp.box_on();
-    mp.set_fontsize("16");
+    mp.set_fontsize(16);
     mp.set_xlabel(xlabel);
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
@@ -287,7 +289,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     mp.plot( vecx, vecy, params );
     mp.grid_on();
     mp.box_on();
-    mp.set_fontsize("16");
+    mp.set_fontsize(16);
     mp.set_xlabel(xlabel);
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
@@ -306,7 +308,7 @@ void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char 
     mp.plot( mat, params );
     mp.grid_on();
     mp.box_on();
-    mp.set_fontsize("16");
+    mp.set_fontsize(16);
     mp.set_xlabel(xlabel);
     mp.set_ylabel(ylabel);
     std::string format = mp.get_format(output);
