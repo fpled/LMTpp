@@ -505,12 +505,12 @@ public:
             fprintf(tube,"splot ");
         else
             fprintf(tube,"plot ");
-        for(unsigned i=0;i<holded_data.size();++i) {
+        for (unsigned i=0;i<holded_data.size();++i) {
             fprintf(tube," '-' %s",holded_data[i].params.c_str());
             fprintf(tube, ( i<holded_data.size()-1 ? "," : "\n" ) );
         }
 
-        for(unsigned i=0;i<holded_data.size();++i) {
+        for (unsigned i=0;i<holded_data.size();++i) {
             if ( jump_lines and holded_data[i].x.size() )
                 fprintf_jumping_lines( holded_data[i].x, holded_data[i].y, holded_data[i].z );
             else if ( holded_data[i].z.size() )

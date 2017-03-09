@@ -43,7 +43,7 @@ struct SubStructuredProblem;
 
             TM m; // un maillage
                     
-            for( unsigned i = 0; ; ++i ) {
+            for ( unsigned i = 0; ; ++i ) {
 
                 /// le maillage ou son contenu varie
                 
@@ -167,13 +167,13 @@ public:
         f << "    <Piece Extent='0 " << grid_size-1 << " 0 " << grid_size-1 << " 0 0'>" << std::endl;
         f << "      <PointData Scalars='offset'>" << std::endl;
         f << "        <DataArray type='Float64' Name='offset' format='ascii' NumberOfComponents='1'>" << std::endl;
-        for(unsigned i=0;i<pem.size();++i)
+        for (unsigned i=0;i<pem.size();++i)
             f << pem[i].dist << ' ';
         //f.write((char *)scalars.begin(),scalars.size()*sizeof(float));
         f << std::endl;
         f << "        </DataArray>" << std::endl;
         f << "        <DataArray type='Float64' Name='normals' format='ascii' NumberOfComponents='3'>" << std::endl;
-        for(unsigned i=0;i<pem.size();++i)
+        for (unsigned i=0;i<pem.size();++i)
             f << pem[i].normal[0] << ' ' << pem[i].normal[1] << " 0 ";
         //f.write((char *)scalars.begin(),scalars.size()*sizeof(float));
         f << std::endl;
@@ -201,8 +201,8 @@ public:
         f << "<VTKFile type='Collection' version='0.1'>" << std::endl;
         f << "    <Collection>" << std::endl;
         unsigned cpt = 0;
-        for( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter, ++cpt )
-            for(unsigned i=0;i<iter->second.size();++i)
+        for ( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter, ++cpt )
+            for (unsigned i=0;i<iter->second.size();++i)
                 f << "        <DataSet timestep='" << iter->first << "' part='" << i << "' file='" << iter->second[i] << "'/>" << std::endl;
         f << "    </Collection>" << std::endl;
         f << "</VTKFile>" << std::endl;
@@ -233,8 +233,8 @@ public:
        // pvs << "set kw(vtkTemp322) [$kw(vtkApplication) GetAnimationInterface]" << std::endl;
        //pvs << "[$kw(vtkApplication) GetRotateCameraButton] SetState 1" << std::endl;
        //pvs << "$kw(vtkApplication) ChangeInteractorStyle 1" << std::endl;
-       for( std::map<std::string,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter ) {
-           for(unsigned i=0;i<( all_mesh ? iter->second.size() : min(iter->second.size(),(unsigned)1) );++i) {
+       for ( std::map<std::string,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter ) {
+           for (unsigned i=0;i<( all_mesh ? iter->second.size() : min(iter->second.size(),(unsigned)1) );++i) {
                pvs << "set kw(vtkgr" << i << ") [$kw(vtkApplication) InitializeReadCustom \"XMLUnstructuredGridReader\" \""
                    << iter->second[i] << "\"]" << std::endl;
                pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkgr" << i << ") \"" << iter->second[i] << "\"" << std::endl;
@@ -251,7 +251,7 @@ public:
                pvs << "" << std::endl;
            }
        }
-       for(unsigned i=0;i<vti_files.size();++i) {
+       for (unsigned i=0;i<vti_files.size();++i) {
            pvs << "set kw(vtkTemp525) [$kw(vtkApplication) InitializeReadCustom \"XMLImageDataReader\" \""
                << vti_files[i] << "\"]" << std::endl;
            pvs << "$kw(vtkApplication) ReadFileInformation $kw(vtkTemp525) \"" << vti_files[i] << "\"" << std::endl;
@@ -298,8 +298,8 @@ public:
 
     Vec<std::string> get_all_pvu_files() const {
         Vec<std::string> res;
-        for( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter )
-            for(unsigned i=0;i<iter->second.size();++i)
+        for ( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter )
+            for (unsigned i=0;i<iter->second.size();++i)
                 res.push_back( iter->second[i] );
         return res;
     }
@@ -325,13 +325,13 @@ public:
 private:
     template<class PV> void app_xminmax(const std::string &filename,const PV &xmi,const PV &xma) {
         if ( init_xminmax ) {
-            for(unsigned i=0;i<min(xmi.size(),(unsigned)3);++i) {
+            for (unsigned i=0;i<min(xmi.size(),(unsigned)3);++i) {
                 xmin[i] = min(xmin[i],xmi[i]); xmax[i] = max(xmax[i],xma[i]);
             }
         }
         else {
             xmin = 0.0; xmax = 0.0;
-            for(unsigned i=0;i<min(xmi.size(),(unsigned)3);++i) {
+            for (unsigned i=0;i<min(xmi.size(),(unsigned)3);++i) {
                 xmin[i] = xmi[i]; xmax[i] = xma[i];
             }
             init_xminmax = true;
