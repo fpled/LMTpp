@@ -71,6 +71,9 @@ public:
     void set_grid(const char *str = "") const { std::stringstream s; s << "grid " << str << "\n"; print( s.str().c_str() ); }
     void set_box(const char *str = "") const { std::stringstream s; s << "box " << str << "\n"; print( s.str().c_str() ); }
     void set_view(const char *str = "") const { std::stringstream s; s << "view(" << str << ")\n"; print( s.str().c_str() ); }
+    void set_legend(const char *str = "") const { std::stringstream s; s << "l = legend(" << str << ");\n"; print( s.str().c_str() ); }
+    void set_interpreter(const char *str = "") const { std::stringstream s; s << "set(l,'Interpreter'," << str << ")\n"; print( s.str().c_str() ); }
+
     void convert(const char *str = "") const { std::stringstream s; s << "convert " << str << ".jpg -compress jpeg eps2:" << str << ".eps &"; system( s.str().c_str() ); }
     void pdfcrop(const char *str = "") const { std::stringstream s; s << "pdfcrop " << str << "..pdf &"; system( s.str().c_str() ); }
 
