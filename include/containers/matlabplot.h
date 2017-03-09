@@ -208,7 +208,7 @@ public:
     /// Make H the current figure, force it to become visible, and raise it above all other figures on the screen
     /// If Figure H does not exist, and H is an integer, a new figure is created with handle H
     template<class T>
-    void figure( T &H ) { print("figure" + to_string( H ) + "\n"); }
+    void figure_handle( T &H ) { print("figure" + to_string( H ) + "\n"); }
 
     /// Retain the current graph and add another graph to it
     void hold_on() { print("hold on\n"); }
