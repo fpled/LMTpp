@@ -67,7 +67,7 @@ public:
     void set_xlim(const char *str = "") const { std::stringstream s; s << "xlim(" << str << ")\n"; print( s.str().c_str() ); }
     void set_ylim(const char *str = "") const { std::stringstream s; s << "ylim(" << str << ")\n"; print( s.str().c_str() ); }
     void set_zlim(const char *str = "") const { std::stringstream s; s << "zlim(" << str << ")\n"; print( s.str().c_str() ); }
-    void set_legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
+    void legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
     void set_grid(const char *str = "") const { std::stringstream s; s << "grid " << str << "\n"; print( s.str().c_str() ); }
     void set_box(const char *str = "") const { std::stringstream s; s << "box " << str << "\n"; print( s.str().c_str() ); }
     void set_view(const char *str = "") const { std::stringstream s; s << "view(" << str << ")\n"; print( s.str().c_str() ); }
