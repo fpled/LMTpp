@@ -73,7 +73,6 @@ public:
     void set_grid(const char *str = "") const { std::stringstream s; s << "grid " << str << "\n"; print( s.str().c_str() ); }
     void set_box(const char *str = "") const { std::stringstream s; s << "box " << str << "\n"; print( s.str().c_str() ); }
     void set_view(const char *str = "") const { std::stringstream s; s << "view(" << str << ")\n"; print( s.str().c_str() ); }
-    void legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
     void set_legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
     void set_legend_interpreter(const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "l = legend(" << str << ");\n set(l,'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
 
