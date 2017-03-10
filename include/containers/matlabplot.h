@@ -160,17 +160,17 @@ public:
 
     struct Disp {
         template<class TX>
-        void operator() (const TX &x, FILE *tube) const { fprintf(tube,"%10.6f,\n",double(x)); }
+        void operator() (const TX &x, FILE *tube) const { fprintf(tube,"%g,\n",double(x)); }
         template<class TX>
-        void operator()(const TX &x, unsigned i, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f,\n",double(i),double(x)); }
+        void operator()(const TX &x, unsigned i, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(i),double(x)); }
         template<class TX,class TY>
-        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f,\n",double(x),double(y(x))); }
+        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y(x))); }
         template<class TX, class T, int s, class O>
-        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f,\n",double(x),double(y[i])); }
+        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y[i])); }
         template<class TX, class TY, int sy, class OY, class TZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f, %10.6f,\n",double(x),double(y[i]),double(z(x,y[i]))); }
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z(x,y[i]))); }
         template<class TX, class TY, int sy, class OY, class TZ, int sz, class OZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f, %10.6f,\n",double(x),double(y[i]),double(z[i])); }
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z[i])); }
     };
 
     /// Plot vector vec versus its index vector
