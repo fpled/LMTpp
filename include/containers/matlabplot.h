@@ -49,6 +49,7 @@ public:
         fflush(tube);
     }
 
+    void addpath_genpath(const char *str = "") const { std::stringstream s; s << "addpath(genpath(" << str << "))\n"; print( s.str().c_str() ); }
     void addpath(const char *str = "") const { std::stringstream s; s << "addpath(" << str << ")\n"; print( s.str().c_str() ); }
     void set_gcf(const char *str = "") const { std::stringstream s; s << "set(gcf," << str << ")\n"; print( s.str().c_str() ); }
     void set_gca(const char *str = "") const { std::stringstream s; s << "set(gca," << str << ")\n"; print( s.str().c_str() ); }
