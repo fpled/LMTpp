@@ -49,8 +49,8 @@ public:
         fflush(tube);
     }
 
-    void addpath_genpath(const char *str = "") const { std::stringstream s; s << "addpath(genpath(" << str << "))\n"; print( s.str().c_str() ); }
     void addpath(const char *str = "") const { std::stringstream s; s << "addpath(" << str << ")\n"; print( s.str().c_str() ); }
+    void addpath_genpath(const char *str = "") const { std::stringstream s; s << "addpath(genpath(" << str << "))\n"; print( s.str().c_str() ); }
     void set_gcf(const char *str = "") const { std::stringstream s; s << "set(gcf," << str << ")\n"; print( s.str().c_str() ); }
     void set_gca(const char *str = "") const { std::stringstream s; s << "set(gca," << str << ")\n"; print( s.str().c_str() ); }
     void set_name(const char *str = "") const { std::stringstream s; s << "set(gcf,'Name'," << str << ")\n"; print( s.str().c_str() ); }
@@ -173,6 +173,7 @@ public:
         void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%10.6f, %10.6f, %10.6f,\n",double(x),double(y[i]),double(z[i])); }
     };
 
+    /// Plot vector vec versus its index vector
     template<class T,int s,class O>
     void plot( const Vec<T,s,O> &vec, const char *params="" ) {
         fprintf(tube,"v = [\n");
@@ -183,6 +184,7 @@ public:
         fflush(tube);
     }
 
+    /// Plot vector x versus vector y
     template<class TX,int sx,class OX,class TY,int sy,class OY>
     void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
         fprintf(tube,"v = [ \n");
@@ -193,6 +195,7 @@ public:
         fflush(tube);
     }
 
+    /// Plot vector x versus vectors y1 and y2
     template<class TX,int sx,class OX,class TY,int sy,class OY>
     void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
         //         if ( hold ) {
@@ -201,6 +204,126 @@ public:
         //         }
         //         else {
         //             fprintf(tube,"plot '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+
+    /// Log-log scale plot vector vec versus its index vector
+    template<class T,int s,class O>
+    void loglog( const Vec<T,s,O> &vec, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( vec, Disp(), tube );
+        fprintf(tube,"];\n");
+
+        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Log-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+
+        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Log-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"loglog '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+
+    /// Semi-log scale plot vector vec versus its index vector
+    template<class T,int s,class O>
+    void semilogx( const Vec<T,s,O> &vec, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( vec, Disp(), tube );
+        fprintf(tube,"];\n");
+
+        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Semi-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+
+        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Semi-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"semilogx '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+
+    /// Semi-log scale plot vector vec versus its index vector
+    template<class T,int s,class O>
+    void semilogy( const Vec<T,s,O> &vec, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( vec, Disp(), tube );
+        fprintf(tube,"];\n");
+
+        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Semi-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+
+        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+
+    /// Semi-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"semilogy '-' %s, '-' %s\n",params,params);
         //             apply_wi( x, Disp(), y1, tube );
         //             fprintf(tube,"e\n");
         //             apply_wi( x, Disp(), y2, tube );
