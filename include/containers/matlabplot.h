@@ -64,6 +64,9 @@ public:
     void set_xlabel(const char *str = "") const { std::stringstream s; s << "xlabel(" << str << ")\n"; print( s.str().c_str() ); }
     void set_ylabel(const char *str = "") const { std::stringstream s; s << "ylabel(" << str << ")\n"; print( s.str().c_str() ); }
     void set_zlabel(const char *str = "") const { std::stringstream s; s << "zlabel(" << str << ")\n"; print( s.str().c_str() ); }
+    void set_xlabel_interpreter(const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "xlabel(" << str << ",'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
+    void set_ylabel_interpreter(const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "ylabel(" << str << ",'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
+    void set_zlabel_interpreter(const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "zlabel(" << str << ",'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
     void set_xlim(const char *str = "") const { std::stringstream s; s << "xlim(" << str << ")\n"; print( s.str().c_str() ); }
     void set_ylim(const char *str = "") const { std::stringstream s; s << "ylim(" << str << ")\n"; print( s.str().c_str() ); }
     void set_zlim(const char *str = "") const { std::stringstream s; s << "zlim(" << str << ")\n"; print( s.str().c_str() ); }
@@ -71,8 +74,8 @@ public:
     void set_box(const char *str = "") const { std::stringstream s; s << "box " << str << "\n"; print( s.str().c_str() ); }
     void set_view(const char *str = "") const { std::stringstream s; s << "view(" << str << ")\n"; print( s.str().c_str() ); }
     void legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
-    void set_legend(const char *str = "") const { std::stringstream s; s << "l = legend(" << str << ");\n"; print( s.str().c_str() ); }
-    void set_interpreter(const char *str = "") const { std::stringstream s; s << "set(l,'Interpreter'," << str << ")\n"; print( s.str().c_str() ); }
+    void set_legend(const char *str = "") const { std::stringstream s; s << "legend(" << str << ")\n"; print( s.str().c_str() ); }
+    void set_legend_interpreter(const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "l = legend(" << str << ");\n set(l,'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
 
     void convert(const char *str = "") const { std::stringstream s; s << "convert " << str << ".jpg -compress jpeg eps2:" << str << ".eps &"; system( s.str().c_str() ); }
     void pdfcrop(const char *str = "") const { std::stringstream s; s << "pdfcrop " << str << "..pdf &"; system( s.str().c_str() ); }
