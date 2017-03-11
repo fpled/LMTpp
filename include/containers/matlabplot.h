@@ -117,10 +117,10 @@ public:
     /// Save current figure
     void mysaveas(const char *filename = "", const char *format = "'fig'", const char *renderer = "") {
         set_paperpositionmode("'auto'");
-        if ( std::strlen(renderer) != 0 )
+        if ( strlen(renderer) != 0 )
             set_renderer(renderer);
         std::string filename_, format_;
-        if ( std::strlen(format) == 0 ) {
+        if ( strlen(format) == 0 ) {
             filename_ = get_filename(filename);
             format_ = get_format(filename);
         }
@@ -454,7 +454,7 @@ void ml_semilogy( const Mat<T,STR,STO> &mat, const char *params="" ) {
 }
 
 template<class T,int s,class O>
-void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -462,8 +462,8 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -475,7 +475,7 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -483,8 +483,8 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -496,7 +496,7 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
 }
 
 template<class T,class STR,class STO>
-void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -504,8 +504,8 @@ void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char 
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -517,7 +517,7 @@ void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char 
 }
 
 template<class T,int s,class O>
-void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -525,8 +525,8 @@ void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *x
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -538,7 +538,7 @@ void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *x
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -546,8 +546,8 @@ void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -559,7 +559,7 @@ void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const
 }
 
 template<class T,class STR,class STO>
-void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -567,8 +567,8 @@ void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const cha
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -580,7 +580,7 @@ void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const cha
 }
 
 template<class T,int s,class O>
-void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -588,8 +588,8 @@ void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char 
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -601,7 +601,7 @@ void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char 
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -609,8 +609,8 @@ void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -622,7 +622,7 @@ void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
 }
 
 template<class T,class STR,class STO>
-void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -630,8 +630,8 @@ void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const c
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -643,7 +643,7 @@ void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const c
 }
 
 template<class T,int s,class O>
-void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -651,8 +651,8 @@ void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char 
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -664,7 +664,7 @@ void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char 
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -672,8 +672,8 @@ void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
@@ -685,7 +685,7 @@ void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
 }
 
 template<class T,class STR,class STO>
-void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="" ) {
+void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'" ) {
     MatlabPlot mp;
     mp.cd_cwd();
     mp.display_off();
@@ -693,8 +693,8 @@ void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const c
     mp.grid_on();
     mp.box_on();
     mp.set_fontsize(16);
-    mp.set_xlabel(xlabel);
-    mp.set_ylabel(ylabel);
+    mp.set_xlabel_interpreter(xlabel,interpreter);
+    mp.set_ylabel_interpreter(ylabel,interpreter);
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
