@@ -137,18 +137,30 @@ public:
         saveas(filename_.c_str(),format_.c_str());
     }
 
-    /// Remove all variables from the current workspace, releasing them from system memory
-    /// Delete all figures
-    void reset() {
-        print("clear all\n");
-        print("close all\n");
-    }
+    /// Clear command window
+    void clc() { print("clc\n"); }
 
     /// Clear current figure window
-    void clear() { print("clf\n"); }
+    void clf() { print("clf\n"); }
 
-    /// Close current figure window
-    void close() { print("close\n"); }
+    /// Remove items from workspace, freeing up system memory
+    void clear(const char *str = "") const { std::stringstream s; s << "clear " << str << "\n"; print( s.str().c_str() ); }
+
+    /// Remove specified figure
+    void close(const char *str = "") const { std::stringstream s; s << "close " << str << "\n"; print( s.str().c_str() ); }
+
+    /// Remove all variables, globals, functions and MEX links
+    void clear_all() { clear("'all'"); }
+
+    /// Remove all figures
+    void close_all() { close("'all'"); }
+
+    /// Remove all variables, globals, functions and MEX links
+    /// Remove all figures
+    void reset() {
+        clear_all();
+        close_all();
+    }
 
     /// Stop and wait for you to press any key before continuing
     void wait() {
