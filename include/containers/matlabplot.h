@@ -112,31 +112,29 @@ public:
     void matlab2tikz(const char *output = "", const char *params = "") const { std::stringstream s; s << "matlab2tikz(" << output << ",'encoding','UTF-8','parseStrings',false,'showInfo',false" << params << ");\n"; print( s.str().c_str() ); }
 
     /// Save current figure
-    void saveas(const char *output = "") const { std::stringstream s; s << "saveas(gcf," << output << ")\n"; print( s.str().c_str() ); }
-    void saveas_format(const char *filename = "", const char *format = "'fig'") const { std::stringstream s; s << "saveas(gcf," << filename << "," << format << ")\n"; print( s.str().c_str() ); }
+    void saveas(const char *filename = "", const char *format = "'fig'") const { std::stringstream s; s << "saveas(gcf," << filename << "," << format << ")\n"; print( s.str().c_str() ); }
 
     /// Save current figure
-    void mysaveas(const char *output = "", const char *renderer = "'OpenGL'") {
+    void mysaveas(const char *filename = "", const char *format = "'fig'", const char *renderer = "") {
         set_paperpositionmode("'auto'");
-        set_renderer(renderer);
-        std::string filename = get_filename(output);
-        std::string format = get_format(output);
-        if ( format == "'jpeg'")
-            convert(filename.c_str());
-        if ( format == "'pdf'")
-            pdfcrop(filename.c_str());
-        saveas(output);
-    }
-    void mysaveas_format(const char *filename = "", const char *format = "'fig'", const char *renderer = "'OpenGL'") {
-        set_paperpositionmode("'auto'");
-        set_renderer(renderer);
-        std::stringstream s; s << format;
-        std::string format_( s.str() );
+        if ( std::strlen(renderer) != 0 )
+            set_renderer(renderer);
+        std::string filename_, format_;
+        if ( std::strlen(format) == 0 ) {
+            filename_ = get_filename(filename);
+            format_ = get_format(filename);
+        }
+        else {
+            std::stringstream s; s << filename;
+            filename_ = s.str();
+            std::stringstream ss; ss << format;
+            format_ = ss.str();
+        }
         if ( format_ == "'jpeg'")
-            convert(filename);
+            convert(filename_.c_str());
         if ( format_ == "'pdf'" )
-            pdfcrop(filename);
-        saveas_format(filename,format);
+            pdfcrop(filename_.c_str());
+        saveas(filename_.c_str(),format_.c_str());
     }
 
     /// Remove all variables from the current workspace, releasing them from system memory
@@ -469,8 +467,10 @@ void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xla
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -488,8 +488,10 @@ void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const c
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -507,8 +509,10 @@ void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char 
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -526,8 +530,10 @@ void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *x
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -545,8 +551,10 @@ void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -564,8 +572,10 @@ void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const cha
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -583,8 +593,10 @@ void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char 
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -602,8 +614,10 @@ void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -621,8 +635,10 @@ void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const c
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -640,8 +656,10 @@ void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char 
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -659,8 +677,10 @@ void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, con
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
@@ -678,8 +698,10 @@ void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const c
     std::string format = mp.get_format(output);
     if ( format == "'tex'" )
         mp.matlab2tikz(output,",'height','\\figureheight'");
-    else
-        mp.mysaveas(output);
+    else {
+        std::string filename = mp.get_filename(output);
+        mp.mysaveas(filename.c_str(),format.c_str());
+    }
     mp.close();
 }
 
