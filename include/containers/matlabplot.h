@@ -113,7 +113,7 @@ public:
 
     /// Save current figure
     void saveas(const char *output = "") const { std::stringstream s; s << "saveas(gcf," << output << ")\n"; print( s.str().c_str() ); }
-//    void saveas(const char *filename = "", const char *format = "") const { std::stringstream s; s << "saveas(gcf," << filename << "," << format << ")\n"; print( s.str().c_str() ); }
+    void saveas_format(const char *filename = "", const char *format = "") const { std::stringstream s; s << "saveas(gcf," << filename << "," << format << ")\n"; print( s.str().c_str() ); }
 
     /// Save current figure
     void mysaveas(const char *output = "") {
@@ -127,17 +127,17 @@ public:
             pdfcrop(filename.c_str());
         saveas(output);
     }
-//    void mysaveas(const char *filename = "", const char *format = "") {
-//        set_paperpositionmode("'auto'");
-//        set_renderer("'OpenGL'");
-//        std::stringstream s; s << format;
-//        std::string format_( s.str() );
-//        if ( format_ == "'jpeg'")
-//            convert(filename);
-//        if ( format_ == "'pdf'" )
-//            pdfcrop(filename);
-//        saveas(filename,format);
-//    }
+    void mysaveas_format(const char *filename = "", const char *format = "") {
+        set_paperpositionmode("'auto'");
+        set_renderer("'OpenGL'");
+        std::stringstream s; s << format;
+        std::string format_( s.str() );
+        if ( format_ == "'jpeg'")
+            convert(filename);
+        if ( format_ == "'pdf'" )
+            pdfcrop(filename);
+        saveas_format(filename,format);
+    }
 
     /// Remove all variables from the current workspace, releasing them from system memory
     /// Delete all figures
