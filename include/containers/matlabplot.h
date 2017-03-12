@@ -346,10 +346,14 @@ public:
     /// Create new figure window
     void figure() { print("figure\n"); }
 
-    /// Make H the current figure, force it to become visible, and raise it above all other figures on the screen
-    /// If Figure H does not exist, and H is an integer, a new figure is created with handle H
+    /// Make the figure h current, visible, and displayed on top of other figures
+    /// If figure h does not exist, and h is an integer, a new figure is created with handle h
     template<class T>
-    void figure(const T &H) const { std::stringstream s; s << "figure(" << to_string( H ) << ")\n"; print( s.str().c_str() ); }
+    void figure(const T &h) const { std::stringstream s; s << "figure(" << to_string( h ) << ")\n"; print( s.str().c_str() ); }
+
+    /// Make the figure h current, but do not change its visibility or stacking with respect to other figures
+    template<class T>
+    void set_current_figure(const T &h) { std::stringstream s; s << "set(0,'CurrentFigure'," << to_string( h ) << ");\n"; print( s.str().c_str() ); }
 
     /// Retain the current graph and add another graph to it
     void hold_on() { print("hold on\n"); }
