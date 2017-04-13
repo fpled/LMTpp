@@ -38,7 +38,7 @@ public:
             exit(1);
         }
     }
-
+    
     MatlabPlot(bool d) : display(d) {
         if ( display ) {
             if ( (tube=popen("matlab -nodesktop -nosplash","w")) == NULL ) {
@@ -96,7 +96,7 @@ public:
     void set_hlegend_interpreter(const char *h = "h", const char *str = "", const char *interpreter = "") const { std::stringstream s; s << "l = legend(" << h << ", " << str << ");\n set(l,'Interpreter'," << interpreter << ")\n"; print( s.str().c_str() ); }
     template<class T>
     void set_alpha(const T &val) const { std::stringstream s; s << "alpha(" << to_string(val) << ")\n"; print( s.str().c_str() ); }
-
+    
     void convert(const char *str = "") const { std::stringstream s; s << "convert " << str << ".jpg -compress jpeg eps2:" << str << ".eps &"; system( s.str().c_str() ); }
     void pdfcrop(const char *str = "") const { std::stringstream s; s << "pdfcrop " << str << "..pdf &"; system( s.str().c_str() ); }
 
@@ -155,25 +155,36 @@ public:
             pdfcrop(filename_.c_str());
         saveas(filename_.c_str(),format_.c_str());
     }
+    
+    /// Save output
+    void save_output(const char *output = "", const char *renderer = "") {
+        std::string format = get_format(output);
+        if ( format == "'tex'" )
+            matlab2tikz(output,",'height','\\figureheight'");
+        else {
+            std::string filename = get_filename(output);
+            mysaveas(filename.c_str(),format.c_str(),renderer);
+        }
+    }
 
     /// Clear command window
     void clc() { print("clc\n"); }
-
+    
     /// Clear current figure window
     void clf() { print("clf\n"); }
 
     /// Remove items from workspace, freeing up system memory
     void clear(const char *str = "") const { std::stringstream s; s << "clear " << str << "\n"; print( s.str().c_str() ); }
-
+    
     /// Remove specified figure
     void close(const char *str = "") const { std::stringstream s; s << "close " << str << "\n"; print( s.str().c_str() ); }
-
+    
     /// Remove all variables, globals, functions and MEX links
     void clear_all() { clear("'all'"); }
-
+    
     /// Remove all figures
     void close_all() { close("'all'"); }
-
+    
     /// Remove all variables, globals, functions and MEX links
     /// Remove all figures
     void reset() {
@@ -186,281 +197,6 @@ public:
         print("pause\n");
         std::cin.get();
     }
-
-    struct Disp {
-        template<class TX>
-        void operator() (const TX &x, FILE *tube) const { fprintf(tube,"%g,\n",double(x)); }
-        template<class TX>
-        void operator()(const TX &x, unsigned i, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(i),double(x)); }
-        template<class TX,class TY>
-        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y(x))); }
-        template<class TX, class T, int s, class O>
-        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y[i])); }
-        template<class TX, class TY, int sy, class OY, class TZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z(x,y[i]))); }
-        template<class TX, class TY, int sy, class OY, class TZ, int sz, class OZ>
-        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z[i])); }
-    };
-
-    /// Plot vector vec versus its index vector
-    template<class T,int s,class O>
-    void plot( const Vec<T,s,O> &vec, const char *params="" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-        
-        fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class T,int s,class O>
-    void hplot( const Vec<T,s,O> &vec, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"%s = plot( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Plot vector x versus vector y
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hplot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"%s = plot( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Plot vector x versus vectors y1 and y2
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
-        //         if ( hold ) {
-        //             holded_data.push_back( HD( x, y1, params ) );
-        //             holded_data.push_back( HD( x, y2, params ) );
-        //         }
-        //         else {
-        //             fprintf(tube,"plot '-' %s, '-' %s\n",params,params);
-        //             apply_wi( x, Disp(), y1, tube );
-        //             fprintf(tube,"e\n");
-        //             apply_wi( x, Disp(), y2, tube );
-        //             fprintf(tube,"e\n");
-        //             fflush(tube);
-        //         }
-        assert(0);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hplot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
-        assert(0);
-    }
-
-    /// Log-log scale plot vector vec versus its index vector
-    template<class T,int s,class O>
-    void loglog( const Vec<T,s,O> &vec, const char *params="" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class T,int s,class O>
-    void hloglog( const Vec<T,s,O> &vec, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"%s = loglog( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Log-log scale plot vector x versus vector y
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hloglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"%s = loglog( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Log-log scale plot vector x versus vectors y1 and y2
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
-        //         if ( hold ) {
-        //             holded_data.push_back( HD( x, y1, params ) );
-        //             holded_data.push_back( HD( x, y2, params ) );
-        //         }
-        //         else {
-        //             fprintf(tube,"loglog '-' %s, '-' %s\n",params,params);
-        //             apply_wi( x, Disp(), y1, tube );
-        //             fprintf(tube,"e\n");
-        //             apply_wi( x, Disp(), y2, tube );
-        //             fprintf(tube,"e\n");
-        //             fflush(tube);
-        //         }
-        assert(0);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hloglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
-        assert(0);
-    }
-
-    /// Semi-log scale plot vector vec versus its index vector
-    template<class T,int s,class O>
-    void semilogx( const Vec<T,s,O> &vec, const char *params="" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class T,int s,class O>
-    void hsemilogx( const Vec<T,s,O> &vec, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"%s = semilogx( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Semi-log scale plot vector x versus vector y
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hsemilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"%s = semilogx( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Semi-log scale plot vector x versus vectors y1 and y2
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
-        //         if ( hold ) {
-        //             holded_data.push_back( HD( x, y1, params ) );
-        //             holded_data.push_back( HD( x, y2, params ) );
-        //         }
-        //         else {
-        //             fprintf(tube,"semilogx '-' %s, '-' %s\n",params,params);
-        //             apply_wi( x, Disp(), y1, tube );
-        //             fprintf(tube,"e\n");
-        //             apply_wi( x, Disp(), y2, tube );
-        //             fprintf(tube,"e\n");
-        //             fflush(tube);
-        //         }
-        assert(0);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hsemilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
-        assert(0);
-    }
-
-    /// Semi-log scale plot vector vec versus its index vector
-    template<class T,int s,class O>
-    void semilogy( const Vec<T,s,O> &vec, const char *params="" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class T,int s,class O>
-    void hsemilogy( const Vec<T,s,O> &vec, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [\n");
-        apply_wi( vec, Disp(), tube );
-        fprintf(tube,"];\n");
-
-        fprintf(tube,"%s = semilogy( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Semi-log scale plot vector x versus vector y
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
-        fflush(tube);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hsemilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
-        fprintf(tube,"v = [ \n");
-        apply_wi( x, Disp(), y, tube );
-        fprintf(tube," ];\n");
-
-        fprintf(tube,"%s = semilogy( v(:,1), v(:,2)%s );\n",h,params);
-        fflush(tube);
-    }
-
-    /// Semi-log scale plot vector x versus vectors y1 and y2
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
-        //         if ( hold ) {
-        //             holded_data.push_back( HD( x, y1, params ) );
-        //             holded_data.push_back( HD( x, y2, params ) );
-        //         }
-        //         else {
-        //             fprintf(tube,"semilogy '-' %s, '-' %s\n",params,params);
-        //             apply_wi( x, Disp(), y1, tube );
-        //             fprintf(tube,"e\n");
-        //             apply_wi( x, Disp(), y2, tube );
-        //             fprintf(tube,"e\n");
-        //             fflush(tube);
-        //         }
-        assert(0);
-    }
-
-    template<class TX,int sx,class OX,class TY,int sy,class OY>
-    void hsemilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
-        assert(0);
-    }
     
     /// Create new figure window
     void figure() { print("figure\n"); }
@@ -469,11 +205,11 @@ public:
     /// If figure h does not exist, and h is an integer, a new figure is created with handle h
     template<class T>
     void figure(const T &h) const { std::stringstream s; s << "figure(" << to_string( h ) << ")\n"; print( s.str().c_str() ); }
-
+    
     /// Make the figure h current, but do not change its visibility or stacking with respect to other figures
     template<class T>
     void set_current_figure(const T &h) { std::stringstream s; s << "set(0,'CurrentFigure'," << to_string( h ) << ");\n"; print( s.str().c_str() ); }
-
+    
     /// Retain the current graph and add another graph to it
     void hold_on() { print("hold on\n"); }
 
@@ -497,7 +233,450 @@ public:
 
     /// Disable the display of figure windows
     void display_off() { print("set(0,'DefaultFigureVisible','off');\n"); }
-
+    
+    struct Disp {
+        template<class TX>
+        void operator() (const TX &x, FILE *tube) const { fprintf(tube,"%g,\n",double(x)); }
+        template<class TX>
+        void operator()(const TX &x, unsigned i, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(i),double(x)); }
+        template<class TX,class TY>
+        void operator() (const TX &x, unsigned i, const TY &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y(x))); }
+        template<class TX, class T, int s, class O>
+        void operator() (const TX &x, unsigned i, const Vec<T,s,O> &y, FILE *tube) const { fprintf(tube,"%g, %g,\n",double(x),double(y[i])); }
+        template<class TX, class TY, int sy, class OY, class TZ>
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const TZ &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z(x,y[i]))); }
+        template<class TX, class TY, int sy, class OY, class TZ, int sz, class OZ>
+        void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%g, %g, %g,\n",double(x),double(y[i]),double(z[i])); }
+    };
+    
+    /// Plot vector v versus its index vector
+    template<class T,int s,class O>
+    void plot( const Vec<T,s,O> &v, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O>
+    void hplot( const Vec<T,s,O> &v, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = plot( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"plot( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hplot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"%s = plot( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"plot '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hplot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
+        assert(0);
+    }
+    
+    /// Log-log scale plot vector v versus its index vector
+    template<class T,int s,class O>
+    void loglog( const Vec<T,s,O> &v, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O>
+    void hloglog( const Vec<T,s,O> &v, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = loglog( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Log-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"loglog( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hloglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"%s = loglog( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Log-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"loglog '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hloglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
+        assert(0);
+    }
+    
+    /// Semi-log scale plot vector v versus its index vector
+    template<class T,int s,class O>
+    void semilogx( const Vec<T,s,O> &v, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O>
+    void hsemilogx( const Vec<T,s,O> &v, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = semilogx( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Semi-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"semilogx( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hsemilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"%s = semilogx( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Semi-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"semilogx '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hsemilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
+        assert(0);
+    }
+    
+    /// Semi-log scale plot vector v versus its index vector
+    template<class T,int s,class O>
+    void semilogy( const Vec<T,s,O> &v, const char *params="" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O>
+    void hsemilogy( const Vec<T,s,O> &v, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [\n");
+        apply_wi( v, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = semilogy( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Semi-log scale plot vector x versus vector y
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"semilogy( v(:,1), v(:,2)%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hsemilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *params="", const char *h="h" ) {
+        fprintf(tube,"v = [ \n");
+        apply_wi( x, Disp(), y, tube );
+        fprintf(tube," ];\n");
+        
+        fprintf(tube,"%s = semilogy( v(:,1), v(:,2)%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Semi-log scale plot vector x versus vectors y1 and y2
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
+        //         if ( hold ) {
+        //             holded_data.push_back( HD( x, y1, params ) );
+        //             holded_data.push_back( HD( x, y2, params ) );
+        //         }
+        //         else {
+        //             fprintf(tube,"semilogy '-' %s, '-' %s\n",params,params);
+        //             apply_wi( x, Disp(), y1, tube );
+        //             fprintf(tube,"e\n");
+        //             apply_wi( x, Disp(), y2, tube );
+        //             fprintf(tube,"e\n");
+        //             fflush(tube);
+        //         }
+        assert(0);
+    }
+    
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void hsemilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
+        assert(0);
+    }
+    
+    /// Create new figure, plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_plot( const Vec<T,s,O> &v, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_plot( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y1, y2, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_loglog( const Vec<T,s,O> &v, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_loglog( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y1, y2, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogx( const Vec<T,s,O> &v, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogx( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y1, y2, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogy( const Vec<T,s,O> &v, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y1, y2, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
     ///
     FILE *tube;
     bool display;
@@ -507,6 +686,7 @@ public:
 template<class T,int s,class O>
 void ml_plot( const Vec<T,s,O> &vec, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.plot( vec, params );
     mp.wait();
 }
@@ -514,6 +694,7 @@ void ml_plot( const Vec<T,s,O> &vec, const char *params="" ) {
 template<class TX,int sx,class OX,class TY,int sy,class OY>
 void ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.plot( vecx, vecy, params );
     mp.wait();
 }
@@ -521,6 +702,7 @@ void ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *
 template<class T,class STR,class STO>
 void ml_plot( const Mat<T,STR,STO> &mat, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.plot( mat, params );
     mp.wait();
 }
@@ -528,6 +710,7 @@ void ml_plot( const Mat<T,STR,STO> &mat, const char *params="" ) {
 template<class T,int s,class O>
 void ml_loglog( const Vec<T,s,O> &vec, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.loglog( vec, params );
     mp.wait();
 }
@@ -535,6 +718,7 @@ void ml_loglog( const Vec<T,s,O> &vec, const char *params="" ) {
 template<class TX,int sx,class OX,class TY,int sy,class OY>
 void ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.loglog( vecx, vecy, params );
     mp.wait();
 }
@@ -542,6 +726,7 @@ void ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char
 template<class T,class STR,class STO>
 void ml_loglog( const Mat<T,STR,STO> &mat, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.loglog( mat, params );
     mp.wait();
 }
@@ -549,6 +734,7 @@ void ml_loglog( const Mat<T,STR,STO> &mat, const char *params="" ) {
 template<class T,int s,class O>
 void ml_semilogx( const Vec<T,s,O> &vec, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( vec, params );
     mp.wait();
 }
@@ -556,6 +742,7 @@ void ml_semilogx( const Vec<T,s,O> &vec, const char *params="" ) {
 template<class TX,int sx,class OX,class TY,int sy,class OY>
 void ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( vecx, vecy, params );
     mp.wait();
 }
@@ -563,6 +750,7 @@ void ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const ch
 template<class T,class STR,class STO>
 void ml_semilogx( const Mat<T,STR,STO> &mat, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( mat, params );
     mp.wait();
 }
@@ -570,6 +758,7 @@ void ml_semilogx( const Mat<T,STR,STO> &mat, const char *params="" ) {
 template<class T,int s,class O>
 void ml_semilogy( const Vec<T,s,O> &vec, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( vec, params );
     mp.wait();
 }
@@ -577,6 +766,7 @@ void ml_semilogy( const Vec<T,s,O> &vec, const char *params="" ) {
 template<class TX,int sx,class OX,class TY,int sy,class OY>
 void ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( vecx, vecy, params );
     mp.wait();
 }
@@ -584,248 +774,93 @@ void ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const ch
 template<class T,class STR,class STO>
 void ml_semilogy( const Mat<T,STR,STO> &mat, const char *params="" ) {
     MatlabPlot mp;
+    mp.figure();
     mp.semilogx( mat, params );
     mp.wait();
 }
 
 template<class T,int s,class O>
-void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_plot( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.plot( vec, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_plot( vec, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_plot( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.plot( vecx, vecy, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_plot( vecx, vecy, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,class STR,class STO>
-void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_plot( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.plot( mat, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_plot( mat, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,int s,class O>
-void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_loglog( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.loglog( vec, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_loglog( vec, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_loglog( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.loglog( vecx, vecy, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_loglog( vecx, vecy, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,class STR,class STO>
-void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_loglog( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.loglog( mat, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_loglog( mat, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,int s,class O>
-void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogx( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogx( vec, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogx( vec, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogx( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogx( vecx, vecy, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogx( vecx, vecy, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,class STR,class STO>
-void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogx( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogx( mat, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogx( mat, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,int s,class O>
-void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogy( const Vec<T,s,O> &vec, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogy( vec, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogy( vec, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class TX,int sx,class OX,class TY,int sy,class OY>
-void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogy( vecx, vecy, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogy( vecx, vecy, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 template<class T,class STR,class STO>
-void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const bool display = false ) {
+void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
     MatlabPlot mp(display);
     mp.cd_cwd();
-    mp.semilogy( mat, params );
-    mp.grid_on();
-    mp.box_on();
-    mp.set_fontsize(16);
-    mp.set_xlabel_interpreter(xlabel,interpreter);
-    mp.set_ylabel_interpreter(ylabel,interpreter);
-    std::string format = mp.get_format(output);
-    if ( format == "'tex'" )
-        mp.matlab2tikz(output,",'height','\\figureheight'");
-    else {
-        std::string filename = mp.get_filename(output);
-        mp.mysaveas(filename.c_str(),format.c_str());
-    }
-    mp.close();
+    mp.save_semilogy( mat, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 }
