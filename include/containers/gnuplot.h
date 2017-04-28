@@ -113,7 +113,8 @@ public:
     void unset_label(const char *str = "") const { std::stringstream s; s << "unset label " << str << "\n"; print( s.str().c_str() ); } 
     void set_key(const char *str = "") const { std::stringstream s; s << "set key " << str << "\n"; print( s.str().c_str() ); } 
     void unset_key(const char *str = "") const { std::stringstream s; s << "unset key " << str << "\n"; print( s.str().c_str() ); } 
-    void set_ouput_terminal( const char *output="" ) {
+
+    void set_output_terminal( const char *output="" ) {
         std::stringstream s; s << output;
         std::string filename( s.str() );
         if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
@@ -130,8 +131,7 @@ public:
             set_terminal( "postscript eps enhanced color colortext" );
         set_output(output);
     }
-
-
+    
     /// Set all graph-related options to their default values
     void reset() { print("reset\n\n"); }
 
@@ -139,62 +139,6 @@ public:
     void wait() {
         print("pause -1\n\n");
         std::cin.get();
-    }
-
-    void hold_on() { hold = true; }
-
-    void hold_off( bool jump_lines = false ) {
-        if ( holded_data.size()==0 ) return;
-
-        if ( holded_data[0].z.size() )
-            fprintf(tube,"splot ");
-        else
-            fprintf(tube,"plot ");
-        for (unsigned i=0;i<holded_data.size();++i) {
-            fprintf(tube," '-' %s",holded_data[i].params.c_str());
-            fprintf(tube, ( i<holded_data.size()-1 ? "," : "\n" ) );
-        }
-
-        for (unsigned i=0;i<holded_data.size();++i) {
-            if ( jump_lines and holded_data[i].x.size() )
-                fprintf_jumping_lines( holded_data[i].x, holded_data[i].y, holded_data[i].z );
-            else if ( holded_data[i].z.size() )
-                apply_wi( holded_data[i].x, Disp(), holded_data[i].y, holded_data[i].z, tube );
-            else if ( holded_data[i].y.size() )
-                apply_wi( holded_data[i].x, Disp(), holded_data[i].y, tube );
-            else
-                apply( holded_data[i].x, Disp(), tube );
-            fprintf(tube,"e\n");
-        }
-        fflush(tube);
-        holded_data.resize( 0 );
-        hold = false;
-    }
-
-    template<class TY>
-    void fprintf_jumping_lines( const Vec<> &x, const TY &y ) {}
-
-    template<class TZ>
-    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const TZ &z ) {
-        double old_x = x[0];
-        for (unsigned i=0;i<x.size();i++) {
-            if (x[i]!=old_x) {
-                fprintf(tube,"\n");
-                old_x = x[i];
-            }
-            fprintf(tube,"%e %e %e\n",x[i],y[i],z(x[i],y[i]));
-        }
-    }
-
-    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const Vec<> &z ) {
-        double old_x = x[0];
-        for (unsigned i=0;i<x.size();i++) {
-            if (x[i]!=old_x) {
-                fprintf(tube,"\n");
-                old_x = x[i];
-            }
-            fprintf(tube,"%e %e %e\n",x[i],y[i],z[i]);
-        }
     }
 
     struct Disp {
@@ -209,7 +153,7 @@ public:
         template<class TX, class TY, int sy, class OY, class TZ, int sz, class OZ>
         void operator() (const TX &x, unsigned i, const Vec<TY,sy,OY> &y, const Vec<TZ,sz,OZ> &z, FILE *tube) const { fprintf(tube,"%e %e %e\n",double(x),double(y[i]),double(z[i])); }
     };
-
+    
     /*!
         Cette méthode permet de représenter une surface discrétisée définie "au dessus" d'un rectangle.
         Entrées :
@@ -220,10 +164,10 @@ public:
             * maxs[ 1 ] est le maximum des ordonnées
             * nb[ 0 ] est le nombre points suivant l'axe des abscisses
             * nb[ 1 ] est le nombre points suivant l'axe des ordonnées
-
+            
         Remarque : le nombre de lignes de mat est donc nb[ 0 ] * nb[ 1 ]
         ATTENTION : pour éviter un affichage bizarre, éviter de vous tromper sur les nb[ 0 ] et nb[ 1 ].
-
+           
     */
     template<class T,class STR,class STO>
     void surface( const Mat<T,STR,STO> &mat, Vec<T,2> mins, Vec<T,2> maxs, Vec<int,2> nb, const char *params="" ) {
@@ -238,7 +182,7 @@ public:
         fprintf(tube,"%s\ne\n",ss.str().c_str());
         fflush(tube);
     }
-
+    
     /*!
         Cette fonction affiche un champ de vecteurs (vx,vy) discrétisé, défini aux points (x,y)
 
@@ -570,9 +514,66 @@ public:
         fflush(tube);
     }
 
+    void hold_on() { hold = true; }
+
+    void hold_off( bool jump_lines = false ) {
+        if ( holded_data.size()==0 ) return;
+
+        if ( holded_data[0].z.size() )
+            fprintf(tube,"splot ");
+        else
+            fprintf(tube,"plot ");
+        for (unsigned i=0;i<holded_data.size();++i) {
+            fprintf(tube," '-' %s",holded_data[i].params.c_str());
+            fprintf(tube, ( i<holded_data.size()-1 ? "," : "\n" ) );
+        }
+
+        for (unsigned i=0;i<holded_data.size();++i) {
+            if ( jump_lines and holded_data[i].x.size() )
+                fprintf_jumping_lines( holded_data[i].x, holded_data[i].y, holded_data[i].z );
+            else if ( holded_data[i].z.size() )
+                apply_wi( holded_data[i].x, Disp(), holded_data[i].y, holded_data[i].z, tube );
+            else if ( holded_data[i].y.size() )
+                apply_wi( holded_data[i].x, Disp(), holded_data[i].y, tube );
+            else
+                apply( holded_data[i].x, Disp(), tube );
+            fprintf(tube,"e\n");
+        }
+        fflush(tube);
+        holded_data.resize( 0 );
+        hold = false;
+    }
+
+    template<class TY>
+    void fprintf_jumping_lines( const Vec<> &x, const TY &y ) {}
+
+    template<class TZ>
+    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const TZ &z ) {
+        double old_x = x[0];
+        for (unsigned i=0;i<x.size();i++) {
+            if (x[i]!=old_x) {
+                fprintf(tube,"\n");
+                old_x = x[i];
+            }
+            fprintf(tube,"%e %e %e\n",x[i],y[i],z(x[i],y[i]));
+        }
+    }
+
+    void fprintf_jumping_lines( const Vec<> &x, const Vec<> &y, const Vec<> &z ) {
+        double old_x = x[0];
+        for (unsigned i=0;i<x.size();i++) {
+            if (x[i]!=old_x) {
+                fprintf(tube,"\n");
+                old_x = x[i];
+            }
+            fprintf(tube,"%e %e %e\n",x[i],y[i],z[i]);
+        }
+    }
+
     FILE *tube;
     bool hold;
     Vec<HD> holded_data;
+
 };
 
 template<class T0>
@@ -589,6 +590,25 @@ void splot( const T0 &data0, const char *params="", bool jump_lines = false ) {
     gp.wait();
 }
 
+template<class T0>
+void save_plot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, params, jump_lines );
+}
+
+template<class T0>
+void save_splot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, params, jump_lines );
+}
+
 template<class T0,class T1>
 void plot( const T0 &data0, const T1 &data1, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
@@ -601,6 +621,25 @@ void splot( const T0 &data0, const T1 &data1, const char *params="", bool jump_l
     GnuPlot gp;
     gp.splot( data0, data1, params, jump_lines );
     gp.wait();
+}
+
+template<class T0,class T1>
+void save_plot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, params, jump_lines );
+}
+
+template<class T0,class T1>
+void save_splot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, params, jump_lines );
 }
 
 template<class T0,class T1,class T2>
@@ -617,6 +656,25 @@ void splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *param
     gp.wait();
 }
 
+template<class T0,class T1,class T2>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, params, jump_lines );
+}
+
+template<class T0,class T1,class T2>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, params, jump_lines );
+}
+
 template<class T0,class T1,class T2,class T3>
 void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
@@ -629,6 +687,25 @@ void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, 
     GnuPlot gp;
     gp.splot( data0, data1, data2, data3, params, jump_lines );
     gp.wait();
+}
+
+template<class T0,class T1,class T2,class T3>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, data3, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, data3, params, jump_lines );
 }
 
 template<class T0,class T1,class T2,class T3,class T4>
@@ -645,6 +722,25 @@ void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, 
     gp.wait();
 }
 
+template<class T0,class T1,class T2,class T3,class T4>
+void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.plot( data0, data1, data2, data3, data4, params, jump_lines );
+}
+
+template<class T0,class T1,class T2,class T3,class T4>
+void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
+    GnuPlot gp;
+    gp.set_output_terminal(output);
+    gp.set_xlabel(xlabel);
+    gp.set_ylabel(ylabel);
+    gp.set_zlabel(zlabel);
+    gp.splot( data0, data1, data2, data3, data4, params, jump_lines );
+}
+
 template<class T0,class T1,class T2,class T3,class T4,class T5>
 void plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
@@ -659,105 +755,10 @@ void splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, 
     gp.wait();
 }
 
-template<class T0>
-void save_plot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.plot( data0, params, jump_lines );
-}
-
-template<class T0>
-void save_splot( const T0 &data0, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.set_zlabel(zlabel);
-    gp.splot( data0, params, jump_lines );
-}
-
-template<class T0,class T1>
-void save_plot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.plot( data0, data1, params, jump_lines );
-}
-
-template<class T0,class T1>
-void save_splot( const T0 &data0, const T1 &data1, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.set_zlabel(zlabel);
-    gp.splot( data0, data1, params, jump_lines );
-}
-
-template<class T0,class T1,class T2>
-void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.plot( data0, data1, data2, params, jump_lines );
-}
-
-template<class T0,class T1,class T2>
-void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.set_zlabel(zlabel);
-    gp.splot( data0, data1, data2, params, jump_lines );
-}
-
-template<class T0,class T1,class T2,class T3>
-void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.plot( data0, data1, data2, data3, params, jump_lines );
-}
-
-template<class T0,class T1,class T2,class T3>
-void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.set_zlabel(zlabel);
-    gp.splot( data0, data1, data2, data3, params, jump_lines );
-}
-
-template<class T0,class T1,class T2,class T3,class T4>
-void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.plot( data0, data1, data2, data3, data4, params, jump_lines );
-}
-
-template<class T0,class T1,class T2,class T3,class T4>
-void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
-    GnuPlot gp;
-    gp.set_ouput_terminal(output);
-    gp.set_xlabel(xlabel);
-    gp.set_ylabel(ylabel);
-    gp.set_zlabel(zlabel);
-    gp.splot( data0, data1, data2, data3, data4, params, jump_lines );
-}
-
 template<class T0,class T1,class T2,class T3,class T4,class T5>
 void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.set_ouput_terminal(output);
+    gp.set_output_terminal(output);
     gp.set_xlabel(xlabel);
     gp.set_ylabel(ylabel);
     gp.plot( data0, data1, data2, data3, data4, data5, params, jump_lines );
@@ -766,7 +767,7 @@ void save_plot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &dat
 template<class T0,class T1,class T2,class T3,class T4,class T5>
 void save_splot( const T0 &data0, const T1 &data1, const T2 &data2, const T3 &data3, const T4 &data4, const T5 &data5, const char *output="", const char *xlabel="", const char *ylabel="", const char *zlabel="", const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    gp.set_ouput_terminal(output);
+    gp.set_output_terminal(output);
     gp.set_xlabel(xlabel);
     gp.set_ylabel(ylabel);
     gp.set_zlabel(zlabel);
