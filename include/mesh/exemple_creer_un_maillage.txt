@@ -116,7 +116,7 @@
                 typedef TM::TNode::T T;
                 
                 TM m;
-                make_rect( m, Hexa(), Pvec( 0, 0, 0 ), Pvec( 1., 1., 1. ), Pvec( 2,2,2 ) );
+                make_rect( m, Hexa(), Pvec( 0., 0., 0. ), Pvec( 1., 1., 1. ), Pvec( 2,2,2 ) );
             
                 for( unsigned i = 0 ; i < m.node_list.size(); ++i )
                     m.node_list[i].courbure = i; 

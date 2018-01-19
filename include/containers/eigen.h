@@ -36,8 +36,8 @@ namespace LMT {
 
             get_eigen_values_and_vectors (vec, eigenvalues, eigenvectors);
             PRINT( eigenvalues );
-            PRINT( eigenvectors[0]);
-            PRINT( eigenvectors[1]);
+            PRINT( eigenvectors[0] );
+            PRINT( eigenvectors[1] );
             
             return 0 ;
         }

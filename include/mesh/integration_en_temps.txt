@@ -50,9 +50,9 @@
 
             Un grand nombre d' équations aux dérivées partielles linéaires peuvent se ramener à la résolution d'une équation différentielle ordinaire. Par exemple l'équation des cordes vibrantes ou de l'élasticité se ramène à résoudre :
             $$ 
-            M \frac{d^2 \xi( t )  }{dt^2} + A \frac{d \xi( t )  }{dt} + R \xi( t ) = \Psi( t )
+            M \frac{d^2 \xi( t )  }{dt^2} + C \frac{d \xi( t )  }{dt} + K \xi( t ) = \Psi( t )
             $$
-            où $ \xi( t ) $ et $ \Psi( t ) $  sont des vecteurs de $R^I$ dépendant du temps et $M$, $A$, $R$ des matrices carré indépendantes du temps de taille $I$. $M$ s'appelle la matrice de masse et $R$ la matrice de rigidité.
+            où $\xi( t )$ et $\Psi( t )$  sont des vecteurs de $R^I$ dépendant du temps et $M$, $K$, $C$ des matrices carrées indépendantes du temps de taille $I$. $M$ s'appelle la matrice de masse, $K$ la matrice de rigidité et $C$ la matrice d'amortissement.
             
             On peut donc appliquer la méthode pour déterminer les approximations de $ \xi( t_i ) $ pour une subdivision $t_0 < t_1 < \ldots < t_J = t0 + T$ de $[ t_0 ; t_0 + T ]$. 
             

@@ -272,7 +272,7 @@ namespace LMTPRIVATE {
 
             T max_l_cut = 0;
             
-            /// détermination des arêtes coupées et calcule de la longueur des arêtes
+            /// détermination des arêtes coupées et calcul de la longueur des arêtes
             for( unsigned i = 0; i < nb_children; ++i ) {
                 nn[ i ] = m_parent->template sub_mesh<1>().elem_list.get_data( next.cut, *m_parent->get_children_of_EA( ea, Number<1>() )[ i ] );
                 ll[ i ] = length( m_parent->get_children_of_EA( ea, Number<1>() )[ i ]->node_virtual( 1 )->pos - m_parent->get_children_of_EA( ea, Number<1>() )[ i ]->node_virtual( 0 )->pos );
@@ -423,7 +423,7 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
         /// on raffine s'il y a au moins deux arêtes coupées par élément
         switch( TM::dim ) {
             case 2 : apply( m.elem_list, r, Number<TM::dim>() ); break;
-            case 3 : apply( m.sub_mesh( Number<1>() ).elem_list, r, Number<TM::dim>() ); break;/// application sur les triangles
+            case 3 : apply( m.sub_mesh( Number<1>() ).elem_list, r, Number<TM::dim>() ); break; /// application sur les triangles
             default:
                 assert( 0 );
         }
@@ -445,6 +445,7 @@ bool refinement( TM &m, Op &op, bool spread_cut = false ) {
     m.elem_list.reg_dyn( &r.cut );
     bool res = m.remove_elements_if( r );
     m.elem_list.unreg_dyn( &r.cut );
+    m.remove_unused_nodes();
 
     m.signal_connectivity_change();
     return res;
@@ -741,7 +742,7 @@ struct RefinementBasedOnLength {
 
 /*!
     Objectif :
-        La fonction \a refinement_if_length_sup permet de raffiner un maillage suivant un critère géométrique (taille des barres). Elle divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à l_max.
+        La fonction \a refinement_if_length_sup permet de raffiner un maillage suivant un critère géométrique (longueur des barres). Elle divise toutes les barres (segments) du maillage en deux pour lesquelles la longueur est supérieure à l_max.
 
     Paramètres :
         * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
@@ -778,8 +779,11 @@ struct RefinementBasedOnLength {
         }
 
     \relates refinement_if_length_sup
+    \relates refinement_if_constraints
     \relates refinement_if_nodal_field_sup
+    \relates refinement_if_constraints_or_nodal_field_sup
     \relates refinement_if_elem_field_sup
+    \relates refinement_if_constraints_or_elem_field_sup
     \relates refinement
     \keyword Maillage/Opération
     \friend lecler@lmt.ens-cachan.fr
@@ -794,16 +798,98 @@ bool refinement_if_length_sup( TM &m, T length_max, bool spread_cut = false ) {
 }
 
 /*!
+    L'opérateur \a RefinementBasedOnConstraints est conçu pour la fonction \a refinement_if_constraints .
+*/
+template<class TF>
+struct RefinementBasedOnConstraints {
+    RefinementBasedOnConstraints( const TF &f ) : ptr_f( &f ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        return ( ptr_f->constrained_nodes()[ e.node(0)->number ] ) and ( ptr_f->constrained_nodes()[ e.node(1)->number ] );
+    }
+
+    const TF* ptr_f;
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_if_constraints permet de raffiner un maillage sur les bords de Dirichlet. Elle divise toutes les barres (segments) du maillage en deux appartenant à un bord de Dirchlet (bord soumis à des contraintes cinématiques).
+
+    Paramètres :
+        * <strong> f </strong> est une formulation de la plateforme.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon.
+
+    Exemple de code pour raffiner un maillage autour des noeuds contraints (appartenant a un bord de Dirichlet) :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+        // inclusion du code de notre Formulation
+        #include "MaFormulation.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
+            typedef Formulation<TM,MaFormulation,DefaultBehavior,double,wont_add_nz> TF;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            T lx = 10., ly = 1.;
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( lx, ly ), Pvec( 21, 5 ) );
+
+            TF f( m );
+
+            for(unsigned i = 0; i < m.node_list.size(); ++i ) {
+                if ( ( m.node_list[ i ].pos[ 0 ] < 1e-6 ) or ( m.node_list[ i ].pos[ 0 ] > lx - 1e-6 ) ) {
+                    for( int d = 0; d < dim; ++d )
+                        f.add_constraint( "sin( node[" + to_string( i ) + "].dep[" + to_string( d ) + "] ) - " + to_string( 0.1 * m.node_list[ i ].pos[ 0 ] * ( d == 0 ) ), 1e5 );
+                }
+            }
+
+            f.solve();
+
+            display_mesh( m );
+
+            refinement_if_constraints( m, f );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_constraints
+    \relates refinement_if_length_sup
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_constraints_or_nodal_field_sup
+    \relates refinement_if_elem_field_sup
+    \relates refinement_if_constraints_or_elem_field_sup
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class TF>
+bool refinement_if_constraints( TM &m, const TF &f, bool spread_cut = false ) {
+    RefinementBasedOnConstraints<TF> r( f );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
     L'opérateur \a RefinementBasedOnNodalField est conçu pour la fonction \a refinement_if_nodal_field_sup .
 */
 template<class ExtractPhi,class TM,class T>
 struct RefinementBasedOnNodalField {
-    RefinementBasedOnNodalField( const ExtractPhi &_p, TM &m, T _k ) : p( _p ), ptr_m( &m ), k( _k  ) {}
+    RefinementBasedOnNodalField( const ExtractPhi &_p, TM &m, T _k, T _pmax ) : p( _p ), ptr_m( &m ), k( _k  ), pmax( _pmax ) {}
 
     template<class TE>
     bool operator()( TE &e ) const {
-        T pmin, pmax;
-        get_min_max( ptr_m->node_list, p, pmin, pmax );
         T p0 = p( *e.node(0) );
         T p1 = p( *e.node(1) );
         return ( p0 > k * pmax ) or ( p1 > k * pmax );
@@ -811,7 +897,7 @@ struct RefinementBasedOnNodalField {
 
     const ExtractPhi &p;
     TM* ptr_m;
-    T k;
+    T k, pmax;
 };
 
 /*!
@@ -857,8 +943,11 @@ struct RefinementBasedOnNodalField {
         }
 
     \relates refinement_if_nodal_field_sup
+    \relates refinement_if_constraints_or_nodal_field_sup
     \relates refinement_if_elem_field_sup
+    \relates refinement_if_constraints_or_elem_field_sup
     \relates refinement_if_length_sup
+    \relates refinement_if_constraints
     \relates refinement
     \keyword Maillage/Opération
     \friend lecler@lmt.ens-cachan.fr
@@ -866,35 +955,126 @@ struct RefinementBasedOnNodalField {
 */
 template<class TM,class ExtractPhi,class T>
 bool refinement_if_nodal_field_sup( TM &m, const ExtractPhi &p, T k, bool spread_cut = false ) {
-    RefinementBasedOnNodalField<ExtractPhi,TM,T> r( p, m, k );
+    T pmin, pmax;
+    get_min_max( m.node_list, p, pmin, pmax );
+    RefinementBasedOnNodalField<ExtractPhi,TM,T> r( p, m, k, pmax );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
+    L'opérateur \a RefinementBasedOnConstraintsAndNodalField est conçu pour la fonction \a refinement_if_constraints_or_nodal_field_sup .
+*/
+template<class ExtractPhi,class TF,class TM,class T>
+struct RefinementBasedOnConstraintsAndNodalField {
+    RefinementBasedOnConstraintsAndNodalField( const ExtractPhi &_p, const TF &f, TM &m, T _k, T _pmax ) : p( _p ), ptr_f( &f ), ptr_m( &m ), k( _k  ), pmax( _pmax ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        if ( ( ptr_f->constrained_nodes()[ e.node(0)->number ] ) and ( ptr_f->constrained_nodes()[ e.node(1)->number ] ) )
+            return 1;
+        T p0 = p( *e.node(0) );
+        T p1 = p( *e.node(1) );
+        return ( p0 > k * pmax ) or ( p1 > k * pmax );
+    }
+
+    const ExtractPhi &p;
+    const TF* ptr_f;
+    TM* ptr_m;
+    T k, pmax;
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_if_constraints_or_nodal_field_sup permet de raffiner un maillage sur les bords de Dirichlet et suivant la valeur d'un attribut nodal sur le reste du maillage. Plus précisément, considérons un attribut nodal scalaire ( i.e. double en général ), qu'on nommera phi. La fonction divise toutes les barres (segments) du maillage en deux appartenant à un bord de Dirchlet (bord soumis à des contraintes cinématiques) ou pour lesquelles la valeur de phi à un des noeuds est supérieure à k fois la valeur maximale de phi sur tout le maillage.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> f </strong> est une formulation de la plateforme.
+        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+        * <strong> k </strong> est un double qui correspond au rapport maximal (entre la valeur de l'attribut sur un des noeuds d'une barre et sa valeur maximale sur tout le maillage) des barres qui ne seront pas divisées.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite atteindre une précision donnée, on relancera la fonction après la mise à jour de l'attribut nodal autant de fois que nécessaire.
+
+    Exemple de code pour raffiner un maillage autour des noeuds contraints (appartenant a un bord de Dirichlet) ou pour lesquels la valeur d'un attribut nodal est supérieure à 0.75 fois la valeur maximale sur tout le maillage :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            T lx = 10., ly = 1.;
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( lx, ly ), Pvec( 21, 5 ) );
+
+            for( unsigned i = 0 ; i < m.node_list.size(); ++i )
+                m.node_list[i].phi = sin( std::sqrt( i ) * 5. );
+
+            TF f( m );
+
+            for(unsigned i = 0; i < m.node_list.size(); ++i ) {
+                if ( ( m.node_list[ i ].pos[ 0 ] < 1e-6 ) or ( m.node_list[ i ].pos[ 0 ] > lx - 1e-6 ) ) {
+                    for( int d = 0; d < dim; ++d )
+                        f.add_constraint( "sin( node[" + to_string( i ) + "].dep[" + to_string( d ) + "] ) - " + to_string( 0.1 * m.node_list[ i ].pos[ 0 ] * ( d == 0 ) ), 1e5 );
+                }
+            }
+
+            f.solve();
+
+            display_mesh( m );
+
+            refinement_if_constraints_or_nodal_field_sup( m, f, ExtractDM< phi_DM >(), 0.75 );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_constraints_or_nodal_field_sup
+    \relates refinement_if_constraints_or_elem_field_sup
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_elem_field_sup
+    \relates refinement_if_length_sup
+    \relates refinement_if_constraints
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class TF,class ExtractPhi,class T>
+bool refinement_if_constraints_or_nodal_field_sup( TM &m, const TF &f, const ExtractPhi &p, T k, bool spread_cut = false ) {
+    T pmin, pmax;
+    get_min_max( m.node_list, p, pmin, pmax );
+    RefinementBasedOnConstraintsAndNodalField<ExtractPhi,TF,TM,T> r( p, f, m, k, pmax );
     return refinement( m, r, spread_cut );
 }
 
 /*!
     L'opérateur \a RefinementBasedOnElemField est conçu pour la fonction \a refinement_if_elem_field_sup .
 */
-template<class ExtractPhi,class TM,class T>
+template<class DM,class TM,class T>
 struct RefinementBasedOnElemField {
-    RefinementBasedOnElemField( const ExtractPhi &_p, TM &m, T _k ) : p( _p ), ptr_m( &m ), k( _k  ) {}
+    RefinementBasedOnElemField( const DM &_dm, TM &m, T _k, T _dmax ) : dm( _dm ), ptr_m( &m ), k( _k  ), dmax( _dmax ) {}
 
     template<class TE>
     bool operator()( TE &e ) const {
-        T pmin, pmax;
-//        get_min_max( ptr_m->elem_list, p, pmin, pmax );
-        PRINT( e );
-        PRINT( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0] );
-        PRINT( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() );
-        PRINT( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0]->number );
-        PRINT( p( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[0] ) );
-//        for(unsigned n=0;n<ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() ;++n)
-//            if ( p( *ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[n] ) > k * pmax )
-//                return 1;
+        for(unsigned n=0;n<ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() ;++n)
+            if ( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[n]->get_field( dm.name(), StructForType<T>() ) > k * dmax )
+                return 1;
         return 0;
     }
 
-    const ExtractPhi &p;
+    const DM &dm;
     TM* ptr_m;
-    T k;
+    T k, dmax;
 };
 
 /*!
@@ -903,7 +1083,7 @@ struct RefinementBasedOnElemField {
 
     Paramètres :
         * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
-        * <strong> ExtractPhi </strong> est une classe qui permet d'accéder à la valeur d'un attribut du maillage m. Par exemple ce sera la classe \a ExtractDM < phi_DM > où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+        * <strong> DM </strong> est une classe qui permet d'accéder au nom d'un attribut du maillage m. Par exemple ce sera la classe \a phi_DM où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
         * <strong> k </strong> est un double qui correspond au rapport maximal (entre la valeur de l'attribut sur un des éléments d'une barre et sa valeur maximale sur tout le maillage) des barres qui ne seront pas divisées.
 
     Retour :
@@ -932,7 +1112,7 @@ struct RefinementBasedOnElemField {
 
             display_mesh( m );
 
-            refinement_if_elem_field_sup( m, ExtractDM< phi_DM >(), 0.75 );
+            refinement_if_elem_field_sup( m, phi_DM, 0.75 );
 
             display_mesh( m );
 
@@ -940,20 +1120,126 @@ struct RefinementBasedOnElemField {
         }
 
     \relates refinement_if_elem_field_sup
+    \relates refinement_if_constraints_or_elem_field_sup
     \relates refinement_if_nodal_field_sup
+    \relates refinement_if_constraints_or_nodal_field_sup
     \relates refinement_if_length_sup
+    \relates refinement_if_constraints
     \relates refinement
     \keyword Maillage/Opération
     \friend lecler@lmt.ens-cachan.fr
     \friend florent.pled@univ-paris-est.fr
 */
-template<class TM,class ExtractPhi,class T>
-bool refinement_if_elem_field_sup( TM &m, const ExtractPhi &p, T k, bool spread_cut = false ) {
+template<class TM,class DM,class T>
+bool refinement_if_elem_field_sup( TM &m, const DM &dm, T k, bool spread_cut = false ) {
 //    m.update_skin();
     m.update_elem_parents( Number<TM::nvi-1>() );
     if ( TM::dim == 3 )
         m.update_elem_parents( Number<TM::nvi-2>() );
-    RefinementBasedOnElemField<ExtractPhi,TM,T> r( p, m, k );
+    T dmin, dmax;
+    ExtractDM<DM> ed;
+    get_min_max( m.elem_list, ed, dmin, dmax );
+    RefinementBasedOnElemField<DM,TM,T> r( dm, m, k, dmax );
+    return refinement( m, r, spread_cut );
+}
+
+/*!
+    L'opérateur \a RefinementBasedConstraintsAndOnElemField est conçu pour la fonction \a refinement_if_constraints_or_elem_field_sup .
+*/
+template<class DM,class TF,class TM,class T>
+struct RefinementBasedOnConstraintsAndElemField {
+    RefinementBasedOnConstraintsAndElemField( const DM &_dm, const TF &f, TM &m, T _k, T _dmax ) : dm( _dm ), ptr_f( &f ), ptr_m( &m ), k( _k  ), dmax( _dmax ) {}
+
+    template<class TE>
+    bool operator()( TE &e ) const {
+        if ( ( ptr_f->constrained_nodes()[ e.node(0)->number ] ) and ( ptr_f->constrained_nodes()[ e.node(1)->number ] ) )
+            return 1;
+        for(unsigned n=0;n<ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e ).size() ;++n)
+            if ( ptr_m->sub_mesh(Number<TM::nvi-1>()).get_parents_of( e )[n]->get_field( dm.name(), StructForType<T>() ) > k * dmax )
+                return 1;
+        return 0;
+    }
+
+    const DM &dm;
+    const TF* ptr_f;
+    TM* ptr_m;
+    T k, dmax;
+};
+
+/*!
+    Objectif :
+        La fonction \a refinement_if_constraints_or_elem_field_sup permet de raffiner un maillage sur les bords de Dirichlet et suivant la valeur d'un attribut élémentaire sur le reste du maillage. Plus précisément, considérons un attribut élémentaire scalaire ( i.e. double en général ), qu'on nommera phi. La fonction divise toutes les barres (segments) du maillage en deux appartenant à un bord de Dirchlet (bord soumis à des contraintes cinématiques) ou pour lesquelles la valeur de phi sur un des éléments est supérieure à k fois la valeur maximale de phi sur tout le maillage.
+
+    Paramètres :
+        * <strong> m </strong> est un maillage qui sera modifié si nécessaire.
+        * <strong> f </strong> est une formulation de la plateforme.
+        * <strong> DM </strong> est une classe qui permet d'accéder au nom d'un attribut du maillage m. Par exemple ce sera la classe \a phi_DM où <strong> phi </strong> est le nom de l'attribut. Remarque : il faut que le MeshCarac du maillage contienne une classe phi_DM.
+        * <strong> k </strong> est un double qui correspond au rapport maximal (entre la valeur de l'attribut sur un des éléments d'une barre et sa valeur maximale sur tout le maillage) des barres qui ne seront pas divisées.
+
+    Retour :
+        Cette fonction renvoie vrai si elle divise au moins une barre et faux sinon. Ainsi si on souhaite atteindre une précision donnée, on relancera la fonction après la mise à jour de l'attribut élémentaire autant de fois que nécessaire.
+
+    Exemple de code pour raffiner un maillage autour des noeuds contraints (appartenant a un bord de Dirichlet) et autour des éléments pour lesquels la valeur d'un attribut élémentaire est supérieure à 0.75 fois la valeur maximale sur tout le maillage :
+    \code C/C++
+
+        #include "mesh/make_rect.h"
+        #include "mesh/refinement.h"
+        #include "mesh/displayparaview.h"
+
+        // inclusion du code de notre MeshCarac
+        #include "MonMeshCarac.h"
+
+        int main( int argc, char **argv ) {
+            typedef Mesh< Mesh_carac_MonMeshCarac<double,2> > TM;
+            typedef TM::Pvec Pvec;
+            typedef TM::TNode::T T;
+
+            TM m;
+            T lx = 10., ly = 1.;
+            make_rect( m, Triangle(), Pvec( 0., 0. ), Pvec( lx, ly ), Pvec( 21, 5 ) );
+
+            for( unsigned n = 0 ; n < m.elem_list.size(); ++n )
+                m.elem_list[n]->set_field( "phi", sin( std::sqrt( n ) * 5. );
+
+            for(unsigned i = 0; i < m.node_list.size(); ++i ) {
+                if ( ( m.node_list[ i ].pos[ 0 ] < 1e-6 ) or ( m.node_list[ i ].pos[ 0 ] > lx - 1e-6 ) ) {
+                    for( int d = 0; d < dim; ++d )
+                        f.add_constraint( "sin( node[" + to_string( i ) + "].dep[" + to_string( d ) + "] ) - " + to_string( 0.1 * m.node_list[ i ].pos[ 0 ] * ( d == 0 ) ), 1e5 );
+                }
+            }
+
+            f.solve();
+
+            display_mesh( m );
+
+            refinement_if_constraints_or_elem_field_sup( m, f, phi_DM(), 0.75 );
+
+            display_mesh( m );
+
+            return 0;
+        }
+
+    \relates refinement_if_constraints_or_elem_field_sup
+    \relates refinement_if_constraints_or_nodal_field_sup
+    \relates refinement_if_elem_field_sup
+    \relates refinement_if_nodal_field_sup
+    \relates refinement_if_length_sup
+    \relates refinement_if_constraints
+    \relates refinement
+    \keyword Maillage/Opération
+    \friend lecler@lmt.ens-cachan.fr
+    \friend florent.pled@univ-paris-est.fr
+*/
+template<class TM,class TF,class DM,class T>
+bool refinement_if_constraints_or_elem_field_sup( TM &m, const TF &f, const DM &dm, T k, bool spread_cut = false ) {
+//    m.update_skin();
+    m.update_elem_parents( Number<TM::nvi-1>() );
+    if ( TM::dim == 3 )
+        m.update_elem_parents( Number<TM::nvi-2>() );
+    T dmin, dmax;
+    ExtractDM<DM> ed;
+    get_min_max( m.elem_list, ed, dmin, dmax );
+    RefinementBasedOnConstraintsAndElemField<DM,TF,TM,T> r( dm, f, m, k, dmax );
     return refinement( m, r, spread_cut );
 }
 

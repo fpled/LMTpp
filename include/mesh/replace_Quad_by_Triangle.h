@@ -53,6 +53,7 @@ struct Replace_Quad_by_Triangle {
     \code C/C++
 
         #include "mesh/make_rect.h"
+        #include "mesh/replace_Quad_by_Triangle.h"
         #include "mesh/displayparaview.h"
 
         // inclusion du code de notre MeshCarac

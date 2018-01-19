@@ -2686,6 +2686,8 @@ public:
         return res;
     }
     ///
+    virtual unsigned nb_constrained_nodes() const { return sum( Vec<unsigned>( constrained_nodes() ) ); }
+    ///
     virtual Vec<bool> constrained_nodes_in_dim( unsigned dim ) const {
         Vec<bool> res;
         res.resize( m->node_list.size(), false );
@@ -2695,6 +2697,8 @@ public:
                     res[ constraints[i].coeffs[j].num ] = true;
         return res;
     }
+    ///
+    virtual unsigned nb_constrained_nodes_in_dim( unsigned dim ) const { return sum( Vec<unsigned>( constrained_nodes_in_dim( dim ) ) ); }
 
     /// add numerical enrichment (poihter to other formulations and neighbours table)
     void add_num_enr(  LMT::FormulationAncestor<ScalarType>* enr_field , Vec< typename TM::TElemList::TListPtr > table_of_neig) {

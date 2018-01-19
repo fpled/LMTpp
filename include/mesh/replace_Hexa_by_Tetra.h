@@ -83,6 +83,7 @@ struct Replace_Hexa_by_Tetra {
     \code C/C++
 
         #include "mesh/make_rect.h"
+        #include "mesh/replace_Hexa_by_Tetra.h"
         #include "mesh/displayparaview.h"
 
         // inclusion du code de notre MeshCarac

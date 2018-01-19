@@ -94,6 +94,24 @@ for i in lst :
     print '    void unset'+(len(i)>0)*'_'+i.replace(' ','_')+'(const char *str = "") const { std::stringstream s; s << \"unset'+(len(i)>0)*' '+i+' \" << str << \"\\n\"; print( s.str().c_str() ); } '
 
 print """
+    void set_output_terminal( const char *output="" ) {
+        std::stringstream s; s << output;
+        std::string filename( s.str() );
+        if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
+            set_terminal_epslatex( "color colortext" );
+            set_format("'$%g$'");
+        }
+        else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
+            set_terminal( "pngcairo enhanced" );
+        else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
+            set_terminal( "svg enhanced" );
+        else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
+            set_terminal( "pdfcairo enhanced color" );
+        else
+            set_terminal( "postscript eps enhanced color colortext" );
+        set_output(output);
+    }
+    
     /// Set all graph-related options to their default values
     void reset() { print("reset\\n\\n"); }
 
@@ -121,7 +139,7 @@ print """
         Entrées :
             * mat est une matrice de trois colonnes : la premiere colonne regroupe les abscisses, la deuxième les ordonnées et la troisième les côtes. Il y a autant de lignes que de points.
             * mins[ 0 ] est le minimum des abscisses
-            * mins[ 1 ] est le minimum des ordonnées 
+            * mins[ 1 ] est le minimum des ordonnées
             * maxs[ 0 ] est le maximum des abscisses
             * maxs[ 1 ] est le maximum des ordonnées
             * nb[ 0 ] est le nombre points suivant l'axe des abscisses
@@ -137,7 +155,7 @@ print """
         oss << "set xrange [" << mins[ 0 ] << ":" << maxs[ 0 ] << "];";
         oss << "set yrange [" << mins[ 1 ] << ":" << maxs[ 1 ] << "];";
         oss << "set dgrid3d " << nb[ 0 ] - 1 << "," <<  nb[ 1 ] - 1 << ";";
-        oss << "set hidden3d;"; 
+        oss << "set hidden3d;";
         fprintf(tube,"%s\\n",oss.str().c_str());
         fprintf(tube,"splot '-' using 1:2:3 %s with lines \\n", params);
         std::ostringstream ss; ss << mat;
@@ -228,12 +246,12 @@ print """
             fprintf(tube,"splot ");
         else
             fprintf(tube,"plot ");
-        for(unsigned i=0;i<holded_data.size();++i) {
+        for (unsigned i=0;i<holded_data.size();++i) {
             fprintf(tube," '-' %s",holded_data[i].params.c_str());
             fprintf(tube, ( i<holded_data.size()-1 ? "," : "\\n" ) );
         }
 
-        for(unsigned i=0;i<holded_data.size();++i) {
+        for (unsigned i=0;i<holded_data.size();++i) {
             if ( jump_lines and holded_data[i].x.size() )
                 fprintf_jumping_lines( holded_data[i].x, holded_data[i].y, holded_data[i].z );
             else if ( holded_data[i].z.size() )
@@ -302,21 +320,7 @@ void """+plot+"""("""+join(arguments,',')+""", const char *params="", bool jump_
 template<"""+join(template,',')+""">
 void save_"""+plot+"""("""+join(arguments,',')+""", const char *output="", const char *xlabel="", const char *ylabel="","""+(plot=='splot')*""" const char *zlabel="","""+""" const char *params="", bool jump_lines = false ) {
     GnuPlot gp;
-    std::stringstream s; s << output;
-    std::string filename( s.str() );
-    if ( filename.rfind( ".tex'" ) == filename.size() - 5 ) {
-        gp.set_terminal_epslatex( "color colortext" );
-        gp.set_format("'$%g$'");
-    }
-    else if ( filename.rfind( ".png'" ) == filename.size() - 5 )
-        gp.set_terminal( "pngcairo enhanced" );
-    else if ( filename.rfind( ".svg'" ) == filename.size() - 5 )
-        gp.set_terminal( "svg enhanced" );
-    else if ( filename.rfind( ".pdf'" ) == filename.size() - 5 )
-        gp.set_terminal( "pdfcairo enhanced color" );
-    else
-        gp.set_terminal( "postscript eps enhanced color colortext" );
-    gp.set_output(output);
+    gp.set_output_terminal(output);
     gp.set_xlabel(xlabel);
     gp.set_ylabel(ylabel);"""+"""
     gp.set_zlabel(zlabel);"""*(plot=='splot')+"""
