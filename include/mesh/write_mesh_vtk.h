@@ -22,7 +22,7 @@ namespace LMT {
 
 template<class TE,class TM>
 void set_vtk_cell_type_and_offsets( const TE &elem, Vec<unsigned> &connectivity, Vec<unsigned> &offsets, Vec<unsigned> &cell_types, TM *m ) {
-    unsigned nb_points, cell_type;
+    unsigned cell_type, nb_points;
     if ( strcmp(TE::can_directly_be_represented_by(),"NodalElement")==0 ) {
         cell_type = 1;
         nb_points = 1;
@@ -75,8 +75,8 @@ void set_vtk_cell_type_and_offsets( const TE &elem, Vec<unsigned> &connectivity,
 
     for(unsigned i=0;i<nb_points;++i)
         connectivity.push_back( m->node_list.number(*elem.node(i)) );
-    cell_types.push_back( cell_type );
     offsets.push_back( connectivity.size() );
+    cell_types.push_back( cell_type );
 }
 
 template<class TM>
