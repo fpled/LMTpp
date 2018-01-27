@@ -83,7 +83,7 @@ template<class TM>
 struct Elem_vtk_extract {
     template<class TE>
     void operator()( const TE &elem ) {
-        set_vtk_cell_type_and_offsets( elem, connectivity,offsets, cell_types, m );
+        set_vtk_cell_type_and_offsets( elem, connectivity, offsets, cell_types, m );
     }
     Vec<unsigned> connectivity,offsets,cell_types;
     const TM *m;
