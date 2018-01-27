@@ -44,6 +44,9 @@ void set_vtk_cell_type_and_offsets( const TE &elem, Vec<unsigned> &connectivity,
     } else if ( strcmp(TE::can_directly_be_represented_by(),"Wedge")==0 ) {
         cell_type = 13;
         nb_points = 6;
+    } else if ( strcmp(TE::can_directly_be_represented_by(),"Pyramid")==0 ) {
+        cell_type = 14;
+        nb_points = 5;
     } else if ( strcmp(TE::can_directly_be_represented_by(),"Bar_3")==0 ) {
         cell_type = 21;
         nb_points = 3;

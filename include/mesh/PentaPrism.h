@@ -92,20 +92,25 @@ void append_skin_elements(Element<PentaPrism,TN,TNG,TD,NET> &e,TC &ch,HET &het,N
     het.add_element(e,ch,NodalElement(),e.node(9));
 }
 
-
-template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<PentaPrism,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
-std::cout << "Surdiscretisation non implementee pour les PentaPrism" << std::endl;
-return false;
-};
-
 template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<PentaPrism,TN,TNG,TD,NET> &e ) {
     typedef typename TNG::T P_T_pos;
     typename TNG::Pvec P0 = e.node(0)->pos, P1 = e.node(1)->pos, P2 = e.node(2)->pos, P3 = e.node(3)->pos;
     P_T_pos D0=0.12;
-   cout << " measure Non implémentée pour le pentaprism"<< endl;assert(0);
- return abs(D0);
+    cout << " measure Non implémentée pour le pentaprism"<< endl;assert(0);
+    return abs(D0);
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element(Element<PentaPrism,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    std::cout << "divide_element not implemented for PentaPrism" << std::endl;
+    assert(0);
+    return false;
+}
+
+template<class TN,class TNG,class TD,unsigned NET,class TM>
+bool divide_element_using_elem_children(Element<PentaPrism,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+    return divide_element(e,m,nnodes);
 }
 
 }

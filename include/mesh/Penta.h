@@ -78,24 +78,18 @@ template<class TN,class TNG,class TD,unsigned NET>
 typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Penta,TN,TNG,TD,NET> &e ) {
     std::cout << "measure not implemented for Penta" << std::endl;
 	assert(0);
-}
-
-template<class TN,class TNG,class TD,unsigned NET>
-typename TypePromote<Abs,typename TNG::T>::T measure( const Element<Quad_42,TN,TNG,TD,NET> &e ) {
-    std::cerr << "measure not implemented for Quad_42" << std::endl;
-    assert(0);
     return typename TypePromote<Abs,typename TNG::T>::T(-1.);
 }
 
 template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+bool divide_element(Element<Penta,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
     std::cout << "divide_element not implemented for Quad_42" << std::endl;
     assert(0);
     return false;
 }
 
 template<class TN,class TNG,class TD,unsigned NET,class TM>
-bool divide_element_using_elem_children(Element<Quad_42,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
+bool divide_element_using_elem_children(Element<Penta,TN,TNG,TD,NET> &e,TM &m,TNG **nnodes) {
     return divide_element(e,m,nnodes);
 }
 
