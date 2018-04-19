@@ -78,7 +78,8 @@ public:
     
     template<class TM> std::string add_mesh( const TM &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double time_step = 0, bool write_mesh = true ) {
         std::string pvu_name = filename;
-        //if ( pvu_name.rfind(".vtu") != pvu_name.size() - 4 )
+        if ( pvu_name.rfind(".vtu") == pvu_name.size() - 4 )
+            pvu_name.erase(pvu_name.end()-4, pvu_name.end());
         pvu_name += "_" + to_string( time_step ) + "_" + to_string( pvu_files[time_step].size() ) + ".vtu";
         // std::cout << pvu_name << std::endl;
 
@@ -98,7 +99,8 @@ public:
 
     template<class TM> std::string add_mesh_iter( const TM &m, const std::string &filename = "paraview", const Vec<std::string> &display_fields = Vec<std::string>("all"), double iter = 0, bool write_mesh = true ) {
         std::string pvu_name = filename;
-        //if ( pvu_name.rfind(".vtu") != pvu_name.size() - 4 )
+        if ( pvu_name.rfind(".vtu") == pvu_name.size() - 4 )
+            pvu_name.erase(pvu_name.end()-4, pvu_name.end());
         pvu_name += "_" + to_string( iter ) + ".vtu";
         // std::cout << pvu_name << std::endl;
 
@@ -186,7 +188,8 @@ public:
         f << "</VTKFile>" << std::endl;
         return vti_name;
     }
-    void set_field_to_display(const std::string &name,TypeField type) {
+    
+    void set_field_to_display(const std::string &name, TypeField type) {
         field_to_display = name;
         type_field_to_display = type;
     }
@@ -296,6 +299,13 @@ public:
        */
     }
 
+   Vec<unsigned> get_all_time_iterations() const {
+       Vec<unsigned> res;
+       for ( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter )
+           res.push_back( iter->first );
+       return res;
+   }
+   
     Vec<std::string> get_all_pvu_files() const {
         Vec<std::string> res;
         for ( std::map<double,Vec<std::string> >::const_iterator iter = pvu_files.begin(); iter != pvu_files.end(); ++iter )
@@ -372,7 +382,11 @@ template<class TM> void display_mesh( const TM &m, const char *nodal_field_to_di
 /*!
  * usefull to get several Windows (using apply_mt)
  */
-struct DpExec { void operator()(DisplayParaview &dp,unsigned i) const { dp.exec( "conf"+to_string(i)+".pvs" ); } };
+struct DpExec {
+    void operator()(DisplayParaview &dp,unsigned i) const {
+        dp.exec( "conf"+to_string(i)+".pvs" );
+    }
+};
 
 /*!
 */
