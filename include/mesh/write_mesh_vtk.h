@@ -93,8 +93,8 @@ template<unsigned nb_data,bool binary>
 struct Data_vtk_extract {
 
     template<class T>
-    void operator()(unsigned i,T data) {
-        //std::cout << "### Data_vtk_extract.operator( scalar ) et i = "<< i << std::endl;
+    void operator()( unsigned i, T data ) {
+        //std::cout << "### Data_vtk_extract.operator( scalar ) et i = " << i << std::endl;
         if ( binary ) {
             os[i].write( (char *)&data, sizeof(T) );
             //os[i].write( " ", sizeof(char) );
@@ -106,9 +106,21 @@ struct Data_vtk_extract {
         }
     }
     
+    template<class T>
+    void operator()( unsigned i, std::complex<T> data ) {
+        //std::cout << "### Data_vtk_extract.operator( complex ) et i = " << i << std::endl;
+        if ( binary ) {
+            os[i].write( (char *)&data, sizeof(T)*2 );
+            T v = 0;
+            os[i].write( (char *)&v,  sizeof(T) );
+        } else {
+            os[i] << data << " 0 ";
+        }
+    }
+    
     template<class T,int s>
     void operator()( unsigned i, Vec<T,s> data ) {
-        //std::cout << "### Data_vtk_extract.operator( Vec ) et i = "<< i << std::endl;
+        //std::cout << "### Data_vtk_extract.operator( Vec ) et i = " << i << std::endl;
         if ( binary ) {
             os[i].write( (char *)&data, sizeof(T)*data.size() );
             if ( data.size()==2 ) {
@@ -122,31 +134,19 @@ struct Data_vtk_extract {
             os[i] << " ";
         }
     }
-
-    template<class T>
-    void operator()( unsigned i, std::complex<T> data ) {
-        //std::cout << "### Data_vtk_extract.operator( complex ) et i = "<< i << std::endl;
-        if ( binary ) {
-            os[i].write( (char *)&data, sizeof(T)*2 );
-            T v = 0;
-            os[i].write( (char *)&v,  sizeof(T) );
-        } else {
-            os[i] << data << " 0 ";
-        }
-    }
     
     /*!
         il aurait été tentant de copier en binaire le contenu du vecteur data.data mais pour des matrices de taille varaible, le contenu et la taille de data.data est optimisé pour les instructions SIMD et donc ne correspond pas forcément à ce qu'on peut penser comme stockage de données.
     */
     template<class T, int sr, int sc, class STO>
     void operator()( unsigned i, Mat<T, Gen<sr, sc>, STO > data ) {
-        //std::cout << "### Data_vtk_extract.operator( Mat ) et i = "<< i << std::endl;
+        //std::cout << "### Data_vtk_extract.operator( Mat ) et i = " << i << std::endl;
         if ( binary ) {
             T v;
             for( unsigned ii = 0; ii < data.nb_rows(); ++ii )
                 for( unsigned j = 0; j < data.nb_cols(); ++j ) {
                     v = data( ii, j );
-                    os[i].write( (char *)&v,  sizeof( T ) ); 
+                    os[i].write( (char *)&v,  sizeof(T) ); 
                 }
         } else {
             os[i] << data << " 0 ";
@@ -158,13 +158,13 @@ struct Data_vtk_extract {
     */
     template<class T, int s, class STO>
     void operator()( unsigned i, Mat<T, Sym<s>, STO > data ) {
-        //std::cout << "### Data_vtk_extract.operator( Mat Sym ) et i = "<< i << std::endl;
+        //std::cout << "### Data_vtk_extract.operator( Mat Sym ) et i = " << i << std::endl;
         if ( binary ) {
             T v;
             for( unsigned ii = 0; ii < data.nb_rows(); ++ii )
                 for( unsigned j = 0; j <= ii; ++j ) {
                     v = data( ii, j );
-                    os[i].write( (char *)&v,  sizeof( T ) ); 
+                    os[i].write( (char *)&v,  sizeof(T) ); 
                 }
         } else {
             os[i] << data << " 0 ";
@@ -175,6 +175,7 @@ struct Data_vtk_extract {
 
     unsigned nb_comp[nb_data+(nb_data==0)];
 };
+
 template<unsigned nb_params_>
 struct GetDynamicSize {
     GetDynamicSize() {
@@ -193,6 +194,7 @@ struct GetDynamicSize {
     unsigned dynamic_size[nb_params_+(nb_params_==0)];
     unsigned nb_comp[nb_params_+(nb_params_==0)];
 };
+
 struct GetDynamicSizeOs {
     template<class T>
     void operator()( unsigned n, const T &d ) { }
@@ -283,7 +285,7 @@ struct Data_vtk_extract_elem {
     }
     
     template<class TE>
-    void operator()( const TE &elem, const Vec<std::string> &display_fields=Vec<std::string>("all") ) {
+    void operator()( const TE &elem, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
         for(typename Map::iterator iter=mapd.begin();iter!=mapd.end();++iter)
             iter->second.appended = false;
         DM::apply_with_names_up_to(elem,*this,Number<TE::nb_params>());
@@ -311,7 +313,7 @@ struct Data_vtk_extract_elem {
                             os << " ";
                             mapd[ name.str() ].os += os.str();
                         }*/
-            if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {
+            if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {
                 for(unsigned j=0;j<gds.dynamic_size[i];++j) {
                     std::ostringstream name;
                     name << names[i] << "_" << j;
@@ -429,11 +431,11 @@ inline void add_encoded( std::string s, std::string &appended ) {
 }
 
 template<bool binary,class TM>
-void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &display_fields=Vec<std::string>("all") ) {
+void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
     using namespace std;
 
     std::string appended;
-    os << "<VTKFile type='UnstructuredGrid' byte_order='LittleEndian'>" << endl; //
+    os << "<VTKFile type='UnstructuredGrid' byte_order='LittleEndian'>" << endl;
     os << "    <UnstructuredGrid>" << endl;
     os << "        <Piece NumberOfPoints='" << m.node_list.size() << "' NumberOfCells='" << m.elem_list.size() << "'>" << endl;
     // PointData
@@ -471,13 +473,13 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
                         add_encoded( dve.os[i].str(), appended );
                     else
                         os << dve.os[i].str();
-                    os << "</DataArray>" << std::endl;
+                    os << "                </DataArray>" << std::endl;
                 }
             }
         }
         // static with dynamic size ( vectors )
         for(unsigned i=0;i<TM::TNode::nb_params;++i) {
-            if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {    //continue;
+            if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 for(unsigned j=0;j<gds.dynamic_size[i];++j) {
                     os << "                <DataArray Name='" << names[i]  << "_" << j
                     << "' NumberOfComponents='" << gds.nb_comp[i] << "' type='Float64' format='ascii'>" << endl;
@@ -513,7 +515,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
         m.elem_list.apply_static(dve);
         apply( m.elem_list, dve, display_fields );
         for(typename Data_vtk_extract_elem<binary>::Map::const_iterator iter=dve.mapd.begin();iter!=dve.mapd.end();++iter) {
-            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {    //continue;
+            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( iter->second.nb_comp ) {
                     os << "                <DataArray Name='" << iter->first
                             << "' NumberOfComponents='" << iter->second.nb_comp << "' type='" << iter->second.vtk_type << "' format='" << (binary ? "appended" : "ascii" ) << "' offset='" << appended.size() << "'>" << endl;
@@ -528,7 +530,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
         // dynamic
         for(unsigned i=0;i<m.elem_list.nb_dyn_data();++i) {
             const DynamicDataAncestor *dd = m.elem_list.get_dyn_data(i);
-            if ( std::find(display_fields.begin(),display_fields.end(),dd->get_name())!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {    //continue;
+            if ( std::find(display_fields.begin(),display_fields.end(),dd->get_name())!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( dd->nb_comp()==0 )
                     continue;
                 os << "                <DataArray Name='" << dd->get_name()
@@ -539,7 +541,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
             }
         }
         // ElementAncestor.group
-        if ( std::find(display_fields.begin(),display_fields.end(),"group")!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all"))
+        if ( std::find(display_fields.begin(),display_fields.end(),"group")!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") )
         {
             os << "                <DataArray Name='group' NumberOfComponents='1' type='UInt32' format='ascii'>" << endl;
             for(unsigned k_elem=0; k_elem<m.elem_list.size(); k_elem++)
@@ -576,8 +578,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
             os << "                </DataArray>" << std::endl;
         }
     }
-
-    // end cell data
+    // end CellData
     os << "            </CellData> " << endl;
 
 
@@ -629,7 +630,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
 
     //std::string s; s.resize( 12 + 2 * appended.size() );
     //unsigned long l_s = s.size();
-    //compress( (Bytef *)&s[0], &l_s, (Bytef *)&appended[0], appended.size());
+    //compress( (Bytef *)&s[0], &l_s, (Bytef *)&appended[0], appended.size() );
     //s.resize( l_s );
     os << appended;
 
@@ -639,89 +640,84 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
 
 }
 
-template<class TM>
-void write_mesh_vtk( std::string filename, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
-    std::ofstream os( filename.c_str() );
-    write_mesh_vtk<true>( os, m, display_fields );
-}
-
 template<bool binary,class TM>
 void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
     using namespace std;
 
-    os << "# vtk DataFile Version 3.0 "<< endl;
+    os << "# vtk DataFile Version 3.0" << endl;
     os << "vtk output" << endl;
-    os << "ASCII \nDATASET UNSTRUCTURED_GRID" << endl;
-    //POINTS
+    os << "ASCII" << endl;
+    os << "DATASET UNSTRUCTURED_GRID" << endl;
+    
+    // POINTS
     os << "POINTS " << m.node_list.size() <<" float " << endl;
     for(unsigned i=0;i<m.node_list.size();++i)
         os << m.node_list[i].pos[0] << " " <<
         m.node_list[i].pos[1*(TM::dim>1)]*(TM::dim>1) << " " <<
         m.node_list[i].pos[2*(TM::dim>2)]*(TM::dim>2) << endl;
 
-    //CELLS
+    // Elem_vtk_extract
     Elem_vtk_extract<TM> es;
     es.m = &m;
     es.cell_types.reserve( m.elem_list.size() );
     apply( m.elem_list, es );
 
-    //nombre total de noeud par element + nombre d'element
+    // total number of nodes per element + number of elements
     unsigned nbtot=0;
-    for(unsigned i=0;i<m.elem_list.size();i++)
+    for(unsigned i=0;i<m.elem_list.size();++i)
         nbtot+=m.elem_list[i]->nb_nodes_virtual();
     nbtot+=m.elem_list.size();
 
-    //connectivites
-    os << "CELLS " << m.elem_list.size() <<" "<< nbtot << endl;
-    for(unsigned i=0;i<m.elem_list.size();i++) {
+    // CELLS
+    os << "CELLS " << m.elem_list.size() << " " << nbtot << endl;
+    for(unsigned i=0;i<m.elem_list.size();++i) {
         os << m.elem_list[i]->nb_nodes_virtual() << " ";
-        for(unsigned j=0;j<m.elem_list[i]->nb_nodes_virtual();j++)
-            os << m.elem_list[i]->node_virtual(j)->number_in_original_mesh()<< " " ;
-        os <<endl;
+        for(unsigned j=0;j<m.elem_list[i]->nb_nodes_virtual();++j)
+            os << m.elem_list[i]->node_virtual(j)->number_in_original_mesh() << " ";
+        os << endl;
     }
 
-    //type des cellules
+    // CELL_TYPES
     os << "CELL_TYPES " << m.elem_list.size()  << endl;
     for(unsigned i=0;i<es.cell_types.size();++i)
         os << es.cell_types[i] << endl;
 
-    //Celldata
-    os << "CELL_DATA " <<     m.elem_list.size() << endl;
-
-    // CellData
+    // CELL_DATA
+    os << "CELL_DATA " << m.elem_list.size() << endl;
+    
     if ( m.elem_list.size() ) {
         // static
         Data_vtk_extract_elem<binary> dve;
         m.elem_list.apply_static(dve);
         apply( m.elem_list, dve, display_fields );
         unsigned nb_field=0;
-        //1ere passe pour reperer les scalaires et vecteurs
+        // 1ere passe pour reperer les scalaires et vecteurs
         for(typename Data_vtk_extract_elem<binary>::Map::const_iterator iter=dve.mapd.begin();iter!=dve.mapd.end();++iter) {
-            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {
+            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {
                 nb_field+=1;
                 std::cout << iter->first << endl;
             }
         }
         std::cout << nb_field << endl;
-        os << "FIELD FieldData " << nb_field <<endl;
-        //2ere passe
+        os << "FIELD FieldData " << nb_field << endl;
+        // 2ere passe
         for(typename Data_vtk_extract_elem<binary>::Map::const_iterator iter=dve.mapd.begin();iter!=dve.mapd.end();++iter) {
-            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {    //continue;
+            if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if (iter->second.nb_comp>1) {
-                    os << iter->first << " " << iter->second.nb_comp << " " << m.elem_list.size() << " float "<<endl;
+                    os << iter->first << " " << iter->second.nb_comp << " " << m.elem_list.size() << " float " << endl;
                     os << iter->second.os << endl;
-                    os <<endl;
+                    os << endl;
                 }
             }
         }
 
-        //dynamic
+        // dynamic
     }
 
 
-    // PointData
+    // POINT_DATA
     if ( m.node_list.size() ) {
-        os << "POINT_DATA " <<     m.node_list.size() << endl;
+        os << "POINT_DATA " << m.node_list.size() << endl;
         // static
         const char *names[TM::TNode::nb_params+(TM::TNode::nb_params==0)];
         DM::get_names<typename TM::TNode>( names );
@@ -738,15 +734,15 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
         for(unsigned i=0;i<m.node_list.size();++i)
             DM::apply(m.node_list[i],dve);
 
-        os << "FIELD FieldData " << TM::TNode::nb_params <<endl;
+        os << "FIELD FieldData " << TM::TNode::nb_params << endl;
 
         for(unsigned i=0;i<TM::TNode::nb_params;++i) {
             if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( names[i]!=const_cast<char *>("pos") and nb_comp[i] ) {
 
-                    os << names[i] << " " << nb_comp[i] << " " << m.node_list.size() << " float " <<endl;
+                    os << names[i] << " " << nb_comp[i] << " " << m.node_list.size() << " float " << endl;
                     os << dve.os[i].str();
-                    os <<endl;
+                    os << endl;
 
                 }
             }
@@ -754,13 +750,13 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
 
         // static with dynamic size ( vectors )
         for(unsigned i=0;i<TM::TNode::nb_params;++i) {
-            if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all")) {    //continue;
+            if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 for(unsigned j=0;j<gds.dynamic_size[i];++j) {
-                    os << names[i] << " " << gds.nb_comp[i] << " " << m.node_list.size() << " float " <<endl;
+                    os << names[i] << " " << gds.nb_comp[i] << " " << m.node_list.size() << " float " << endl;
                     GetDynamicSizeOs gdsos = { os, i, j };
                     for(unsigned i=0;i<m.node_list.size();++i)
                         DM::apply(m.node_list[i],gdsos);
-                    os <<endl;
+                    os << endl;
                 }
             }
         }
@@ -816,6 +812,12 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
     //     }
     //
 
+}
+
+template<class TM>
+void write_mesh_vtk( std::string filename, const TM &m, const Vec<std::string> &display_fields = Vec<std::string>("all") ) {
+    std::ofstream os( filename.c_str() );
+    write_mesh_vtk<true>( os, m, display_fields );
 }
 
 };
