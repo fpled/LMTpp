@@ -112,7 +112,7 @@ struct Data_vtk_extract {
         if ( binary ) {
             os[i].write( (char *)&data, sizeof(T)*2 );
             T v = 0;
-            os[i].write( (char *)&v,  sizeof(T) );
+            os[i].write( (char *)&v, sizeof(T) );
         } else {
             os[i] << data << " 0 ";
         }
@@ -125,7 +125,7 @@ struct Data_vtk_extract {
             os[i].write( (char *)&data, sizeof(T)*data.size() );
             if ( data.size()==2 ) {
                 T v(0);
-                os[i].write( (char *)&v,  sizeof(T) );
+                os[i].write( (char *)&v, sizeof(T) );
             }
         } else {
             os[i] << data;
@@ -301,18 +301,19 @@ struct Data_vtk_extract_elem {
         unsigned nb_comp[TE::nb_params+(TE::nb_params==0)];
         DM::get_nb_comp<TE>( nb_comp );
         for(unsigned i=0;i<TE::nb_params;++i) {
-            /*            if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() )
-                            continue;
-                        for(unsigned j=0;j<gds.dynamic_size[i];++j) {
-                            std::ostringstream name; name << names[i] << "_" << j;
-                            mapd[ name.str() ].nb_comp = gds.nb_comp[i];
-
-                            std::ostringstream os;
-                            GetDynamicSizeOs gdsos = { os, i, j };
-                            DM::apply(elem,gdsos);
-                            os << " ";
-                            mapd[ name.str() ].os += os.str();
-                        }*/
+//            if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() )
+//                continue;
+//            for(unsigned j=0;j<gds.dynamic_size[i];++j) {
+//                std::ostringstream name;
+//                name << names[i] << "_" << j;
+//                mapd[ name.str() ].nb_comp = gds.nb_comp[i];
+                
+//                std::ostringstream os;
+//                GetDynamicSizeOs gdsos = { os, i, j };
+//                DM::apply(elem,gdsos);
+//                os << " ";
+//                mapd[ name.str() ].os += os.str();
+//            }
             if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {
                 for(unsigned j=0;j<gds.dynamic_size[i];++j) {
                     std::ostringstream name;
@@ -435,12 +436,13 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
     using namespace std;
 
     std::string appended;
+    os << "<?xml version='1.0' ?>" << endl;
     os << "<VTKFile type='UnstructuredGrid' byte_order='LittleEndian'>" << endl;
     os << "    <UnstructuredGrid>" << endl;
     os << "        <Piece NumberOfPoints='" << m.node_list.size() << "' NumberOfCells='" << m.elem_list.size() << "'>" << endl;
+    
     // PointData
     os << "            <PointData>" << endl;
-
     if ( m.node_list.size() ) {
         // static
         const char *names[TM::TNode::nb_params+(TM::TNode::nb_params==0)];
@@ -465,15 +467,15 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
             if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( names[i]!=const_cast<char *>("pos") and nb_comp[i] ) {
                     os << "                <DataArray Name='" << names[i]
-                            << "' NumberOfComponents='" << nb_comp[i] << "' type='" << get_vtk_types.res[i] << "' format='" << ( binary ? "appended" : "ascii" );
+                          << "' NumberOfComponents='" << nb_comp[i] << "' type='" << get_vtk_types.res[i] << "' format='" << ( binary ? "appended" : "ascii" );
                     if ( binary )
                         os << "' offset='" << appended.size();
-                    os << "'>";
+                    os << "'>" << endl;
                     if ( binary )
                         add_encoded( dve.os[i].str(), appended );
                     else
-                        os << dve.os[i].str();
-                    os << "                </DataArray>" << std::endl;
+                        os << dve.os[i].str() << endl;
+                    os << "                </DataArray>" << endl;
                 }
             }
         }
@@ -486,6 +488,7 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
                     GetDynamicSizeOs gdsos = { os, i, j };
                     for(unsigned i=0;i<m.node_list.size();++i)
                         DM::apply(m.node_list[i],gdsos);
+                    os << endl;
                     os << "                </DataArray>" << endl;
                 }
             }
@@ -518,7 +521,10 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
             if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( iter->second.nb_comp ) {
                     os << "                <DataArray Name='" << iter->first
-                            << "' NumberOfComponents='" << iter->second.nb_comp << "' type='" << iter->second.vtk_type << "' format='" << (binary ? "appended" : "ascii" ) << "' offset='" << appended.size() << "'>" << endl;
+                       << "' NumberOfComponents='" << iter->second.nb_comp << "' type='" << iter->second.vtk_type << "' format='" << ( binary ? "appended" : "ascii" );
+                    if ( binary )
+                        os << "' offset='" << appended.size();
+                    os << "'>" << endl;
                     if ( binary )
                         add_encoded( iter->second.os, appended );
                     else
@@ -545,9 +551,8 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
         {
             os << "                <DataArray Name='group' NumberOfComponents='1' type='UInt32' format='ascii'>" << endl;
             for(unsigned k_elem=0; k_elem<m.elem_list.size(); k_elem++)
-            {
-                os << m.elem_list[k_elem]->group << endl;
-            }
+                os << m.elem_list[k_elem]->group << " ";
+            os << endl;
             os << "                </DataArray>" << endl;
         }
     }
@@ -567,26 +572,32 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
             if ( nb_comp[i]==0 )
                 continue;
             os << "                <DataArray Name='" << names[i]
-                    << "' NumberOfComponents='" << nb_comp[i] << "' type='Float64' format='" << (binary ? "appended" : "ascii" ) << "' offset='" << appended.size() << "'>\n";
+                    << "' NumberOfComponents='" << nb_comp[i] << "' type='Float64' format='" << ( binary ? "appended" : "ascii" );
+            if ( binary )
+                os << "' offset='" << appended.size();
+            os << "'>" << endl;
             std::string s; s.reserve( dvem.os[i].str().size() * m.elem_list.size() );
             for(unsigned k=0;k<m.elem_list.size();++k)
                 s += dvem.os[i].str();
             if ( binary )
                 add_encoded( s, appended );
             else
-                os << s;
-            os << "                </DataArray>" << std::endl;
+                os << s << endl;
+            os << "                </DataArray>" << endl;
         }
     }
     // end CellData
     os << "            </CellData> " << endl;
-
-
+    
+    
     // Points
     os << "            <Points>" << endl;
-    os << "                <DataArray NumberOfComponents='3' type='Float64' format='" << (binary ? "appended" : "ascii" ) << "' offset='" << appended.size() << "'>" << endl;
+    os << "                <DataArray NumberOfComponents='3' type='Float64' format='" << ( binary ? "appended" : "ascii" );
+    if ( binary )
+        os << "' offset='" << appended.size();
+    os << "'>" << endl;
     if ( binary ) {
-        std::string s; s.reserve( sizeof(double) * 3 * m.node_list.size() );
+        std::string s; s.reserve( sizeof(double)*m.node_list.size()*3 );
         for(unsigned i=0;i<m.node_list.size();++i) {
             for(unsigned d=0;d<3;++d) {
                 double v = m.node_list[i].pos[d*(TM::dim>d)]*(TM::dim>d);
@@ -605,11 +616,12 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
     os << "            </Points> " << endl;
 
     // Cells
-    os << "            <Cells>" << endl;
     Elem_vtk_extract<TM> es;
     es.m = &m;
+    es.offsets.reserve( m.elem_list.size() );
     es.cell_types.reserve( m.elem_list.size() );
     apply( m.elem_list, es );
+    os << "            <Cells>" << endl;
     os << "                <DataArray Name='connectivity' type='Int32' format='ascii'>" << endl;
     for(unsigned i=0;i<es.connectivity.size();++i)
         os << es.connectivity[i] << ( (i%8)==7 || i==es.connectivity.size()-1 ? '\n' : ' ' );
@@ -623,8 +635,11 @@ void write_mesh_vtk( std::ostream &os, const TM &m, const Vec<std::string> &disp
         os << es.cell_types[i] << ( (i%8)==7 || i==es.cell_types.size()-1 ? '\n' : ' ' );
     os << "                </DataArray>" << endl;
     os << "            </Cells>" << endl;
+    
     os << "        </Piece>" << endl;
     os << "    </UnstructuredGrid>" << endl;
+    
+    // AppendedData
     os << "    <AppendedData encoding='base64'>" << endl;
     os << "        _";
 
@@ -656,7 +671,7 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
         m.node_list[i].pos[1*(TM::dim>1)]*(TM::dim>1) << " " <<
         m.node_list[i].pos[2*(TM::dim>2)]*(TM::dim>2) << endl;
 
-    // Elem_vtk_extract
+    // CELLS
     Elem_vtk_extract<TM> es;
     es.m = &m;
     es.cell_types.reserve( m.elem_list.size() );
@@ -667,8 +682,7 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
     for(unsigned i=0;i<m.elem_list.size();++i)
         nbtot+=m.elem_list[i]->nb_nodes_virtual();
     nbtot+=m.elem_list.size();
-
-    // CELLS
+    
     os << "CELLS " << m.elem_list.size() << " " << nbtot << endl;
     for(unsigned i=0;i<m.elem_list.size();++i) {
         os << m.elem_list[i]->nb_nodes_virtual() << " ";
@@ -684,7 +698,6 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
 
     // CELL_DATA
     os << "CELL_DATA " << m.elem_list.size() << endl;
-    
     if ( m.elem_list.size() ) {
         // static
         Data_vtk_extract_elem<binary> dve;
@@ -695,10 +708,10 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
         for(typename Data_vtk_extract_elem<binary>::Map::const_iterator iter=dve.mapd.begin();iter!=dve.mapd.end();++iter) {
             if ( std::find(display_fields.begin(),display_fields.end(),iter->first)!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {
                 nb_field+=1;
-                std::cout << iter->first << endl;
+                //std::cout << iter->first << endl;
             }
         }
-        std::cout << nb_field << endl;
+        //std::cout << nb_field << endl;
         os << "FIELD FieldData " << nb_field << endl;
         // 2ere passe
         for(typename Data_vtk_extract_elem<binary>::Map::const_iterator iter=dve.mapd.begin();iter!=dve.mapd.end();++iter) {
@@ -713,11 +726,10 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
 
         // dynamic
     }
-
-
+    
     // POINT_DATA
+    os << "POINT_DATA " << m.node_list.size() << endl;
     if ( m.node_list.size() ) {
-        os << "POINT_DATA " << m.node_list.size() << endl;
         // static
         const char *names[TM::TNode::nb_params+(TM::TNode::nb_params==0)];
         DM::get_names<typename TM::TNode>( names );
@@ -739,11 +751,9 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
         for(unsigned i=0;i<TM::TNode::nb_params;++i) {
             if ( std::find(display_fields.begin(),display_fields.end(),std::string(names[i]))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") ) {    //continue;
                 if ( names[i]!=const_cast<char *>("pos") and nb_comp[i] ) {
-
                     os << names[i] << " " << nb_comp[i] << " " << m.node_list.size() << " float " << endl;
                     os << dve.os[i].str();
                     os << endl;
-
                 }
             }
         }
@@ -761,56 +771,56 @@ void write_mesh_vtk_v2( std::ostream &os, const TM &m, const Vec<std::string> &d
             }
         }
 
-        //         // dynamic
-        //         for(unsigned i=0;i<m.node_list.nb_dyn_data();++i) {
-        //             const DynamicDataAncestor *dd = m.node_list.get_dyn_data(i);
-        //             if ( std::find(display_fields.begin(),display_fields.end(),std::string(dd->get_name()))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") )
-        //             {    //continue;
-        //             if ( dd->nb_comp()==0 ) continue;
-        //             os << "                <DataArray Name='" << dd->get_name()
-        //             << "' NumberOfComponents='" << dd->nb_comp() << "' type='Float64' format='ascii'>" << endl;
-        //             dd->write_data(os);
-        //             os << endl;
-        //             os << "                </DataArray>" << endl;
-        //            }
-        //         }
+//        // dynamic
+//        for(unsigned i=0;i<m.node_list.nb_dyn_data();++i) {
+//            const DynamicDataAncestor *dd = m.node_list.get_dyn_data(i);
+//            if ( std::find(display_fields.begin(),display_fields.end(),std::string(dd->get_name()))!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") )
+//            {    //continue;
+//                if ( dd->nb_comp()==0 ) continue;
+//                os << "                <DataArray Name='" << dd->get_name()
+//                   << "' NumberOfComponents='" << dd->nb_comp() << "' type='Float64' format='ascii'>" << endl;
+//                dd->write_data(os);
+//                os << endl;
+//                os << "                </DataArray>" << endl;
+//            }
+//        }
     }
 
-    //     // global data
-    //     const char *names[TM::nb_params+(TM::nb_params==0)];
-    //     DM::get_names<TM>( names );
-    //     unsigned nb_comp[TM::nb_params+(TM::nb_params==0)];
-    //     DM::get_nb_comp<TM>( nb_comp );
-    //     for(unsigned i=0;i<TM::nb_params;++i)
-    //         nb_comp[i] += (nb_comp[i]==2);
-    //
-    //     Data_vtk_extract<TM::nb_params,binary> dvem;
-    //     DM::get_nb_comp<TM>( dvem.nb_comp );
-    //     DM::apply( m, dvem );
-    //     for(unsigned i=0;i<TM::nb_params;++i) {
-    //        if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") )
-    //         {    //continue;
-    //         if ( nb_comp[i]==0 ) continue;
-    //         os << "                <DataArray Name='" << names[i]
-    //             << "' NumberOfComponents='" << nb_comp[i] << "' type='Float64' format='" << (binary ? "binary" : "ascii" ) << "'>";
-    //         for(unsigned k=0;k<m.elem_list.size();++k) {
-    //             if ( binary ) {
-    // //                os << "_";
-    // //                 std::string s = dvem.os[i].str();
-    // //                 char o0,o1,o2,o3;
-    // //                 unsigned k;
-    // //                 for(k=0;k<s.size()-2;k+=3) { EncodeTriplet(s[k+0],s[k+1],s[k+2],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
-    // //                 for(;k<s.size()-1;k+=2) { EncodePair(s[k+0],s[k+1],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
-    // //                 for(;k<s.size();++k) { EncodeSingle(s[k+0],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
-    //                os << "_";
-    //                os <<*dvem.osvtk[i];
-    //             }
-    //             else os << dvem.os[i].str();
-    //         }
-    //         os << "                </DataArray>" << std::endl;
-    //        }
-    //     }
-    //
+//    // global data
+//    const char *names[TM::nb_params+(TM::nb_params==0)];
+//    DM::get_names<TM>( names );
+//    unsigned nb_comp[TM::nb_params+(TM::nb_params==0)];
+//    DM::get_nb_comp<TM>( nb_comp );
+//    for(unsigned i=0;i<TM::nb_params;++i)
+//        nb_comp[i] += (nb_comp[i]==2);
+    
+//    Data_vtk_extract<TM::nb_params,binary> dvem;
+//    DM::get_nb_comp<TM>( dvem.nb_comp );
+//    DM::apply( m, dvem );
+//    for(unsigned i=0;i<TM::nb_params;++i) {
+//        if ( std::find(display_fields.begin(),display_fields.end(),names[i])!=display_fields.end() or (display_fields.size()>=1 and display_fields[0]=="all") )
+//        {    //continue;
+//            if ( nb_comp[i]==0 ) continue;
+//            os << "                <DataArray Name='" << names[i]
+//                  << "' NumberOfComponents='" << nb_comp[i] << "' type='Float64' format='" << ( binary ? "binary" : "ascii" ) << "'>";
+//            for(unsigned k=0;k<m.elem_list.size();++k) {
+//                if ( binary ) {
+////                    os << "_";
+////                    std::string s = dvem.os[i].str();
+////                    char o0,o1,o2,o3;
+////                    unsigned k;
+////                    for(k=0;k<s.size()-2;k+=3) { EncodeTriplet(s[k+0],s[k+1],s[k+2],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
+////                    for(;k<s.size()-1;k+=2) { EncodePair(s[k+0],s[k+1],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
+////                    for(;k<s.size();++k) { EncodeSingle(s[k+0],&o0,&o1,&o2,&o3); os.write(&o0,1); os.write(&o1,1); os.write(&o2,1); os.write(&o3,1); }
+//                    os << "_";
+//                    os << *dvem.osvtk[i];
+//                }
+//                else os << dvem.os[i].str();
+//            }
+//            os << "                </DataArray>" << endl;
+//        }
+//    }
+    
 
 }
 
