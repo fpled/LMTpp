@@ -400,8 +400,8 @@ std::string save( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::stri
 /*!
 */
 template<class Carac,unsigned nvi_to_subs,unsigned skin>
-int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &filename = "paraview", const std::string &pvsm_file = "" ) {
-    std::string vtu_name = save( m, filename );
+int display( const MeshAncestor<Carac,nvi_to_subs,skin> &m, const std::string &filename = "paraview", , const Vec<std::string> &display_fields = Vec<std::string>("all"), const std::string &pvsm_file = "" ) {
+    std::string vtu_name = save( m, filename, display_fields );
     if ( pvsm_file.size() ) {
         std::string t = "paraview --state=" + pvsm_file;
         return system( t.c_str() );
