@@ -485,7 +485,7 @@ public:
         fprintf(tube,"%s = semilogy( v(:,1), v(:,2)%s );\n",h,params);
         fflush(tube);
     }
-    
+
     /// Semi-log scale plot vector x versus vectors y1 and y2
     template<class TX,int sx,class OX,class TY,int sy,class OY>
     void semilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="" ) {
@@ -507,6 +507,75 @@ public:
     template<class TX,int sx,class OX,class TY,int sy,class OY>
     void hsemilogy( const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y1, const Vec<TY,sy,OY> &y2, const char *params="", const char *h="h" ) {
         assert(0);
+    }
+
+    
+    /// Plot confidence intervals lower and upper versus their index vectors
+    template<class T,int s,class O>
+    void ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *params="" ) {
+        fprintf(tube,"x = [\n");
+        for (int i=0; i<lower.size(); ++i)
+            fprintf(tube,"%g,\n",double(i));
+        fprintf(tube,"];\n");
+        fprintf(tube,"lower = [\n");
+        apply_wi( lower, Disp(), tube );
+        fprintf(tube,"];\n");
+        fprintf(tube,"upper = [\n");
+        apply_wi( upper, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"ciplot( lower, upper, x%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O>
+    void hciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *params="", const char *h="h" ) {
+        fprintf(tube,"x = [\n");
+        for (int i=0; i<lower.size(); ++i)
+            fprintf(tube,"%g,\n",double(i));
+        fprintf(tube,"];\n");
+        fprintf(tube,"lower = [\n");
+        apply_wi( lower, Disp(), tube );
+        fprintf(tube,"];\n");
+        fprintf(tube,"upper = [\n");
+        apply_wi( upper, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = ciplot( lower, upper, x%s );\n",h,params);
+        fflush(tube);
+    }
+    
+    /// Plot confidence intervals lower and upper versus vector x
+    template<class T,int s,class O,class TX,int sx,class OX>
+    void ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const Vec<TX,sx,OX> &x, const char *params="" ) {
+        fprintf(tube,"lower = [ \n");
+        apply_wi( lower, Disp(), tube );
+        fprintf(tube," ];\n");
+        fprintf(tube,"upper = [ \n");
+        apply_wi( upper, Disp(), tube );
+        fprintf(tube," ];\n");
+        fprintf(tube,"x = [\n");
+        apply_wi( x, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"ciplot( lower, upper, x%s );\n",params);
+        fflush(tube);
+    }
+    
+    template<class T,int s,class O,class TX,int sx,class OX>
+    void hciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const Vec<TX,sx,OX> &x, const char *params="", const char *h="h" ) {
+        fprintf(tube,"lower = [ \n");
+        apply_wi( lower, Disp(), tube );
+        fprintf(tube," ];\n");
+        fprintf(tube,"upper = [ \n");
+        apply_wi( upper, Disp(), tube );
+        fprintf(tube," ];\n");
+        fprintf(tube,"x = [\n");
+        apply_wi( x, Disp(), tube );
+        fprintf(tube,"];\n");
+        
+        fprintf(tube,"%s = ciplot( lower, upper, x%s );\n",h,params);
+        fflush(tube);
     }
     
     /// Create new figure, plot vector v versus its index vector, save and close figure
@@ -676,6 +745,649 @@ public:
         save_output(output,renderer);
         close();
     }
+  
+    /// Create new figure, plot confidence intervals lower and upper versus their index vectors, save and close figure
+    template<class T,int s,class O>
+    void save_ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot confidence intervals lower and upper versus vector x, save and close figure
+    template<class T,int s,class O,class TX,int sx,class OX>
+    void save_ciplot( const Vec<TX,sx,OX> &x, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, x, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus their index vectors, save and close figure
+    template<class T,int s,class O>
+    void save_vciplot( const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus vector x, save and close figure
+    template<class T,int s,class O,class TX,int sx,class OX>
+    void save_vciplot( const Vec<TX,sx,OX> &x, const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, x, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( x, v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        save_output(output,renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_plot_fig_eps_tex(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+
+    /// Create new figure, plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_plot_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+
+    /// Create new figure, plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_plot_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y1, params1 );
+        hold_on();
+        plot( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+
+    /// Create new figure, plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_plot_fig_eps_tex_legend(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+
+    /// Create new figure, plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_plot_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+
+    /// Create new figure, plot vector x versus vectors y1 and y2 , save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_plot_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        plot( x, y1, params1 );
+        hold_on();
+        plot( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_loglog_fig_eps_tex(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_loglog_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_loglog_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y1, params1 );
+        hold_on();
+        loglog( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_loglog_fig_eps_tex_legend(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_loglog_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, log-log scale plot vector x versus vectors y1 and y2 , save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_loglog_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        loglog( x, y1, params1 );
+        hold_on();
+        loglog( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogx_fig_eps_tex(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogx_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_semilogx_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y1, params1 );
+        hold_on();
+        semilogx( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogx_fig_eps_tex_legend(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogx_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2 , save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_semilogx_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogx( x, y1, params1 );
+        hold_on();
+        semilogx( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogy_fig_eps_tex(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogy_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2, save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_semilogy_fig_eps_tex(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y1, params1 );
+        hold_on();
+        semilogy( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector v versus its index vector, save and close figure
+    template<class T,int s,class O>
+    void save_semilogy_fig_eps_tex_legend(const Vec<T,s,O> &v, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( v, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vector y, save and close figure
+    template<class TX,int sx,class OX,class TY,int sy,class OY>
+    void save_semilogy_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY,sy,OY> &y, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y, params );
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, semi-log scale plot vector x versus vectors y1 and y2 , save and close figure
+    template<class TX,int sx,class OX,class TY1,int sy1,class OY1,class TY2,int sy2,class OY2>
+    void save_semilogy_fig_eps_tex_legend(const Vec<TX,sx,OX> &x, const Vec<TY1,sy1,OY1> &y1, const Vec<TY2,sy2,OY2> &y2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        semilogy( x, y1, params1 );
+        hold_on();
+        semilogy( x, y2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus their index vectors, save and close figure
+    template<class T,int s,class O>
+    void save_vciplot_fig_eps_tex( const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus vector x, save and close figure
+    template<class TX,int sx,class OX,class T,int s,class O>
+    void save_vciplot_fig_eps_tex( const Vec<TX,sx,OX> &x, const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, x, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( x, v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus vector x, save and close figure
+    template<class TX,int sx,class OX,class T1,int s1,class O1,class T2,int s2,class O2>
+    void save_vciplot_fig_eps_tex( const Vec<TX,sx,OX> &x, const Vec<T1,s1,O1> &v1, const Vec<T1,s1,O1> &lower1, const Vec<T1,s1,O1> &upper1, const Vec<T2,s2,O2> &v2, const Vec<T2,s2,O2> &lower2, const Vec<T2,s2,O2> &upper2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower1, upper1, x, params1 );
+        set_alpha(0.2);
+        hold_on();
+        ciplot( lower2, upper2, x, params2 );
+        set_alpha(0.2);
+        plot( x, v1, params1 );
+        plot( x, v2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus their index vectors, save and close figure
+    template<class T,int s,class O>
+    void save_vciplot_fig_eps_tex_legend( const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus vector x, save and close figure
+    template<class TX,int sx,class OX,class T,int s,class O>
+    void save_vciplot_fig_eps_tex_legend( const Vec<TX,sx,OX> &x, const Vec<T,s,O> &v, const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower, upper, x, params );
+        set_alpha(0.2);
+        hold_on();
+        plot( x, v, params );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
+    
+    /// Create new figure, plot vector v, confidence intervals lower and upper versus vector x, save and close figure
+    template<class TX,int sx,class OX,class T1,int s1,class O1,class T2,int s2,class O2>
+    void save_vciplot_fig_eps_tex_legend( const Vec<TX,sx,OX> &x, const Vec<T1,s1,O1> &v1, const Vec<T1,s1,O1> &lower1, const Vec<T1,s1,O1> &upper1, const Vec<T2,s2,O2> &v2, const Vec<T2,s2,O2> &lower2, const Vec<T2,s2,O2> &upper2, const char *filename="", const char *xlabel="", const char *ylabel="", const char *legend="", const char *params1="", const char *params2="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="" ) {
+        figure();
+        ciplot( lower1, upper1, x, params1 );
+        set_alpha(0.2);
+        hold_on();
+        ciplot( lower2, upper2, x, params2 );
+        set_alpha(0.2);
+        plot( x, v1, params1 );
+        plot( x, v2, params2 );
+        hold_off();
+        grid_on();
+        box_on();
+        set_fontsize(fontsize);
+        set_xlabel_interpreter(xlabel,interpreter);
+        set_ylabel_interpreter(ylabel,interpreter);
+        set_legend(legend);
+        std::string filename_ = get_filename(filename);
+        matlab2tikz(("'" + filename_ + ".tex'").c_str(),",'height','\\figureheight'");
+        mysaveas(("'" + filename_ + "'").c_str(),"'epsc2'",renderer);
+        mysaveas(("'" + filename_ + "'").c_str(),"'fig'",renderer);
+        close();
+    }
     
     ///
     FILE *tube;
@@ -759,7 +1471,7 @@ template<class T,int s,class O>
 void ml_semilogy( const Vec<T,s,O> &vec, const char *params="" ) {
     MatlabPlot mp;
     mp.figure();
-    mp.semilogx( vec, params );
+    mp.semilogy( vec, params );
     mp.wait();
 }
 
@@ -767,7 +1479,7 @@ template<class TX,int sx,class OX,class TY,int sy,class OY>
 void ml_semilogy( const Vec<TX,sx,OX> &vecx, const Vec<TY,sy,OY> &vecy, const char *params="" ) {
     MatlabPlot mp;
     mp.figure();
-    mp.semilogx( vecx, vecy, params );
+    mp.semilogy( vecx, vecy, params );
     mp.wait();
 }
 
@@ -775,7 +1487,23 @@ template<class T,class STR,class STO>
 void ml_semilogy( const Mat<T,STR,STO> &mat, const char *params="" ) {
     MatlabPlot mp;
     mp.figure();
-    mp.semilogx( mat, params );
+    mp.semilogy( mat, params );
+    mp.wait();
+}
+
+template<class T,int s,class O>
+void ml_ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *params="" ) {
+    MatlabPlot mp;
+    mp.figure();
+    mp.ciplot( lower, upper, params );
+    mp.wait();
+}
+
+template<class T,int s,class O,class TX,int sx,class OX>
+void ml_ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const Vec<TX,sx,OX> &vecx, const char *params="" ) {
+    MatlabPlot mp;
+    mp.figure();
+    mp.ciplot( lower, upper, vecx, params );
     mp.wait();
 }
 
@@ -861,6 +1589,20 @@ void save_ml_semilogy( const Mat<T,STR,STO> &mat, const char *output="", const c
     MatlabPlot mp(display);
     mp.cd_cwd();
     mp.save_semilogy( mat, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
+}
+
+template<class T,int s,class O>
+void save_ml_ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
+    MatlabPlot mp(display);
+    mp.cd_cwd();
+    mp.save_ciplot( lower, upper, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
+}
+
+template<class T,int s,class O,class TX,int sx,class OX>
+void save_ml_ciplot( const Vec<T,s,O> &lower, const Vec<T,s,O> &upper, const Vec<TX,sx,OX> &x, const char *output="", const char *xlabel="", const char *ylabel="", const char *params="", const char *interpreter="'latex'", const double fontsize=16, const char *renderer="", const bool display = false ) {
+    MatlabPlot mp(display);
+    mp.cd_cwd();
+    mp.save_ciplot( lower, upper, x, output, xlabel, ylabel, params, interpreter, fontsize, renderer );
 }
 
 }
