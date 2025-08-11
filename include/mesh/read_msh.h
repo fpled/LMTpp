@@ -17,11 +17,15 @@
 #include "Triangle.h"
 #include "Triangle_6.h"
 #include "Quad.h"
+#include "Quad_8.h"
 #include "Quad_9.h"
 #include "Tetra.h"
 #include "Tetra_10.h"
 #include "Hexa.h"
+#include "Hexa_20.h"
 #include "Wedge.h"
+#include "Wedge_15.h"
+#include "Pyramid.h"
 
 #include <fstream>
 #include <map>
@@ -152,6 +156,12 @@ void read_msh( TM &m, std::istream &is ) throw(std::runtime_error) {
                     m.add_element( Wedge(),DefaultBehavior(),vn.ptr() );
                 }
             }
+            else if ( type_elem == 7 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Pyramid(), vn.ptr() );
+                    m.add_element( Pyramid(),DefaultBehavior(),vn.ptr() );
+                }
+            }
             else if ( type_elem == 8 ) { //TODO
                 if ( nvi == 1 ) {
                     m.add_element( Bar_3(),DefaultBehavior(),vn.ptr() );
@@ -176,8 +186,50 @@ void read_msh( TM &m, std::istream &is ) throw(std::runtime_error) {
                     m.add_element( Tetra_10(),DefaultBehavior(),vn.ptr() );
                 }
             }
+//            else if ( type_elem == 12 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Hexa_27(), vn.ptr() );
+//                    m.add_element( Hexa_27(),DefaultBehavior(),vn.ptr() );
+//                }
+//            }
+//            else if ( type_elem == 13 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Wedge_18(), vn.ptr() );
+//                    m.add_element( Wedge_18(),DefaultBehavior(),vn.ptr() );
+//                }
+//            }
+//            else if ( type_elem == 14 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Pyramid_14(), vn.ptr() );
+//                    m.add_element( Pyramid_14(),DefaultBehavior(),vn.ptr() );
+//                }
+//            }
             else if ( type_elem == 15 ) { //TODO
             }
+            else if ( type_elem == 16 ) { //TODO
+                if ( nvi == 2 ) {
+                    permutation_if_jac_neg ( Quad_8(), vn.ptr() );
+                    m.add_element( Quad_8(),DefaultBehavior(),vn.ptr() );
+                }
+            }
+            else if ( type_elem == 17 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Hexa_20(), vn.ptr() );
+                    m.add_element( Hexa_20(),DefaultBehavior(),vn.ptr() );
+                }
+            }
+            else if ( type_elem == 18 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Wedge_15(), vn.ptr() );
+                    m.add_element( Wedge_15(),DefaultBehavior(),vn.ptr() );
+                }
+            }
+//            else if ( type_elem == 19 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Pyramid_13(), vn.ptr() );
+//                    m.add_element( Pyramid_13(),DefaultBehavior(),vn.ptr() );
+//                }
+//            }
             else {
                 std::cout << "unknown type elem in read_msh -> " << type_elem << std::endl;
             }            

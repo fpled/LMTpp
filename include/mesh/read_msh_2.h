@@ -16,10 +16,16 @@
 #include "Bar_3.h"
 #include "Triangle.h"
 #include "Triangle_6.h"
+#include "Quad.h"
+#include "Quad_8.h"
+#include "Quad_9.h"
 #include "Tetra.h"
 #include "Tetra_10.h"
 #include "Hexa.h"
+#include "Hexa_20.h"
 #include "Wedge.h"
+#include "Wedge_15.h"
+#include "Pyramid.h"
 #include "../containers/indexof.h"
 
 #include <fstream>
@@ -157,6 +163,12 @@ void read_msh_2( TM &m, std::istream &is, unsigned nvi, const VarTag &vt ) throw
                     assign_tag_values( m.add_element( Wedge(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
                 }
             }
+            else if ( type_elem == 7 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Pyramid(), vn.ptr() );
+                    assign_tag_values( m.add_element( Pyramid(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+                }
+            }
             else if ( type_elem == 8 ) { //TODO
                 if ( nvi == 1 ) {
                     assign_tag_values( m.add_element( Bar_3(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
@@ -168,6 +180,12 @@ void read_msh_2( TM &m, std::istream &is, unsigned nvi, const VarTag &vt ) throw
                     assign_tag_values( m.add_element( Triangle_6(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
                 }
             }
+            else if ( type_elem == 10 ) { //TODO
+                if ( nvi == 2 ) {
+                    permutation_if_jac_neg ( Quad_9(), vn.ptr() );
+                    assign_tag_values( m.add_element( Quad_9(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+                }
+            }
             else if ( type_elem == 11 ) { //TODO
                 if ( nvi == 3 ) {
                     swap( vn[8], vn[9] );
@@ -175,8 +193,50 @@ void read_msh_2( TM &m, std::istream &is, unsigned nvi, const VarTag &vt ) throw
                     assign_tag_values( m.add_element( Tetra_10(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
                 }
             }
+//            else if ( type_elem == 12 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Hexa_27(), vn.ptr() );
+//                    assign_tag_values( m.add_element( Hexa_27(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//                }
+//            }
+//            else if ( type_elem == 13 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Wedge_18(), vn.ptr() );
+//                    assign_tag_values( m.add_element( Wedge_18(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//                }
+//            }
+//            else if ( type_elem == 14 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Pyramid_14(), vn.ptr() );
+//                    assign_tag_values( m.add_element( Pyramid_14(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//                }
+//            }
             else if ( type_elem == 15 ) { //TODO
             }
+            else if ( type_elem == 16 ) { //TODO
+                if ( nvi == 2 ) {
+                    permutation_if_jac_neg ( Quad_8(), vn.ptr() );
+                    assign_tag_values( m.add_element( Quad_8(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+                }
+            }
+            else if ( type_elem == 17 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Hexa_20(), vn.ptr() );
+                    assign_tag_values( m.add_element( Hexa_20(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+                }
+            }
+            else if ( type_elem == 18 ) { //TODO
+                if ( nvi == 3 ) {
+                    permutation_if_jac_neg ( Wedge_15(), vn.ptr() );
+                    assign_tag_values( m.add_element( Wedge_15(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+                }
+            }
+//            else if ( type_elem == 19 ) { //TODO
+//                if ( nvi == 3 ) {
+//                    permutation_if_jac_neg ( Pyramid_13(), vn.ptr() );
+//                    assign_tag_values( m.add_element( Pyramid_13(),DefaultBehavior(),vn.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//                }
+//            }
             else {
                 std::cout << "unknown type elem in read_msh_2 -> " << type_elem << std::endl;
             }
@@ -253,7 +313,7 @@ void read_msh_2_tags_for_nvi( TM &m, const std::string &fic_name, Number<nvi_to_
     Vec<typename TM::Tpos> tag_values;
     for(unsigned i=0;i<nb_elems;++i) {
         static unsigned nb_nodes_elem[] = { 2, 3, 4, 4, 8, 6, 5, 3, 6, 9, 10, 27, 18, 14, 1, 8, 20, 15, 13 };
-        static unsigned nvi_elem[] = { 0, 1, 2, 2, 3, 3, 3 };
+        static unsigned nvi_elem[] = { 0, 1, 2, 2, 3, 3, 3, 3, 1, 2, 2, 3, 3, 3, 3, 0, 2, 3, 3, 3 };
         //
         getline( is, str );
         std::istringstream s( str );
@@ -284,6 +344,31 @@ void read_msh_2_tags_for_nvi( TM &m, const std::string &fic_name, Number<nvi_to_
                 assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Hexa()    , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
             else if ( type_elem == 6 )
                 assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Wedge()   , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 7 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Pyramid() , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 8 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Bar_3()   , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 9 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Triangle_6(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 10 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Quad_9()  , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 11 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Tetra_10(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//            else if ( type_elem == 12 )
+//                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Hexa_27() , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//            else if ( type_elem == 13 )
+//                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Wedge_18(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//            else if ( type_elem == 14 )
+//                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Pyramid_14(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//            else if ( type_elem == 15 ) {}
+            else if ( type_elem == 16 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Quad_8()  , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 17 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Hexa_20() , DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+            else if ( type_elem == 18 )
+                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Wedge_15(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
+//            else if ( type_elem == 19 )
+//                assign_tag_values( m.sub_mesh( Number<nvi_to_subs>() ).elem_list.find( Pyramid_13(), DefaultBehavior(), m, v.ptr() ), tag_values, vt, Number<0>(), Number<NbSubTypes<VarTag>::res>() );
             else {
                 std::cout << "unknown type elem." << std::endl;
                 assert ( 0 );
